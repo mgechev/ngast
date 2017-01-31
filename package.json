@@ -1,0 +1,23 @@
+{
+  "name": "ngast",
+  "version": "0.0.1",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Minko Gechev <mgechev@gmail.com>",
+  "license": "MIT",
+  "dependencies": {
+    "@angular/compiler": "^2.4.5",
+    "@angular/compiler-cli": "^2.4.5",
+    "@angular/core": "^2.4.5",
+    "@angular/language-service": "^2.4.5",
+    "rxjs": "^5.0.3",
+    "typescript": "^2.1.5",
+    "zone.js": "^0.7.6"
+  },
+  "devDependencies": {
+    "@types/node": "^7.0.4"
+  }
+}
