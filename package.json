@@ -18,6 +18,7 @@
     "zone.js": "^0.7.6"
   },
   "devDependencies": {
-    "@types/node": "^7.0.4"
+    "@types/node": "^7.0.4",
+    "tslint": "^4.4.2"
   }
 }
