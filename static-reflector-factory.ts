@@ -100,7 +100,6 @@ const patchTypeScriptServiceHost = (proto: any, configFile: string) => {
         }
         var tsConfigPath = configFile;
         var basePath = path.dirname(tsConfigPath || this.context);
-        console.log(basePath);
         result = this._reflectorHost = new ReflectorHost(
           () => this.tsService.getProgram(),
           this.host,
@@ -169,7 +168,7 @@ export const create = (configFile: string) => {
   const ngHost = new res.TypeScriptServiceHost(host, ts.createLanguageService(host));
   const ngServer = res.createLanguageService(ngHost);
   ngHost.setSite(ngServer);
-  return ngHost;
+  return { service: ngServer, host: ngHost };
 
   // const usePathMapping = !!options.rootDirs && options.rootDirs.length > 0;
   // const context = new ModuleResolutionHostAdapter(host);
