@@ -1,6 +1,8 @@
 import {ProjectSymbols} from './project-symbols';
 import {createProgram} from './create-program';
+import * as fs from 'fs';
 
+// const configFilePath = '/Users/mgechev/Projects/angular-seed/src/client/tsconfig.json';
 const configFilePath = '/Users/mgechev/Projects/angular-seed/src/client/tsconfig.json';
 
 // console.log((new ProjectSymbols(createProgram(configFilePath)).getDirectives().pop().annotation as any).styleUrls);
@@ -9,15 +11,15 @@ const configFilePath = '/Users/mgechev/Projects/angular-seed/src/client/tsconfig
 const ps = new ProjectSymbols(createProgram(configFilePath));
 // ps.getModules();
 // console.log(ps.getModules().filter(m => m.metadata.type.reference.name === 'AppModule'));
-const m = ps.getModules().pop();
-console.log(m);
-ps.metadataResolver.loadNgModuleDirectiveAndPipeMetadata(m.metadata.type.reference, false)
-.then(() => {
-  console.log(m.metadata.declaredDirectives);
-})
-.catch(e => {
-  console.log(e);
-});
+console.log(ps.getTemplateAst(ps.getDirectives().map(m => m.metadata.metadata.type).pop().reference));
+// console.log(m);
+// ps.metadataResolver.loadNgModuleDirectiveAndPipeMetadata(m.metadata.type.reference, false)
+// .then(() => {
+//   console.log(ps.metadataResolver.getNonNormalizedDirectiveMetadata(m.metadata.declaredDirectives[0].reference));
+// })
+// .catch(e => {
+//   console.log(e);
+// });
 // const dir = .metadata.bootstrapComponents.pop();
 // console.log(ps.metadataResolver.getNonNormalizedDirectiveMetadata(dir.reference));
 // // console.log(ps.metadataResolver.getNonNormalizedDirectiveMetadata(dir));
