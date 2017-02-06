@@ -46,14 +46,17 @@ import {
   NodeCompilerHostContext
 } from '@angular/compiler-cli';
 
-export class DummyResourceLoader extends ResourceLoader {
-  get(url: string): Promise<string> { return Promise.resolve(''); }
+export class FileSystemResourceLoader extends ResourceLoader {
+  get(url: string): Promise<string> {
+    return Promise.resolve(fs.readFileSync(url).toString());
+  }
 }
 
 export class ProjectSymbols {
   public metadataResolver: CompileMetadataResolver;
   public reflector: StaticReflector;
   public staticSymbolResolver: StaticSymbolResolver;
+  public staticResolverHost: CompilerHost;
 
   private lastProgram: ts.Program;
   private options: AngularCompilerOptions;
@@ -154,10 +157,12 @@ export class ProjectSymbols {
 
   private findNode(symbol: StaticSymbol): ts.Node|undefined {
     function find(node: ts.Node): ts.Node|undefined {
-      if (symbol.name !== ((node as any).name || {}).text) {
-        return ts.forEachChild(node, find);
-      } else {
-        return node;
+      if (node && node.kind === ts.SyntaxKind.ClassDeclaration) {
+        if (symbol.name !== (node as ts.ClassDeclaration).name.text) {
+          return ts.forEachChild(node, find);
+        } else {
+          return node;
+        }
       }
     }
     return find(this.program.getSourceFile(symbol.filePath));
@@ -214,12 +219,13 @@ export class ProjectSymbols {
       useJit: false
     });
 
-    const normalizer = new DirectiveNormalizer(new DummyResourceLoader(), createOfflineCompileUrlResolver(), parser, config);
+    const fileResolver = new FileSystemResourceLoader();
+    const normalizer = new DirectiveNormalizer(fileResolver, createOfflineCompileUrlResolver(), parser, config);
 
-    const staticResolverHost = new CompilerHost(this.program, this.options, new NodeCompilerHostContext());
+    this.staticResolverHost = new CompilerHost(this.program, this.options, new NodeCompilerHostContext());
 
     this.staticSymbolResolver = new StaticSymbolResolver(
-            staticResolverHost, staticSymbolCache, summaryResolver,
+            this.staticResolverHost, staticSymbolCache, summaryResolver,
             (e, filePath) => {
               console.log(e, filePath);
             });
@@ -233,12 +239,10 @@ export class ProjectSymbols {
     const dirResolver = new DirectiveResolver(this.reflector);
     const pipeResolver = new PipeResolver(this.reflector);
 
-    const directiveNormalizer = new DirectiveNormalizer(new DummyResourceLoader(), new UrlResolver(), parser, config);
+    const directiveNormalizer = new DirectiveNormalizer(fileResolver, new UrlResolver(), parser, config);
 
     this.metadataResolver = new CompileMetadataResolver(
-            ngModuleResolver, dirResolver, pipeResolver, new SummaryResolver(),
+            ngModuleResolver, dirResolver, pipeResolver, summaryResolver,
             new DomElementSchemaRegistry(), directiveNormalizer, this.reflector);
-
-    return this.staticSymbolResolver;
   }
 }
