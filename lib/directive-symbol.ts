@@ -1,5 +1,5 @@
 import {Program} from 'typescript';
-import {resolveForwardRef} from '@angular/core';
+import {resolveForwardRef, SchemaMetadata} from '@angular/core';
 import {
   StaticSymbol,
   DirectiveResolver,
@@ -13,7 +13,9 @@ import {
   Parser,
   TemplateParser,
   DomElementSchemaRegistry,
-  DirectiveNormalizer
+  DirectiveNormalizer,
+  CompileDirectiveSummary,
+  CompilePipeSummary
 } from '@angular/compiler';
 
 import {ProjectSymbols} from './project-symbols';
@@ -21,6 +23,12 @@ import {Symbol} from './symbol';
 import {ResourceResolver} from './resource-resolver';
 
 import {parseCss} from './css-parser/parseCss';
+
+interface DirectiveContext {
+  directives: CompileDirectiveSummary[];
+  pipes: CompilePipeSummary[];
+  schemas: SchemaMetadata[];
+}
 
 export class DirectiveSymbol extends Symbol {
   private urlResolver = new UrlResolver();
@@ -37,8 +45,13 @@ export class DirectiveSymbol extends Symbol {
       super(program, symbol);
     }
 
-  getMetadata() {
-    const metadata = this.metadataResolver.getNonNormalizedDirectiveMetadata(this.symbol);
+  getNonResolvedMetadata() {
+    return this.metadataResolver.getNonNormalizedDirectiveMetadata(this.symbol);
+  }
+
+  // TODO: use the normalizer's cache in order to prevent repetative I/O operations
+  getResolvedMetadata() {
+    const metadata = this.getNonResolvedMetadata();
     const componentType = resolveForwardRef(this.symbol);
     const componentUrl = componentModuleUrl(this.reflector, componentType, metadata);
     const templateMetadata = metadata.metadata.template;
@@ -63,8 +76,26 @@ export class DirectiveSymbol extends Symbol {
   }
 
   getStyleAsts() {
-    return this.getMetadata()
+    return this.getResolvedMetadata()
       .styles.map(s => parseCss(s));
+  }
+
+  getDirectiveContext(): DirectiveContext {
+    const analyzedModules = this.projectSymbols.getAnalyzedModules();
+    let ngModule = analyzedModules.ngModuleByPipeOrDirective.get(this.symbol);
+    if (!ngModule) {
+      throw new Error('Cannot find module associated with the directive ' + this.symbol.name);
+    }
+    const resolvedDirectives = ngModule.transitiveModule.directives.map(
+        d => this.metadataResolver.getNonNormalizedDirectiveMetadata(d.reference));
+    const directives =
+        resolvedDirectives.filter(d => d !== null).map(d => d.metadata.toSummary());
+    const pipes = ngModule.transitiveModule.pipes.map(
+        p => this.metadataResolver.getOrLoadPipeMetadata(p.reference).toSummary());
+    const schemas = ngModule.schemas;
+    return {
+      pipes, directives, schemas
+    };
   }
 
   getTemplateAst() {
@@ -72,7 +103,7 @@ export class DirectiveSymbol extends Symbol {
     try {
       const resolvedMetadata =
           this.metadataResolver.getNonNormalizedDirectiveMetadata(this.symbol as any);
-      const dirMetadata = this.getMetadata();
+      const dirMetadata = this.getResolvedMetadata();
       const source = dirMetadata.template;
       const metadata = resolvedMetadata && resolvedMetadata.metadata;
       if (metadata) {
@@ -82,29 +113,16 @@ export class DirectiveSymbol extends Symbol {
         const parser = new TemplateParser(
             expressionParser, new DomElementSchemaRegistry(), htmlParser, null, []);
         const htmlResult = htmlParser.parse(source, '');
-        const analyzedModules = this.projectSymbols.getAnalyzedModules();
         let errors: any[] = undefined;
-        let ngModule = analyzedModules.ngModuleByPipeOrDirective.get(this.symbol);
-        if (!ngModule) {
-          throw new Error('Cannot find module associated with the directive ' + this.symbol.name);
-        }
-        if (ngModule) {
-          const resolvedDirectives = ngModule.transitiveModule.directives.map(
-              d => this.metadataResolver.getNonNormalizedDirectiveMetadata(d.reference));
-          const directives =
-              resolvedDirectives.filter(d => d !== null).map(d => d.metadata.toSummary());
-          const pipes = ngModule.transitiveModule.pipes.map(
-              p => this.metadataResolver.getOrLoadPipeMetadata(p.reference).toSummary());
-          const schemas = ngModule.schemas;
-          const parseResult = parser.tryParseHtml(
-              htmlResult, metadata, source, directives, pipes, schemas, '');
-          result = {
-            htmlAst: htmlResult.rootNodes,
-            templateAst: parseResult.templateAst,
-            directive: metadata, directives, pipes,
-            parseErrors: parseResult.errors, expressionParser, errors
-          };
-        }
+        const { directives, pipes, schemas } = this.getDirectiveContext();
+        const parseResult = parser.tryParseHtml(
+            htmlResult, metadata, source, directives, pipes, schemas, '');
+        result = {
+          htmlAst: htmlResult.rootNodes,
+          templateAst: parseResult.templateAst,
+          directive: metadata, directives, pipes,
+          parseErrors: parseResult.errors, expressionParser, errors
+        };
       }
     } catch (e) {
       result = {errors: [{ message: e.message}]};
@@ -113,6 +131,6 @@ export class DirectiveSymbol extends Symbol {
   }
 
   isComponent() {
-    return !!this.getMetadata().template;
+    return !!this.getResolvedMetadata().template;
   }
 }

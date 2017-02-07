@@ -7,7 +7,7 @@ export const normalizeOptions = (options: any, configFilePath: string) => {
   options.configFilePath = configFilePath;
 };
 
-export const createProgram = (configFile: string): ts.Program => {
+export const createProgramFromTsConfig = (configFile: string): ts.Program => {
   const projectDirectory = dirname(configFile);
   const { config } = ts.readConfigFile(configFile, ts.sys.readFile);
 
