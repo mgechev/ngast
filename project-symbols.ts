@@ -4,8 +4,9 @@ import * as fs from 'fs';
 import * as path from 'path';
 
 import {createProgram} from './create-program';
-
 import {TemplateSource} from './types';
+
+import {ResourceResolver} from './resource-resolver';
 
 import {ViewEncapsulation, NO_ERRORS_SCHEMA, resolveForwardRef} from '@angular/core';
 import {
@@ -47,6 +48,9 @@ import {
   NodeCompilerHostContext
 } from '@angular/compiler-cli';
 
+import {PipeSymbol} from './pipe-symbol';
+import {DirectiveSymbol} from './directive-symbol';
+
 export class FileSystemResourceLoader extends ResourceLoader {
   get(url: string): Promise<string> {
     return Promise.resolve(fs.readFileSync(url).toString());
@@ -58,53 +62,54 @@ export class ProjectSymbols {
   public reflector: StaticReflector;
   public staticSymbolResolver: StaticSymbolResolver;
   public staticResolverHost: CompilerHost;
+  public pipeResolver: PipeResolver;
 
+  private directiveResolver: DirectiveResolver;
   private urlResolver: UrlResolver;
   private directiveNormalizer: DirectiveNormalizer;
   private lastProgram: ts.Program;
   private options: AngularCompilerOptions;
   private analyzedModules: NgAnalyzedModules;
 
-  constructor(private program: ts.Program) {
+  constructor(private program: ts.Program, private resourceResolver: ResourceResolver<string>) {
     this.options = this.program.getCompilerOptions();
     this.init();
   }
 
   getModules() {
     this.validate();
-    const result: [{ node: ts.Node, metadata: CompileNgModuleMetadata }] =
-      [] as [{ node: ts.Node, metadata: CompileNgModuleMetadata }];
-    this.ensureAnalyzedModules()
+    const result: CompileNgModuleMetadata[] = [];
+    this.getAnalyzedModules()
       .ngModuleByPipeOrDirective
       .forEach((m, s) => {
-        result.push({
-          node: this.findNode(s),
-          metadata: m
-        });
+        result.push(m);
       });
     return result;
   }
 
-  getDirectives() {
+  getDirectives(): DirectiveSymbol[] {
     return this.extractProgramSymbols()
-      .filter(v => this.metadataResolver.isDirective(v))
-      .map(v => {
-        return {
-          node: this.findNode(v),
-          metadata: this.metadataResolver.getNonNormalizedDirectiveMetadata(v)
-        };
-      });
+      .filter(s => this.metadataResolver.isDirective(s))
+      .map(s => new DirectiveSymbol(
+        s,
+        this.metadataResolver,
+        this.directiveNormalizer,
+        this.directiveResolver,
+        this.reflector,
+        this.resourceResolver,
+        this
+      ));
   }
 
   getPipes() {
     return this.extractProgramSymbols()
-      .filter(v => this.metadataResolver.isPipe(v));
-      // .map(v => this.metadataResolver.getPipeMetadata(v));
+      .filter(v => this.metadataResolver.isPipe(v))
+      .map(p => new PipeSymbol(p, this.pipeResolver, this));
   }
 
   getProjectSummary() {
     const module = this.getModules().pop();
-    return this.metadataResolver.getNgModuleSummary(module.metadata.type.reference);
+    return this.metadataResolver.getNgModuleSummary(module.type.reference);
   }
 
   updateProgram(program: ts.Program) {
@@ -114,84 +119,7 @@ export class ProjectSymbols {
     }
   }
 
-  getTemplateAst(type: StaticSymbol): any {
-    let result: any;
-    try {
-      const resolvedMetadata =
-          this.metadataResolver.getNonNormalizedDirectiveMetadata(type as any);
-      const dirMetadata = this.getDirectives()
-          .filter(d => d.metadata.metadata.type.reference === type).pop()
-          .metadata;
-      const dirType = resolveForwardRef(dirMetadata.metadata.type.reference);
-      const componentUrl = componentModuleUrl(this.reflector, dirType, dirMetadata);
-      let source = dirMetadata.metadata.template.template;
-      if (!source) {
-        source = fs.readFileSync(this.urlResolver.resolve(componentUrl, dirMetadata.metadata.template.templateUrl)).toString();
-      }
-      const metadata = resolvedMetadata && resolvedMetadata.metadata;
-      if (metadata) {
-        const rawHtmlParser = new HtmlParser();
-        const htmlParser = new I18NHtmlParser(rawHtmlParser);
-        const expressionParser = new Parser(new Lexer());
-        const parser = new TemplateParser(
-            expressionParser, new DomElementSchemaRegistry(), htmlParser, null, []);
-        const htmlResult = htmlParser.parse(source, '');
-        const analyzedModules = this.ensureAnalyzedModules();
-        let errors: any[] = undefined;
-        let ngModule = analyzedModules.ngModuleByPipeOrDirective.get(type);
-        if (!ngModule) {
-          throw new Error('Cannot find module associated with the directive ' + type.name);
-        }
-        if (ngModule) {
-          const resolvedDirectives = ngModule.transitiveModule.directives.map(
-              d => this.metadataResolver.getNonNormalizedDirectiveMetadata(d.reference));
-          const directives =
-              resolvedDirectives.filter(d => d !== null).map(d => d.metadata.toSummary());
-          const pipes = ngModule.transitiveModule.pipes.map(
-              p => this.metadataResolver.getOrLoadPipeMetadata(p.reference).toSummary());
-          const schemas = ngModule.schemas;
-          const parseResult = parser.tryParseHtml(
-              htmlResult, metadata, source, directives, pipes, schemas, '');
-          result = {
-            htmlAst: htmlResult.rootNodes,
-            templateAst: parseResult.templateAst,
-            directive: metadata, directives, pipes,
-            parseErrors: parseResult.errors, expressionParser, errors
-          };
-        }
-      }
-    } catch (e) {
-      result = {errors: [{ message: e.message}]};
-    }
-    return result;
-  }
-
-  private getDirectiveMetadata(d: StaticSymbol) {
-    const metadata = this.metadataResolver.getNonNormalizedDirectiveMetadata(d);
-    return metadata.metadata;
-  }
-
-  private findNode(symbol: StaticSymbol): ts.Node|undefined {
-    function find(node: ts.Node): ts.Node|undefined {
-      if (node && node.kind === ts.SyntaxKind.ClassDeclaration) {
-        if (symbol.name !== (node as ts.ClassDeclaration).name.text) {
-          return ts.forEachChild(node, find);
-        } else {
-          return node;
-        }
-      }
-    }
-    return find(this.program.getSourceFile(symbol.filePath));
-  }
-
-  private extractProgramSymbols() {
-    return extractProgramSymbols(
-      this.staticSymbolResolver, this.program.getSourceFiles().map(sf => sf.fileName), {
-        isSourceFile() { return true; }
-      });
-  }
-
-  private ensureAnalyzedModules(): NgAnalyzedModules {
+  getAnalyzedModules(): NgAnalyzedModules {
     let analyzedModules = this.analyzedModules;
     if (!analyzedModules) {
       const analyzeHost = {isSourceFile(filePath: string) { return true; }};
@@ -203,6 +131,13 @@ export class ProjectSymbols {
           analyzeNgModules(programSymbols, analyzeHost, this.metadataResolver);
     }
     return analyzedModules;
+  }
+
+  private extractProgramSymbols() {
+    return extractProgramSymbols(
+      this.staticSymbolResolver, this.program.getSourceFiles().map(sf => sf.fileName), {
+        isSourceFile() { return true; }
+      });
   }
 
   private validate() {
@@ -251,14 +186,14 @@ export class ProjectSymbols {
             });
 
     const ngModuleResolver = new NgModuleResolver(this.reflector);
-    const dirResolver = new DirectiveResolver(this.reflector);
-    const pipeResolver = new PipeResolver(this.reflector);
+    this.directiveResolver = new DirectiveResolver(this.reflector);
+    this.pipeResolver = new PipeResolver(this.reflector);
 
     this.urlResolver = createOfflineCompileUrlResolver();
     this.directiveNormalizer = new DirectiveNormalizer(fileResolver, this.urlResolver, parser, config);
 
     this.metadataResolver = new CompileMetadataResolver(
-            ngModuleResolver, dirResolver, pipeResolver, summaryResolver,
+            ngModuleResolver, this.directiveResolver, this.pipeResolver, summaryResolver,
             new DomElementSchemaRegistry(), this.directiveNormalizer, this.reflector);
   }
 }
