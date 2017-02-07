@@ -40,7 +40,7 @@ export class DirectiveSymbol extends Symbol {
     private directiveNormalizer: DirectiveNormalizer,
     private resolver: DirectiveResolver,
     private reflector: StaticReflector,
-    private resourceResolver: ResourceResolver<string>,
+    private resourceResolver: ResourceResolver,
     private projectSymbols: ProjectSymbols) {
       super(program, symbol);
     }
@@ -58,15 +58,15 @@ export class DirectiveSymbol extends Symbol {
     // Required because otherwise the normalizer gets confused.
     if (!templateMetadata.template) {
       templateMetadata.templateUrl = this.urlResolver.resolve(componentUrl, templateMetadata.templateUrl);
-      templateMetadata.template = this.resourceResolver.resolveSync(templateMetadata.templateUrl);
+      templateMetadata.template = this.resourceResolver.getSync(templateMetadata.templateUrl);
     }
     const currentMetadata = this.directiveNormalizer.normalizeTemplateSync(Object.assign(templateMetadata, {
       moduleUrl: componentUrl,
       componentType
     }));
-    currentMetadata.template = this.resourceResolver.resolveSync(templateMetadata.templateUrl);
+    currentMetadata.template = this.resourceResolver.getSync(templateMetadata.templateUrl);
     currentMetadata.styles = currentMetadata.styles.concat(currentMetadata.styleUrls.map(path =>
-      this.resourceResolver.resolveSync(path)));
+      this.resourceResolver.getSync(path)));
     return currentMetadata;
   }
 

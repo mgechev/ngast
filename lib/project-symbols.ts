@@ -1,61 +1,37 @@
 import * as ts from 'typescript';
 
-import * as fs from 'fs';
-import * as path from 'path';
-
-import {createProgram} from './create-program';
-import {TemplateSource} from './types';
-
 import {ResourceResolver} from './resource-resolver';
 
-import {ViewEncapsulation, NO_ERRORS_SCHEMA, resolveForwardRef} from '@angular/core';
+import {ViewEncapsulation} from '@angular/core';
 import {
   CompileMetadataResolver,
   NgModuleResolver,
   DirectiveResolver,
   DirectiveNormalizer,
-  ResourceLoader,
   UrlResolver,
   HtmlParser,
   CompilerConfig,
   PipeResolver,
   AotSummaryResolver,
   DomElementSchemaRegistry,
-  analyzeAndValidateNgModules,
   extractProgramSymbols,
   StaticSymbolResolver,
-  StaticSymbolResolverHost,
   StaticSymbolCache,
-  StaticSymbol,
   StaticReflector,
-  SummaryResolver,
   createOfflineCompileUrlResolver,
   analyzeNgModules,
   NgAnalyzedModules,
-  I18NHtmlParser,
-  Parser,
-  Lexer,
-  TemplateParser,
   CompileNgModuleMetadata,
-  componentModuleUrl
 } from '@angular/compiler';
 
 import {
   CompilerHost,
   AngularCompilerOptions,
-  CompilerHostContext,
-  ModuleMetadata,
   NodeCompilerHostContext
 } from '@angular/compiler-cli';
 
 import {PipeSymbol} from './pipe-symbol';
 import {DirectiveSymbol} from './directive-symbol';
-
-export class FileSystemResourceLoader extends ResourceLoader {
-  get(url: string): Promise<string> {
-    return Promise.resolve(fs.readFileSync(url).toString());
-  }
-}
 
 export class ProjectSymbols {
   public metadataResolver: CompileMetadataResolver;
@@ -71,7 +47,7 @@ export class ProjectSymbols {
   private options: AngularCompilerOptions;
   private analyzedModules: NgAnalyzedModules;
 
-  constructor(private program: ts.Program, private resourceResolver: ResourceResolver<string>) {
+  constructor(private program: ts.Program, private resourceResolver: ResourceResolver) {
     this.options = this.program.getCompilerOptions();
     this.init();
   }
@@ -171,8 +147,6 @@ export class ProjectSymbols {
       useJit: false
     });
 
-    const fileResolver = new FileSystemResourceLoader();
-
     this.staticResolverHost = new CompilerHost(this.program, this.options, new NodeCompilerHostContext());
 
     this.staticSymbolResolver = new StaticSymbolResolver(
@@ -191,7 +165,7 @@ export class ProjectSymbols {
     this.pipeResolver = new PipeResolver(this.reflector);
 
     this.urlResolver = createOfflineCompileUrlResolver();
-    this.directiveNormalizer = new DirectiveNormalizer(fileResolver, this.urlResolver, parser, config);
+    this.directiveNormalizer = new DirectiveNormalizer(this.resourceResolver, this.urlResolver, parser, config);
 
     this.metadataResolver = new CompileMetadataResolver(
             ngModuleResolver, this.directiveResolver, this.pipeResolver, summaryResolver,
