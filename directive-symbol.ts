@@ -1,4 +1,5 @@
 import {resolveForwardRef} from '@angular/core';
+
 import {
   StaticSymbol,
   DirectiveResolver,
@@ -16,10 +17,10 @@ import {
 } from '@angular/compiler';
 
 import {ProjectSymbols} from './project-symbols';
-
 import {Symbol} from './symbol';
-
 import {ResourceResolver} from './resource-resolver';
+
+import {parseCss} from './css-parser/parseCss';
 
 export class DirectiveSymbol extends Symbol {
   private urlResolver = new UrlResolver();
@@ -60,7 +61,12 @@ export class DirectiveSymbol extends Symbol {
       .getAnalyzedModules().ngModuleByPipeOrDirective.get(this.symbol);
   }
 
-  getAst() {
+  getStyleAsts() {
+    return this.getMetadata()
+      .styles.map(s => parseCss(s));
+  }
+
+  getTemplateAst() {
     let result: any;
     try {
       const resolvedMetadata =
