@@ -1,3 +1,4 @@
+import {Program} from 'typescript';
 import {resolveForwardRef} from '@angular/core';
 import {StaticSymbol, PipeResolver} from '@angular/compiler';
 
@@ -6,11 +7,12 @@ import {Symbol} from './symbol';
 
 export class PipeSymbol extends Symbol {
   constructor(
+    program: Program,
     symbol: StaticSymbol,
     private resolver: PipeResolver,
     private projectSymbols: ProjectSymbols
   ) {
-    super(symbol);
+    super(program, symbol);
   }
 
   getModule() {

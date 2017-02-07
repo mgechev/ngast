@@ -27,7 +27,7 @@ const resolver = {
 // console.log(new ProjectSymbols(createProgram(configFilePath)).getDirectives().pop().metadata);
 const ps = new ProjectSymbols(createProgram(configFilePath), resolver);
 
-console.log(ps.getDirectives().pop().getMetadata());
+console.log(ps.getDirectives().pop().getNode());
 // ps.getModules();
 // console.log(ps.getModules().filter(m => m.metadata.type.reference.name === 'AppModule'));
 // console.log(ps.getTemplateAst(ps.getDirectives().map(m => m.metadata.metadata.type).pop().reference));

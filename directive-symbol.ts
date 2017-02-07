@@ -1,5 +1,5 @@
+import {Program} from 'typescript';
 import {resolveForwardRef} from '@angular/core';
-
 import {
   StaticSymbol,
   DirectiveResolver,
@@ -26,6 +26,7 @@ export class DirectiveSymbol extends Symbol {
   private urlResolver = new UrlResolver();
 
   constructor(
+    program: Program,
     symbol: StaticSymbol,
     private metadataResolver: CompileMetadataResolver,
     private directiveNormalizer: DirectiveNormalizer,
@@ -33,7 +34,7 @@ export class DirectiveSymbol extends Symbol {
     private reflector: StaticReflector,
     private resourceResolver: ResourceResolver<string>,
     private projectSymbols: ProjectSymbols) {
-      super(symbol);
+      super(program, symbol);
     }
 
   getMetadata() {

@@ -91,6 +91,7 @@ export class ProjectSymbols {
     return this.extractProgramSymbols()
       .filter(s => this.metadataResolver.isDirective(s))
       .map(s => new DirectiveSymbol(
+        this.program,
         s,
         this.metadataResolver,
         this.directiveNormalizer,
@@ -104,7 +105,7 @@ export class ProjectSymbols {
   getPipes() {
     return this.extractProgramSymbols()
       .filter(v => this.metadataResolver.isPipe(v))
-      .map(p => new PipeSymbol(p, this.pipeResolver, this));
+      .map(p => new PipeSymbol(this.program, p, this.pipeResolver, this));
   }
 
   getProjectSummary() {
