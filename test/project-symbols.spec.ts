@@ -46,5 +46,12 @@ describe('ProjectSymbols', () => {
       const result = projectSymbols.getPipes();
       expect(result.some(p => p.symbol.name === 'DecimalPipe')).toBeTruthy();
     });
+
+    it('should update the program', () => {
+      const projectSymbols = new ProjectSymbols(program, resourceResolver);
+      const spy = spyOn(ProjectSymbols.prototype, 'validate');
+      projectSymbols.updateProgram(createProgramFromTsConfig(__dirname + '/../../test/fixture/basic/tsconfig.json'));
+      expect(spy).toHaveBeenCalled();
+    });
   });
 });

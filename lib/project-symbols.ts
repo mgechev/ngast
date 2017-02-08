@@ -92,6 +92,14 @@ export class ProjectSymbols {
     return undefined;
   }
 
+  updateProgram(program: ts.Program): void {
+    if (program !== this.program) {
+      this.program = program;
+      this.validate();
+    }
+  }
+
+  /** @internal */
   getAnalyzedModules(): NgAnalyzedModules {
     let analyzedModules = this.analyzedModules;
     if (!analyzedModules) {
@@ -104,13 +112,6 @@ export class ProjectSymbols {
           analyzeNgModules(programSymbols, analyzeHost, this.metadataResolver);
     }
     return analyzedModules;
-  }
-
-  updateProgram(program: ts.Program): void {
-    if (program !== this.program) {
-      this.program = program;
-      this.validate();
-    }
   }
 
   private extractProgramSymbols() {
