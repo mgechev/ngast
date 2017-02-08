@@ -1,6 +1,6 @@
 import {ProjectSymbols, ProgramFactory} from '../';
-import {createProgramFromTsConfig} from '../demo/create-program';
-import {resourceResolver} from '../demo/resource-resolver';
+import {createProgramFromTsConfig} from './utils/create-program';
+import {resourceResolver} from './utils/resource-resolver';
 
 describe('ProjectSymbols', () => {
   describe('basic project', () => {

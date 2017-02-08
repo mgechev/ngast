@@ -2,8 +2,8 @@ import * as ts from 'typescript';
 // import {writeFileSync} from 'fs';
 
 import {ContextSymbols} from '../';
-import {createProgramFromTsConfig} from '../demo/create-program';
-import {resourceResolver} from '../demo/resource-resolver';
+import {createProgramFromTsConfig} from './utils/create-program';
+import {resourceResolver} from './utils/resource-resolver';
 
 describe('ContextSymbols', () => {
   describe('basic project', () => {
