@@ -6,12 +6,12 @@
     "emitDecoratorMetadata": true,
     "experimentalDecorators": true,
     "stripInternal": true,
-    "outDir": "./dist",
-    "strictNullChecks": true,
+    "declaration": true,
+    "outDir": "./dist-test",
     "lib": ["es2015", "dom"]
   },
   "files": [
-    "index.ts"
+    "./test/symbol.spec.ts"
   ],
   "angularCompilerOptions": {
     "skipTemplateCodegen": true

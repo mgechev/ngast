@@ -1,0 +1,6 @@
+{
+  "spec_dir": "dist-test",
+  "spec_files": [
+    "**/*.spec.js"
+  ]
+}
