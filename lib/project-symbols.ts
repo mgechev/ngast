@@ -52,14 +52,14 @@ export class ProjectSymbols {
     const discoverModules = (summary: any) => {
       if (!summary || !summary.type || !summary.type.reference) return [];
       const routes = summary.providers
-        .filter(p => p.provider.token.identifier.reference.name === 'ANALYZE_FOR_ENTRY_COMPONENTS')
+        .filter(p => 'ANALYZE_FOR_ENTRY_COMPONENTS' === p.provider.token.identifier.reference.name)
         .map(p => p.provider.useValue);
-      const contexts = [].concat.apply([], routes)
+      const contexts: ContextSymbols[] = [].concat.apply([], routes)
         .filter(r => !!r.loadChildren)
         .map(r => this.lazyModuleResolver.resolve(summary.type.reference.filePath, r))
         .filter(r => !!r)
         .map(p => new ContextSymbols(this.programFactory.create([p]), this.resolver));
-      return [].concat.apply([], contexts.map(discoverModules)).concat(contexts);
+      return contexts.concat([].concat.apply([], contexts.map(c => c.getContextSummary()).map(discoverModules)));
     };
     return [this.getRootContext()].concat(discoverModules(summary));
   }
