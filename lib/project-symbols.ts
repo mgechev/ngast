@@ -34,12 +34,11 @@ import {PipeSymbol} from './pipe-symbol';
 import {DirectiveSymbol} from './directive-symbol';
 
 export class ProjectSymbols {
-  public metadataResolver: CompileMetadataResolver;
-  public reflector: StaticReflector;
-  public staticSymbolResolver: StaticSymbolResolver;
-  public staticResolverHost: CompilerHost;
-  public pipeResolver: PipeResolver;
-
+  private metadataResolver: CompileMetadataResolver;
+  private reflector: StaticReflector;
+  private staticSymbolResolver: StaticSymbolResolver;
+  private staticResolverHost: CompilerHost;
+  private pipeResolver: PipeResolver;
   private directiveResolver: DirectiveResolver;
   private urlResolver: UrlResolver;
   private directiveNormalizer: DirectiveNormalizer;
@@ -86,7 +85,9 @@ export class ProjectSymbols {
 
   getProjectSummary() {
     const module = this.getModules().pop();
-    return this.metadataResolver.getNgModuleSummary(module.type.reference);
+    if (module) {
+      return this.metadataResolver.getNgModuleSummary(module.type.reference);
+    }
   }
 
   updateProgram(program: ts.Program) {
@@ -127,7 +128,8 @@ export class ProjectSymbols {
   }
 
   private clearCaches() {
-    this.metadataResolver = null;
+    this.metadataResolver.clearCache();
+    this.directiveNormalizer.clearCache();
   }
 
   private init() {
@@ -135,7 +137,7 @@ export class ProjectSymbols {
     const staticSymbolCache = new StaticSymbolCache();
 
     const summaryResolver = new AotSummaryResolver({
-      loadSummary(filePath: string) { return null; },
+      loadSummary(filePath: string) { return ''; },
       isSourceFile(sourceFilePath: string) { return true; },
     }, staticSymbolCache);
 
@@ -150,7 +152,8 @@ export class ProjectSymbols {
     this.staticResolverHost = new CompilerHost(this.program, this.options, new NodeCompilerHostContext());
 
     this.staticSymbolResolver = new StaticSymbolResolver(
-            this.staticResolverHost, staticSymbolCache, summaryResolver,
+            // The strict null check gets confused here
+            (this.staticResolverHost as any), staticSymbolCache, summaryResolver,
             (e, filePath) => {
               console.log(e, filePath);
             });

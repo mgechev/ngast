@@ -111,9 +111,8 @@ export class DirectiveSymbol extends Symbol {
         const htmlParser = new I18NHtmlParser(rawHtmlParser);
         const expressionParser = new Parser(new Lexer());
         const parser = new TemplateParser(
-            expressionParser, new DomElementSchemaRegistry(), htmlParser, null, []);
+            expressionParser, new DomElementSchemaRegistry(), htmlParser, undefined, []);
         const htmlResult = htmlParser.parse(source, '');
-        let errors: any[] = undefined;
         const { directives, pipes, schemas } = this.getDirectiveContext();
         const parseResult = parser.tryParseHtml(
             htmlResult, metadata, source, directives, pipes, schemas, '');
@@ -121,7 +120,7 @@ export class DirectiveSymbol extends Symbol {
           htmlAst: htmlResult.rootNodes,
           templateAst: parseResult.templateAst,
           directive: metadata, directives, pipes,
-          parseErrors: parseResult.errors, expressionParser, errors
+          parseErrors: parseResult.errors, expressionParser
         };
       }
     } catch (e) {
