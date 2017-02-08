@@ -1,4 +1,5 @@
 import * as ts from 'typescript';
+import {writeFileSync} from 'fs';
 
 import {ProjectSymbols} from '../';
 import {createProgramFromTsConfig} from '../demo/create-program';
@@ -52,6 +53,24 @@ describe('ProjectSymbols', () => {
       const spy = spyOn(ProjectSymbols.prototype, 'validate');
       projectSymbols.updateProgram(createProgramFromTsConfig(__dirname + '/../../test/fixture/basic/tsconfig.json'));
       expect(spy).toHaveBeenCalled();
+    });
+  });
+
+  describe('routing project', () => {
+    let program: ts.Program;
+
+    beforeEach(() => {
+      program = createProgramFromTsConfig(__dirname + '/../../test/fixture/routing/tsconfig.json');
+    });
+
+    it('should find lazy modules', () => {
+      const projectSymbols = new ProjectSymbols(program, resourceResolver);
+      const summary = projectSymbols.getProjectSummary();
+      expect(summary.type.reference.name).toBe('AppModule');
+      const routeConfig = summary.providers
+        .filter(p => p.provider.token.identifier.reference.name === 'ANALYZE_FOR_ENTRY_COMPONENTS').pop();
+      expect(routeConfig.provider.useValue[0].path).toBe('lazy-a');
+      expect(routeConfig.provider.useValue[2].path).toBe('regular');
     });
   });
 });
