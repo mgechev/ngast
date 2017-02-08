@@ -2,7 +2,7 @@ import {Program} from 'typescript';
 import {resolveForwardRef, Pipe} from '@angular/core';
 import {StaticSymbol, PipeResolver, CompileNgModuleMetadata} from '@angular/compiler';
 
-import {ProjectSymbols} from './project-symbols';
+import {ContextSymbols} from './context-symbols';
 import {Symbol} from './symbol';
 
 export class PipeSymbol extends Symbol {
@@ -10,7 +10,7 @@ export class PipeSymbol extends Symbol {
     program: Program,
     symbol: StaticSymbol,
     private resolver: PipeResolver,
-    private projectSymbols: ProjectSymbols
+    private projectSymbols: ContextSymbols
   ) {
     super(program, symbol);
   }

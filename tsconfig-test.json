@@ -12,6 +12,7 @@
   },
   "files": [
     "test/symbol.spec.ts",
+    "test/context-symbols.spec.ts",
     "test/project-symbols.spec.ts"
   ],
   "angularCompilerOptions": {

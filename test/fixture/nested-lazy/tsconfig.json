@@ -9,6 +9,7 @@
   "files": [
     "lazy-a.ts",
     "lazy-b.ts",
+    "lazy-c.ts",
     "index.ts"
   ]
 }
