@@ -9,7 +9,7 @@
  */
 
 import * as chars from './chars';
-import {ParseError, ParseLocation, ParseSourceFile, ParseSourceSpan} from './parseUtil';
+import {ParseError, ParseLocation, ParseSourceFile, ParseSourceSpan} from './parse-util';
 
 import {
   BlockType,
@@ -34,13 +34,13 @@ import {
   CssUnknownRuleAst,
   CssUnknownTokenListAst,
   mergeTokens
-} from './cssAst';
-import {CssLexer, CssLexerMode, CssScanner, CssToken, CssTokenType, generateErrorMessage, isNewline} from './cssLexer';
+} from './css-ast';
+import {CssLexer, CssLexerMode, CssScanner, CssToken, CssTokenType, generateErrorMessage, isNewline} from './css-lexer';
 
 const SPACE_OPERATOR = ' ';
 
-export {CssToken} from './cssLexer';
-export {BlockType} from './cssAst';
+export {CssToken} from './css-lexer';
+export {BlockType} from './css-ast';
 
 const SLASH_CHARACTER = '/';
 const GT_CHARACTER = '>';

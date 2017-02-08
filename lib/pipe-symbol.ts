@@ -1,6 +1,6 @@
 import {Program} from 'typescript';
-import {resolveForwardRef} from '@angular/core';
-import {StaticSymbol, PipeResolver} from '@angular/compiler';
+import {resolveForwardRef, Pipe} from '@angular/core';
+import {StaticSymbol, PipeResolver, CompileNgModuleMetadata} from '@angular/compiler';
 
 import {ProjectSymbols} from './project-symbols';
 import {Symbol} from './symbol';
@@ -15,12 +15,12 @@ export class PipeSymbol extends Symbol {
     super(program, symbol);
   }
 
-  getModule() {
+  getModule(): CompileNgModuleMetadata | undefined {
     return this.projectSymbols.getAnalyzedModules()
       .ngModuleByPipeOrDirective.get(this.symbol);
   }
 
-  getMetadata() {
+  getMetadata(): Pipe {
     return this.resolver.resolve(resolveForwardRef(this.symbol));
   }
 }

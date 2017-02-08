@@ -1,5 +1,5 @@
 import {StaticSymbol} from '@angular/compiler';
-import {Symbol} from '../lib/symbol';
+import {Symbol} from '../';
 import {createProgram} from './utils/create-program';
 
 describe('Symbol', () => {

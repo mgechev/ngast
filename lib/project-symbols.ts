@@ -22,6 +22,7 @@ import {
   analyzeNgModules,
   NgAnalyzedModules,
   CompileNgModuleMetadata,
+  CompileNgModuleSummary
 } from '@angular/compiler';
 
 import {
@@ -51,7 +52,7 @@ export class ProjectSymbols {
     this.init();
   }
 
-  getModules() {
+  getModules(): CompileNgModuleMetadata[] {
     this.validate();
     const result: CompileNgModuleMetadata[] = [];
     this.getAnalyzedModules()
@@ -64,10 +65,10 @@ export class ProjectSymbols {
 
   getDirectives(): DirectiveSymbol[] {
     return this.extractProgramSymbols()
-      .filter(s => this.metadataResolver.isDirective(s))
-      .map(s => new DirectiveSymbol(
+      .filter(symbol => this.metadataResolver.isDirective(symbol))
+      .map(symbol => new DirectiveSymbol(
         this.program,
-        s,
+        symbol,
         this.metadataResolver,
         this.directiveNormalizer,
         this.directiveResolver,
@@ -77,24 +78,18 @@ export class ProjectSymbols {
       ));
   }
 
-  getPipes() {
+  getPipes(): PipeSymbol[] {
     return this.extractProgramSymbols()
       .filter(v => this.metadataResolver.isPipe(v))
       .map(p => new PipeSymbol(this.program, p, this.pipeResolver, this));
   }
 
-  getProjectSummary() {
+  getProjectSummary(): CompileNgModuleSummary | undefined {
     const module = this.getModules().pop();
     if (module) {
       return this.metadataResolver.getNgModuleSummary(module.type.reference);
     }
-  }
-
-  updateProgram(program: ts.Program) {
-    if (program !== this.program) {
-      this.program = program;
-      this.validate();
-    }
+    return undefined;
   }
 
   getAnalyzedModules(): NgAnalyzedModules {
@@ -109,6 +104,13 @@ export class ProjectSymbols {
           analyzeNgModules(programSymbols, analyzeHost, this.metadataResolver);
     }
     return analyzedModules;
+  }
+
+  updateProgram(program: ts.Program): void {
+    if (program !== this.program) {
+      this.program = program;
+      this.validate();
+    }
   }
 
   private extractProgramSymbols() {
@@ -133,7 +135,6 @@ export class ProjectSymbols {
   }
 
   private init() {
-    this.validate();
     const staticSymbolCache = new StaticSymbolCache();
 
     const summaryResolver = new AotSummaryResolver({

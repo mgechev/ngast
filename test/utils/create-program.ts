@@ -9,10 +9,11 @@ export const normalizeOptions = (options: any, configFilePath: string) => {
 
 export const createProgram = (project: Project, config: any, root: string = ''): ts.Program => {
   const filenames = Object.keys(project);
-  const parseConfigHost: ts.ParseConfigHost = {
-    fileExists: (path: string) => {
-      return true;
-    },
+
+  // Any because of different APIs in TypeScript 2.1 and 2.0
+  const parseConfigHost: any = {
+    fileExists: (path: string) => true,
+    readFile: (file) => null,
     readDirectory: (dir: string) => filenames.filter(f => dirname(f) === dir),
     useCaseSensitiveFileNames: true,
   };

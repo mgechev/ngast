@@ -7,9 +7,9 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {ParseLocation, ParseSourceSpan} from './parseUtil';
+import {ParseLocation, ParseSourceSpan} from './parse-util';
 
-import {CssToken, CssTokenType} from './cssLexer';
+import {CssToken, CssTokenType} from './css-lexer';
 
 export enum BlockType {
   Import,

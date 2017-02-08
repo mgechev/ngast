@@ -1,5 +1,5 @@
 import {Program} from 'typescript';
-import {resolveForwardRef, SchemaMetadata} from '@angular/core';
+import {resolveForwardRef, SchemaMetadata, Directive} from '@angular/core';
 import {
   StaticSymbol,
   DirectiveResolver,
@@ -15,19 +15,33 @@ import {
   DomElementSchemaRegistry,
   DirectiveNormalizer,
   CompileDirectiveSummary,
-  CompilePipeSummary
+  CompilePipeSummary,
+  CompileNgModuleMetadata,
+  CompileTemplateMetadata,
+  CompileDirectiveMetadata,
+  TemplateAst,
+  ParseError
 } from '@angular/compiler';
 
 import {ProjectSymbols} from './project-symbols';
 import {Symbol} from './symbol';
 import {ResourceResolver} from './resource-resolver';
 
-import {parseCss} from './css-parser/parseCss';
+import {CssAst} from './css-parser/css-ast';
+import {parseCss} from './css-parser/parse-css';
 
-interface DirectiveContext {
+export interface DirectiveContext {
   directives: CompileDirectiveSummary[];
   pipes: CompilePipeSummary[];
   schemas: SchemaMetadata[];
+}
+
+export interface TemplateAstResult {
+  htmlAst?: any[];
+  templateAst?: TemplateAst[];
+  directive?: CompileDirectiveMetadata;
+  parseErrors?: ParseError[];
+  errors?: [{message: string}];
 }
 
 export class DirectiveSymbol extends Symbol {
@@ -45,12 +59,12 @@ export class DirectiveSymbol extends Symbol {
       super(program, symbol);
     }
 
-  getNonResolvedMetadata() {
+  getNonResolvedMetadata(): { annotation: Directive, metadata: CompileDirectiveMetadata } {
     return this.metadataResolver.getNonNormalizedDirectiveMetadata(this.symbol);
   }
 
   // TODO: use the normalizer's cache in order to prevent repetative I/O operations
-  getResolvedMetadata() {
+  getResolvedMetadata(): CompileTemplateMetadata {
     const metadata = this.getNonResolvedMetadata();
     const componentType = resolveForwardRef(this.symbol);
     const componentUrl = componentModuleUrl(this.reflector, componentType, metadata);
@@ -70,12 +84,12 @@ export class DirectiveSymbol extends Symbol {
     return currentMetadata;
   }
 
-  getModule() {
+  getModule(): CompileNgModuleMetadata | undefined {
     return this.projectSymbols
       .getAnalyzedModules().ngModuleByPipeOrDirective.get(this.symbol);
   }
 
-  getStyleAsts() {
+  getStyleAsts(): CssAst[] {
     return this.getResolvedMetadata()
       .styles.map(s => parseCss(s));
   }
@@ -98,8 +112,8 @@ export class DirectiveSymbol extends Symbol {
     };
   }
 
-  getTemplateAst() {
-    let result: any;
+  getTemplateAst(): TemplateAstResult {
+    let result: TemplateAstResult;
     try {
       const resolvedMetadata =
           this.metadataResolver.getNonNormalizedDirectiveMetadata(this.symbol as any);
@@ -119,9 +133,11 @@ export class DirectiveSymbol extends Symbol {
         result = {
           htmlAst: htmlResult.rootNodes,
           templateAst: parseResult.templateAst,
-          directive: metadata, directives, pipes,
-          parseErrors: parseResult.errors, expressionParser
+          directive: metadata,
+          parseErrors: parseResult.errors
         };
+      } else {
+        result = { errors: [ {message: 'Cannot find metadata for the directive'} ] };
       }
     } catch (e) {
       result = {errors: [{ message: e.message}]};
@@ -129,7 +145,7 @@ export class DirectiveSymbol extends Symbol {
     return result;
   }
 
-  isComponent() {
+  isComponent(): boolean {
     return !!this.getResolvedMetadata().template;
   }
 }
