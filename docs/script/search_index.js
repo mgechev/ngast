@@ -1,39 +1,39 @@
 window.esdocSearchIndex = [
   [
-    "ngast/dist/lib/project-symbols.js~basiclazymoduleresolver",
-    "variable/index.html#static-variable-BasicLazyModuleResolver",
-    "<span>BasicLazyModuleResolver</span> <span class=\"search-result-import-path\">ngast/dist/lib/project-symbols.js</span>",
-    "variable"
+    "ngast/dist-docs/lib/project-symbols.js~basiclazymoduleresolver",
+    "class/dist-docs/lib/project-symbols.js~BasicLazyModuleResolver.html",
+    "<span>BasicLazyModuleResolver</span> <span class=\"search-result-import-path\">ngast/dist-docs/lib/project-symbols.js</span>",
+    "class"
   ],
   [
-    "ngast/dist/lib/context-symbols.js~contextsymbols",
-    "variable/index.html#static-variable-ContextSymbols",
-    "<span>ContextSymbols</span> <span class=\"search-result-import-path\">ngast/dist/lib/context-symbols.js</span>",
-    "variable"
+    "ngast/dist-docs/lib/context-symbols.js~contextsymbols",
+    "class/dist-docs/lib/context-symbols.js~ContextSymbols.html",
+    "<span>ContextSymbols</span> <span class=\"search-result-import-path\">ngast/dist-docs/lib/context-symbols.js</span>",
+    "class"
   ],
   [
-    "ngast/dist/lib/directive-symbol.js~directivesymbol",
-    "variable/index.html#static-variable-DirectiveSymbol",
-    "<span>DirectiveSymbol</span> <span class=\"search-result-import-path\">ngast/dist/lib/directive-symbol.js</span>",
-    "variable"
+    "ngast/dist-docs/lib/directive-symbol.js~directivesymbol",
+    "class/dist-docs/lib/directive-symbol.js~DirectiveSymbol.html",
+    "<span>DirectiveSymbol</span> <span class=\"search-result-import-path\">ngast/dist-docs/lib/directive-symbol.js</span>",
+    "class"
   ],
   [
-    "ngast/dist/lib/pipe-symbol.js~pipesymbol",
-    "variable/index.html#static-variable-PipeSymbol",
-    "<span>PipeSymbol</span> <span class=\"search-result-import-path\">ngast/dist/lib/pipe-symbol.js</span>",
-    "variable"
+    "ngast/dist-docs/lib/pipe-symbol.js~pipesymbol",
+    "class/dist-docs/lib/pipe-symbol.js~PipeSymbol.html",
+    "<span>PipeSymbol</span> <span class=\"search-result-import-path\">ngast/dist-docs/lib/pipe-symbol.js</span>",
+    "class"
   ],
   [
-    "ngast/dist/lib/project-symbols.js~projectsymbols",
-    "variable/index.html#static-variable-ProjectSymbols",
-    "<span>ProjectSymbols</span> <span class=\"search-result-import-path\">ngast/dist/lib/project-symbols.js</span>",
-    "variable"
+    "ngast/dist-docs/lib/project-symbols.js~projectsymbols",
+    "class/dist-docs/lib/project-symbols.js~ProjectSymbols.html",
+    "<span>ProjectSymbols</span> <span class=\"search-result-import-path\">ngast/dist-docs/lib/project-symbols.js</span>",
+    "class"
   ],
   [
-    "ngast/dist/lib/symbol.js~symbol",
-    "variable/index.html#static-variable-Symbol",
-    "<span>Symbol</span> <span class=\"search-result-import-path\">ngast/dist/lib/symbol.js</span>",
-    "variable"
+    "ngast/dist-docs/lib/symbol.js~symbol",
+    "class/dist-docs/lib/symbol.js~Symbol.html",
+    "<span>Symbol</span> <span class=\"search-result-import-path\">ngast/dist-docs/lib/symbol.js</span>",
+    "class"
   ],
   [
     "builtinexternal/ecmascriptexternal.js~array",
@@ -366,51 +366,195 @@ window.esdocSearchIndex = [
     "external"
   ],
   [
-    "dist/index.js",
-    "file/dist/index.js.html",
-    "dist/index.js",
+    "dist-docs/index.js",
+    "file/dist-docs/index.js.html",
+    "dist-docs/index.js",
     "file"
   ],
   [
-    "dist/lib/context-symbols.js",
-    "file/dist/lib/context-symbols.js.html",
-    "dist/lib/context-symbols.js",
+    "dist-docs/lib/context-symbols.js",
+    "file/dist-docs/lib/context-symbols.js.html",
+    "dist-docs/lib/context-symbols.js",
     "file"
   ],
   [
-    "dist/lib/directive-symbol.js",
-    "file/dist/lib/directive-symbol.js.html",
-    "dist/lib/directive-symbol.js",
+    "dist-docs/lib/context-symbols.js~contextsymbols#constructor",
+    "class/dist-docs/lib/context-symbols.js~ContextSymbols.html#instance-constructor-constructor",
+    "dist-docs/lib/context-symbols.js~ContextSymbols#constructor",
+    "method"
+  ],
+  [
+    "dist-docs/lib/context-symbols.js~contextsymbols#getanalyzedmodules",
+    "class/dist-docs/lib/context-symbols.js~ContextSymbols.html#instance-method-getAnalyzedModules",
+    "dist-docs/lib/context-symbols.js~ContextSymbols#getAnalyzedModules",
+    "method"
+  ],
+  [
+    "dist-docs/lib/context-symbols.js~contextsymbols#getcontextsummary",
+    "class/dist-docs/lib/context-symbols.js~ContextSymbols.html#instance-method-getContextSummary",
+    "dist-docs/lib/context-symbols.js~ContextSymbols#getContextSummary",
+    "method"
+  ],
+  [
+    "dist-docs/lib/context-symbols.js~contextsymbols#getdirectives",
+    "class/dist-docs/lib/context-symbols.js~ContextSymbols.html#instance-method-getDirectives",
+    "dist-docs/lib/context-symbols.js~ContextSymbols#getDirectives",
+    "method"
+  ],
+  [
+    "dist-docs/lib/context-symbols.js~contextsymbols#getmodules",
+    "class/dist-docs/lib/context-symbols.js~ContextSymbols.html#instance-method-getModules",
+    "dist-docs/lib/context-symbols.js~ContextSymbols#getModules",
+    "method"
+  ],
+  [
+    "dist-docs/lib/context-symbols.js~contextsymbols#getpipes",
+    "class/dist-docs/lib/context-symbols.js~ContextSymbols.html#instance-method-getPipes",
+    "dist-docs/lib/context-symbols.js~ContextSymbols#getPipes",
+    "method"
+  ],
+  [
+    "dist-docs/lib/context-symbols.js~contextsymbols#updateprogram",
+    "class/dist-docs/lib/context-symbols.js~ContextSymbols.html#instance-method-updateProgram",
+    "dist-docs/lib/context-symbols.js~ContextSymbols#updateProgram",
+    "method"
+  ],
+  [
+    "dist-docs/lib/directive-symbol.js",
+    "file/dist-docs/lib/directive-symbol.js.html",
+    "dist-docs/lib/directive-symbol.js",
     "file"
   ],
   [
-    "dist/lib/pipe-symbol.js",
-    "file/dist/lib/pipe-symbol.js.html",
-    "dist/lib/pipe-symbol.js",
+    "dist-docs/lib/directive-symbol.js~directivesymbol#constructor",
+    "class/dist-docs/lib/directive-symbol.js~DirectiveSymbol.html#instance-constructor-constructor",
+    "dist-docs/lib/directive-symbol.js~DirectiveSymbol#constructor",
+    "method"
+  ],
+  [
+    "dist-docs/lib/directive-symbol.js~directivesymbol#getdirectivecontext",
+    "class/dist-docs/lib/directive-symbol.js~DirectiveSymbol.html#instance-method-getDirectiveContext",
+    "dist-docs/lib/directive-symbol.js~DirectiveSymbol#getDirectiveContext",
+    "method"
+  ],
+  [
+    "dist-docs/lib/directive-symbol.js~directivesymbol#getmodule",
+    "class/dist-docs/lib/directive-symbol.js~DirectiveSymbol.html#instance-method-getModule",
+    "dist-docs/lib/directive-symbol.js~DirectiveSymbol#getModule",
+    "method"
+  ],
+  [
+    "dist-docs/lib/directive-symbol.js~directivesymbol#getnonresolvedmetadata",
+    "class/dist-docs/lib/directive-symbol.js~DirectiveSymbol.html#instance-method-getNonResolvedMetadata",
+    "dist-docs/lib/directive-symbol.js~DirectiveSymbol#getNonResolvedMetadata",
+    "method"
+  ],
+  [
+    "dist-docs/lib/directive-symbol.js~directivesymbol#getresolvedmetadata",
+    "class/dist-docs/lib/directive-symbol.js~DirectiveSymbol.html#instance-method-getResolvedMetadata",
+    "dist-docs/lib/directive-symbol.js~DirectiveSymbol#getResolvedMetadata",
+    "method"
+  ],
+  [
+    "dist-docs/lib/directive-symbol.js~directivesymbol#getstyleasts",
+    "class/dist-docs/lib/directive-symbol.js~DirectiveSymbol.html#instance-method-getStyleAsts",
+    "dist-docs/lib/directive-symbol.js~DirectiveSymbol#getStyleAsts",
+    "method"
+  ],
+  [
+    "dist-docs/lib/directive-symbol.js~directivesymbol#gettemplateast",
+    "class/dist-docs/lib/directive-symbol.js~DirectiveSymbol.html#instance-method-getTemplateAst",
+    "dist-docs/lib/directive-symbol.js~DirectiveSymbol#getTemplateAst",
+    "method"
+  ],
+  [
+    "dist-docs/lib/directive-symbol.js~directivesymbol#iscomponent",
+    "class/dist-docs/lib/directive-symbol.js~DirectiveSymbol.html#instance-method-isComponent",
+    "dist-docs/lib/directive-symbol.js~DirectiveSymbol#isComponent",
+    "method"
+  ],
+  [
+    "dist-docs/lib/pipe-symbol.js",
+    "file/dist-docs/lib/pipe-symbol.js.html",
+    "dist-docs/lib/pipe-symbol.js",
     "file"
   ],
   [
-    "dist/lib/project-symbols.js",
-    "file/dist/lib/project-symbols.js.html",
-    "dist/lib/project-symbols.js",
+    "dist-docs/lib/pipe-symbol.js~pipesymbol#constructor",
+    "class/dist-docs/lib/pipe-symbol.js~PipeSymbol.html#instance-constructor-constructor",
+    "dist-docs/lib/pipe-symbol.js~PipeSymbol#constructor",
+    "method"
+  ],
+  [
+    "dist-docs/lib/pipe-symbol.js~pipesymbol#getmetadata",
+    "class/dist-docs/lib/pipe-symbol.js~PipeSymbol.html#instance-method-getMetadata",
+    "dist-docs/lib/pipe-symbol.js~PipeSymbol#getMetadata",
+    "method"
+  ],
+  [
+    "dist-docs/lib/pipe-symbol.js~pipesymbol#getmodule",
+    "class/dist-docs/lib/pipe-symbol.js~PipeSymbol.html#instance-method-getModule",
+    "dist-docs/lib/pipe-symbol.js~PipeSymbol#getModule",
+    "method"
+  ],
+  [
+    "dist-docs/lib/project-symbols.js",
+    "file/dist-docs/lib/project-symbols.js.html",
+    "dist-docs/lib/project-symbols.js",
     "file"
   ],
   [
-    "dist/lib/resource-resolver.js",
-    "file/dist/lib/resource-resolver.js.html",
-    "dist/lib/resource-resolver.js",
+    "dist-docs/lib/project-symbols.js~basiclazymoduleresolver#resolve",
+    "class/dist-docs/lib/project-symbols.js~BasicLazyModuleResolver.html#instance-method-resolve",
+    "dist-docs/lib/project-symbols.js~BasicLazyModuleResolver#resolve",
+    "method"
+  ],
+  [
+    "dist-docs/lib/project-symbols.js~projectsymbols#constructor",
+    "class/dist-docs/lib/project-symbols.js~ProjectSymbols.html#instance-constructor-constructor",
+    "dist-docs/lib/project-symbols.js~ProjectSymbols#constructor",
+    "method"
+  ],
+  [
+    "dist-docs/lib/project-symbols.js~projectsymbols#getlazyloadedcontexts",
+    "class/dist-docs/lib/project-symbols.js~ProjectSymbols.html#instance-method-getLazyLoadedContexts",
+    "dist-docs/lib/project-symbols.js~ProjectSymbols#getLazyLoadedContexts",
+    "method"
+  ],
+  [
+    "dist-docs/lib/project-symbols.js~projectsymbols#getrootcontext",
+    "class/dist-docs/lib/project-symbols.js~ProjectSymbols.html#instance-method-getRootContext",
+    "dist-docs/lib/project-symbols.js~ProjectSymbols#getRootContext",
+    "method"
+  ],
+  [
+    "dist-docs/lib/resource-resolver.js",
+    "file/dist-docs/lib/resource-resolver.js.html",
+    "dist-docs/lib/resource-resolver.js",
     "file"
   ],
   [
-    "dist/lib/symbol.js",
-    "file/dist/lib/symbol.js.html",
-    "dist/lib/symbol.js",
+    "dist-docs/lib/symbol.js",
+    "file/dist-docs/lib/symbol.js.html",
+    "dist-docs/lib/symbol.js",
     "file"
   ],
   [
-    "dist/ngast.bundle.js",
-    "file/dist/ngast.bundle.js.html",
-    "dist/ngast.bundle.js",
-    "file"
+    "dist-docs/lib/symbol.js~symbol#constructor",
+    "class/dist-docs/lib/symbol.js~Symbol.html#instance-constructor-constructor",
+    "dist-docs/lib/symbol.js~Symbol#constructor",
+    "method"
+  ],
+  [
+    "dist-docs/lib/symbol.js~symbol#getnode",
+    "class/dist-docs/lib/symbol.js~Symbol.html#instance-method-getNode",
+    "dist-docs/lib/symbol.js~Symbol#getNode",
+    "method"
+  ],
+  [
+    "dist-docs/lib/symbol.js~symbol#symbol",
+    "class/dist-docs/lib/symbol.js~Symbol.html#instance-get-symbol",
+    "dist-docs/lib/symbol.js~Symbol#symbol",
+    "member"
   ]
 ]

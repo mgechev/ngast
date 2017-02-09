@@ -1,31 +1,31 @@
 {
   "coverage": "100%",
-  "expectCount": 6,
-  "actualCount": 6,
+  "expectCount": 31,
+  "actualCount": 31,
   "files": {
-    "dist/lib/project-symbols.js": {
-      "expectCount": 2,
-      "actualCount": 2,
+    "dist-docs/lib/project-symbols.js": {
+      "expectCount": 6,
+      "actualCount": 6,
       "undocumentLines": []
     },
-    "dist/lib/context-symbols.js": {
-      "expectCount": 1,
-      "actualCount": 1,
+    "dist-docs/lib/context-symbols.js": {
+      "expectCount": 8,
+      "actualCount": 8,
       "undocumentLines": []
     },
-    "dist/lib/directive-symbol.js": {
-      "expectCount": 1,
-      "actualCount": 1,
+    "dist-docs/lib/directive-symbol.js": {
+      "expectCount": 9,
+      "actualCount": 9,
       "undocumentLines": []
     },
-    "dist/lib/pipe-symbol.js": {
-      "expectCount": 1,
-      "actualCount": 1,
+    "dist-docs/lib/pipe-symbol.js": {
+      "expectCount": 4,
+      "actualCount": 4,
       "undocumentLines": []
     },
-    "dist/lib/symbol.js": {
-      "expectCount": 1,
-      "actualCount": 1,
+    "dist-docs/lib/symbol.js": {
+      "expectCount": 4,
+      "actualCount": 4,
       "undocumentLines": []
     }
   }

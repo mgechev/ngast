@@ -1,9 +1,10 @@
 {
-  "source": "./dist",
+  "source": "./dist-docs",
   "destination": "./docs",
   "excludes": ["css-parser"],
   "title": "ngast - high-level parsing tool for Angular projects",
-  "access": ["public", "private", "protected"],
+  "access": ["public"],
   "undocumentIdentifier": false,
-  "autoPrivate": false
+  "autoPrivate": false,
+  "includeSource": false
 }
