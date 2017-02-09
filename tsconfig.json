@@ -1,13 +1,13 @@
 {
   "compilerOptions": {
     "target": "es5",
-    "module": "commonjs",
+    "module": "es2015",
     "sourceMap": true,
+    "moduleResolution": "node",
     "emitDecoratorMetadata": true,
     "experimentalDecorators": true,
     "stripInternal": true,
     "outDir": "./dist",
-    "strictNullChecks": true,
     "lib": ["es2015", "dom"]
   },
   "files": [

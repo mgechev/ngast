@@ -1,0 +1,966 @@
+[
+  {
+    "__docId__": 0,
+    "kind": "file",
+    "name": "dist/index.js",
+    "content": "export { ContextSymbols } from './lib/context-symbols';\nexport { ProjectSymbols } from './lib/project-symbols';\nexport { DirectiveSymbol } from './lib/directive-symbol';\nexport { PipeSymbol } from './lib/pipe-symbol';\nexport { Symbol } from './lib/symbol';\n//# sourceMappingURL=index.js.map",
+    "static": true,
+    "longname": "dist/index.js",
+    "access": null,
+    "description": null,
+    "lineNumber": 1
+  },
+  {
+    "__docId__": 1,
+    "kind": "file",
+    "name": "dist/lib/context-symbols.js",
+    "content": "import { ViewEncapsulation } from '@angular/core';\nimport { CompileMetadataResolver, NgModuleResolver, DirectiveResolver, DirectiveNormalizer, HtmlParser, CompilerConfig, PipeResolver, AotSummaryResolver, DomElementSchemaRegistry, extractProgramSymbols, StaticSymbolResolver, StaticSymbolCache, StaticReflector, createOfflineCompileUrlResolver, analyzeNgModules } from '@angular/compiler';\nimport { CompilerHost, NodeCompilerHostContext } from '@angular/compiler-cli';\nimport { PipeSymbol } from './pipe-symbol';\nimport { DirectiveSymbol } from './directive-symbol';\n/**\n * Creates a proxy which provides us access to the symbols\n * defined in given context (could be lazy loaded module or the root module).\n *\n * @export\n * @class ContextSymbols\n */\nvar ContextSymbols = (function () {\n    /**\n     * Creates an instance of ContextSymbols.\n     *\n     * @param {ts.Program} program\n     * @param {ResourceResolver} resourceResolver\n     *\n     * @memberOf ContextSymbols\n     */\n    function ContextSymbols(program, resourceResolver) {\n        this.program = program;\n        this.resourceResolver = resourceResolver;\n        this.options = this.program.getCompilerOptions();\n        this.init();\n    }\n    /**\n     * Returns the metadata associated to this module.\n     *\n     * @returns {CompileNgModuleMetadata[]}\n     *\n     * @memberOf ContextSymbols\n     */\n    ContextSymbols.prototype.getModules = function () {\n        this.validate();\n        var result = [];\n        this.getAnalyzedModules()\n            .ngModuleByPipeOrDirective\n            .forEach(function (m, s) {\n            result.push(m);\n        });\n        return result;\n    };\n    /**\n     * Returns all the directives available in the context.\n     *\n     * @returns {DirectiveSymbol[]}\n     *\n     * @memberOf ContextSymbols\n     */\n    ContextSymbols.prototype.getDirectives = function () {\n        var _this = this;\n        return this.extractProgramSymbols()\n            .filter(function (symbol) { return _this.metadataResolver.isDirective(symbol); })\n            .map(function (symbol) { return new DirectiveSymbol(_this.program, symbol, _this.metadataResolver, _this.directiveNormalizer, _this.directiveResolver, _this.reflector, _this.resourceResolver, _this); });\n    };\n    /**\n     * Returns all the pipes available in this module.\n     *\n     * @returns {PipeSymbol[]}\n     *\n     * @memberOf ContextSymbols\n     */\n    ContextSymbols.prototype.getPipes = function () {\n        var _this = this;\n        return this.extractProgramSymbols()\n            .filter(function (v) { return _this.metadataResolver.isPipe(v); })\n            .map(function (p) { return new PipeSymbol(_this.program, p, _this.pipeResolver, _this); });\n    };\n    /**\n     * Returns the summary of this context.\n     *\n     * @returns {(CompileNgModuleSummary | undefined)}\n     *\n     * @memberOf ContextSymbols\n     */\n    ContextSymbols.prototype.getContextSummary = function () {\n        var module = this.getModules().pop();\n        if (module) {\n            return this.metadataResolver.getNgModuleSummary(module.type.reference);\n        }\n        return undefined;\n    };\n    /**\n     * Updates the program which has impact over the loaded symbols.\n     * In case the `udpate` method is called with program different from\n     * the current one, all the internal caches will be cleared.\n     *\n     * @param {ts.Program} program\n     *\n     * @memberOf ContextSymbols\n     */\n    ContextSymbols.prototype.updateProgram = function (program) {\n        if (program !== this.program) {\n            this.program = program;\n            this.validate();\n        }\n    };\n    /** @internal */\n    ContextSymbols.prototype.getAnalyzedModules = function () {\n        var analyzedModules = this.analyzedModules;\n        if (!analyzedModules) {\n            var analyzeHost = { isSourceFile: function (filePath) { return true; } };\n            var programSymbols = extractProgramSymbols(this.staticSymbolResolver, this.program.getSourceFiles().map(function (sf) { return sf.fileName; }), analyzeHost);\n            analyzedModules = this.analyzedModules =\n                analyzeNgModules(programSymbols, analyzeHost, this.metadataResolver);\n        }\n        return analyzedModules;\n    };\n    ContextSymbols.prototype.extractProgramSymbols = function () {\n        return extractProgramSymbols(this.staticSymbolResolver, this.program.getSourceFiles().map(function (sf) { return sf.fileName; }), {\n            isSourceFile: function () { return true; }\n        });\n    };\n    ContextSymbols.prototype.validate = function () {\n        var program = this.program;\n        if (this.lastProgram !== program) {\n            this.clearCaches();\n            this.lastProgram = program;\n            this.init();\n        }\n    };\n    ContextSymbols.prototype.clearCaches = function () {\n        this.metadataResolver.clearCache();\n        this.directiveNormalizer.clearCache();\n    };\n    ContextSymbols.prototype.init = function () {\n        var staticSymbolCache = new StaticSymbolCache();\n        var summaryResolver = new AotSummaryResolver({\n            loadSummary: function (filePath) { return ''; },\n            isSourceFile: function (sourceFilePath) { return true; },\n        }, staticSymbolCache);\n        var parser = new HtmlParser();\n        var config = new CompilerConfig({\n            genDebugInfo: false,\n            defaultEncapsulation: ViewEncapsulation.Emulated,\n            logBindingUpdate: false,\n            useJit: false\n        });\n        this.staticResolverHost = new CompilerHost(this.program, this.options, new NodeCompilerHostContext());\n        this.staticSymbolResolver = new StaticSymbolResolver(\n        // The strict null check gets confused here\n        this.staticResolverHost, staticSymbolCache, summaryResolver, function (e, filePath) {\n            console.log(e, filePath);\n        });\n        this.reflector = new StaticReflector(this.staticSymbolResolver, [], [], function (e, filePath) {\n            console.log(e, filePath);\n        });\n        var ngModuleResolver = new NgModuleResolver(this.reflector);\n        this.directiveResolver = new DirectiveResolver(this.reflector);\n        this.pipeResolver = new PipeResolver(this.reflector);\n        this.urlResolver = createOfflineCompileUrlResolver();\n        this.directiveNormalizer = new DirectiveNormalizer(this.resourceResolver, this.urlResolver, parser, config);\n        this.metadataResolver = new CompileMetadataResolver(ngModuleResolver, this.directiveResolver, this.pipeResolver, summaryResolver, new DomElementSchemaRegistry(), this.directiveNormalizer, this.reflector);\n    };\n    return ContextSymbols;\n}());\nexport { ContextSymbols };\n//# sourceMappingURL=context-symbols.js.map",
+    "static": true,
+    "longname": "dist/lib/context-symbols.js",
+    "access": null,
+    "description": null,
+    "lineNumber": 1
+  },
+  {
+    "__docId__": 2,
+    "kind": "variable",
+    "name": "ContextSymbols",
+    "memberof": "dist/lib/context-symbols.js",
+    "static": true,
+    "longname": "dist/lib/context-symbols.js~ContextSymbols",
+    "access": null,
+    "export": true,
+    "importPath": "ngast/dist/lib/context-symbols.js",
+    "importStyle": "{ContextSymbols}",
+    "description": "Creates a proxy which provides us access to the symbols\ndefined in given context (could be lazy loaded module or the root module).",
+    "lineNumber": 13,
+    "unknown": [
+      {
+        "tagName": "@class",
+        "tagValue": "ContextSymbols"
+      }
+    ],
+    "type": {
+      "types": [
+        "*"
+      ]
+    }
+  },
+  {
+    "__docId__": 3,
+    "kind": "file",
+    "name": "dist/lib/directive-symbol.js",
+    "content": "var __extends = (this && this.__extends) || function (d, b) {\n    for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];\n    function __() { this.constructor = d; }\n    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());\n};\nimport { resolveForwardRef } from '@angular/core';\nimport { componentModuleUrl, UrlResolver, HtmlParser, I18NHtmlParser, Lexer, Parser, TemplateParser, DomElementSchemaRegistry } from '@angular/compiler';\nimport { Symbol } from './symbol';\nimport { parseCss } from './css-parser/parse-css';\n/**\n * This class represents the individual directives and wrapps\n * their `StaticSymbol`s produced by the `@angular/compiler`.\n *\n * @export\n * @class DirectiveSymbol\n * @extends {Symbol}\n */\nvar DirectiveSymbol = (function (_super) {\n    __extends(DirectiveSymbol, _super);\n    /**\n     * Creates an instance of DirectiveSymbol.\n     *\n     * @param {Program} program\n     * @param {StaticSymbol} symbol\n     * @param {CompileMetadataResolver} metadataResolver\n     * @param {DirectiveNormalizer} directiveNormalizer\n     * @param {DirectiveResolver} resolver\n     * @param {StaticReflector} reflector\n     * @param {ResourceResolver} resourceResolver\n     * @param {ContextSymbols} projectSymbols\n     *\n     * @memberOf DirectiveSymbol\n     */\n    function DirectiveSymbol(program, symbol, metadataResolver, directiveNormalizer, resolver, reflector, resourceResolver, projectSymbols) {\n        var _this = _super.call(this, program, symbol) || this;\n        _this.metadataResolver = metadataResolver;\n        _this.directiveNormalizer = directiveNormalizer;\n        _this.resolver = resolver;\n        _this.reflector = reflector;\n        _this.resourceResolver = resourceResolver;\n        _this.projectSymbols = projectSymbols;\n        _this.urlResolver = new UrlResolver();\n        return _this;\n    }\n    /**\n     * Returns the non-resolved metadata for given directive.\n     * If it is a component, this means that the external templates\n     * and styles won't be read from the drive. Also, the paths to\n     * external metadata won't be resolved.\n     *\n     * @returns {CompileDirectiveMetadata}\n     *\n     * @memberOf DirectiveSymbol\n     */\n    DirectiveSymbol.prototype.getNonResolvedMetadata = function () {\n        return this.metadataResolver.getNonNormalizedDirectiveMetadata(this.symbol).metadata;\n    };\n    // TODO: use the normalizer's cache in order to prevent repetative I/O operations\n    /**\n     * Returns the normalized and resolved metadata for given directive or component.\n     * For components, all the external templates and styles will be read and\n     * set as values of the returned `CompileTemplateMetadata` properties.\n     *\n     * @returns {CompileTemplateMetadata}\n     *\n     * @memberOf DirectiveSymbol\n     */\n    DirectiveSymbol.prototype.getResolvedMetadata = function () {\n        var _this = this;\n        var metadata = this.metadataResolver.getNonNormalizedDirectiveMetadata(this.symbol);\n        var componentType = resolveForwardRef(this.symbol);\n        var componentUrl = componentModuleUrl(this.reflector, componentType, metadata);\n        var templateMetadata = metadata.metadata.template;\n        // Required because otherwise the normalizer gets confused.\n        if (!templateMetadata.template) {\n            templateMetadata.templateUrl = this.urlResolver.resolve(componentUrl, templateMetadata.templateUrl);\n            templateMetadata.template = this.resourceResolver.getSync(templateMetadata.templateUrl);\n        }\n        var currentMetadata = this.directiveNormalizer.normalizeTemplateSync(Object.assign(templateMetadata, {\n            moduleUrl: componentUrl,\n            componentType: componentType\n        }));\n        if (templateMetadata.templateUrl) {\n            currentMetadata.template = this.resourceResolver.getSync(templateMetadata.templateUrl);\n            currentMetadata.templateUrl = templateMetadata.templateUrl;\n        }\n        currentMetadata.styles = currentMetadata.styles.concat(currentMetadata.styleUrls.map(function (path) {\n            return _this.resourceResolver.getSync(path);\n        }));\n        return currentMetadata;\n    };\n    /**\n     * Returns the module where the given directive has been declared.\n     *\n     * @returns {(CompileNgModuleMetadata | undefined)}\n     *\n     * @memberOf DirectiveSymbol\n     */\n    DirectiveSymbol.prototype.getModule = function () {\n        return this.projectSymbols\n            .getAnalyzedModules().ngModuleByPipeOrDirective.get(this.symbol);\n    };\n    /**\n     * Returns the ASTs of all styles of the target directive.\n     *\n     * @returns {CssAst[]}\n     *\n     * @memberOf DirectiveSymbol\n     */\n    DirectiveSymbol.prototype.getStyleAsts = function () {\n        return this.getResolvedMetadata()\n            .styles.map(function (s) { return parseCss(s); });\n    };\n    /**\n     * Returns the context into which the template of given\n     * component is going to be compiled.\n     *\n     * @returns {DirectiveContext}\n     *\n     * @memberOf DirectiveSymbol\n     */\n    DirectiveSymbol.prototype.getDirectiveContext = function () {\n        var _this = this;\n        var analyzedModules = this.projectSymbols.getAnalyzedModules();\n        var ngModule = analyzedModules.ngModuleByPipeOrDirective.get(this.symbol);\n        if (!ngModule) {\n            throw new Error('Cannot find module associated with the directive ' + this.symbol.name);\n        }\n        var resolvedDirectives = ngModule.transitiveModule.directives.map(function (d) { return _this.metadataResolver.getNonNormalizedDirectiveMetadata(d.reference); });\n        var directives = resolvedDirectives.filter(function (d) { return d !== null; }).map(function (d) { return d.metadata.toSummary(); });\n        var pipes = ngModule.transitiveModule.pipes.map(function (p) { return _this.metadataResolver.getOrLoadPipeMetadata(p.reference).toSummary(); });\n        var schemas = ngModule.schemas;\n        return {\n            pipes: pipes, directives: directives, schemas: schemas\n        };\n    };\n    /**\n     * Returns the compiled template of the target component.\n     *\n     * @returns {TemplateAstResult}\n     *\n     * @memberOf DirectiveSymbol\n     */\n    DirectiveSymbol.prototype.getTemplateAst = function () {\n        var result;\n        try {\n            var resolvedMetadata = this.metadataResolver.getNonNormalizedDirectiveMetadata(this.symbol);\n            var dirMetadata = this.getResolvedMetadata();\n            var source = dirMetadata.template;\n            var metadata = resolvedMetadata && resolvedMetadata.metadata;\n            if (metadata) {\n                var rawHtmlParser = new HtmlParser();\n                var htmlParser = new I18NHtmlParser(rawHtmlParser);\n                var expressionParser = new Parser(new Lexer());\n                var parser = new TemplateParser(expressionParser, new DomElementSchemaRegistry(), htmlParser, undefined, []);\n                var htmlResult = htmlParser.parse(source, '');\n                var _a = this.getDirectiveContext(), directives = _a.directives, pipes = _a.pipes, schemas = _a.schemas;\n                var parseResult = parser.tryParseHtml(htmlResult, metadata, source, directives, pipes, schemas, '');\n                result = {\n                    templateAst: parseResult.templateAst,\n                    parseErrors: parseResult.errors,\n                    errors: []\n                };\n            }\n            else {\n                result = { errors: [{ message: 'Cannot find metadata for the directive' }] };\n            }\n        }\n        catch (e) {\n            result = { errors: [{ message: e.message }] };\n        }\n        return result;\n    };\n    /**\n     * Returns if the target directive is a component.\n     *\n     * @returns {boolean}\n     *\n     * @memberOf DirectiveSymbol\n     */\n    DirectiveSymbol.prototype.isComponent = function () {\n        return !!this.getResolvedMetadata().template;\n    };\n    return DirectiveSymbol;\n}(Symbol));\nexport { DirectiveSymbol };\n//# sourceMappingURL=directive-symbol.js.map",
+    "static": true,
+    "longname": "dist/lib/directive-symbol.js",
+    "access": null,
+    "description": null,
+    "lineNumber": 1
+  },
+  {
+    "__docId__": 4,
+    "kind": "variable",
+    "name": "__extends",
+    "memberof": "dist/lib/directive-symbol.js",
+    "static": true,
+    "longname": "dist/lib/directive-symbol.js~__extends",
+    "access": null,
+    "export": false,
+    "importPath": "ngast/dist/lib/directive-symbol.js",
+    "importStyle": null,
+    "description": null,
+    "lineNumber": 1,
+    "undocument": true,
+    "unknown": [
+      {
+        "tagName": "@_undocument",
+        "tagValue": ""
+      }
+    ],
+    "type": {
+      "types": [
+        "*"
+      ]
+    }
+  },
+  {
+    "__docId__": 5,
+    "kind": "variable",
+    "name": "DirectiveSymbol",
+    "memberof": "dist/lib/directive-symbol.js",
+    "static": true,
+    "longname": "dist/lib/directive-symbol.js~DirectiveSymbol",
+    "access": null,
+    "export": true,
+    "importPath": "ngast/dist/lib/directive-symbol.js",
+    "importStyle": "{DirectiveSymbol}",
+    "description": "This class represents the individual directives and wrapps\ntheir `StaticSymbol`s produced by the `@angular/compiler`.",
+    "lineNumber": 18,
+    "unknown": [
+      {
+        "tagName": "@class",
+        "tagValue": "DirectiveSymbol"
+      },
+      {
+        "tagName": "@extends",
+        "tagValue": "{Symbol}"
+      }
+    ],
+    "type": {
+      "types": [
+        "*"
+      ]
+    }
+  },
+  {
+    "__docId__": 6,
+    "kind": "file",
+    "name": "dist/lib/pipe-symbol.js",
+    "content": "var __extends = (this && this.__extends) || function (d, b) {\n    for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];\n    function __() { this.constructor = d; }\n    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());\n};\nimport { resolveForwardRef } from '@angular/core';\nimport { Symbol } from './symbol';\n/**\n * A wrapper around the pipe symbol.\n *\n * @export\n * @class PipeSymbol\n * @extends {Symbol}\n */\nvar PipeSymbol = (function (_super) {\n    __extends(PipeSymbol, _super);\n    /**\n     * Creates an instance of PipeSymbol.\n     *\n     * @param {Program} program\n     * @param {StaticSymbol} symbol\n     * @param {PipeResolver} resolver\n     * @param {ContextSymbols} projectSymbols\n     *\n     * @memberOf PipeSymbol\n     */\n    function PipeSymbol(program, symbol, resolver, projectSymbols) {\n        var _this = _super.call(this, program, symbol) || this;\n        _this.resolver = resolver;\n        _this.projectSymbols = projectSymbols;\n        return _this;\n    }\n    /**\n     * Returns the module where the wrapped pipe was defined.\n     *\n     * @returns {(CompileNgModuleMetadata | undefined)}\n     *\n     * @memberOf PipeSymbol\n     */\n    PipeSymbol.prototype.getModule = function () {\n        return this.projectSymbols.getAnalyzedModules()\n            .ngModuleByPipeOrDirective.get(this.symbol);\n    };\n    /**\n     * Returns the pipe metadata.\n     *\n     * @returns {Pipe}\n     *\n     * @memberOf PipeSymbol\n     */\n    PipeSymbol.prototype.getMetadata = function () {\n        return this.resolver.resolve(resolveForwardRef(this.symbol));\n    };\n    return PipeSymbol;\n}(Symbol));\nexport { PipeSymbol };\n//# sourceMappingURL=pipe-symbol.js.map",
+    "static": true,
+    "longname": "dist/lib/pipe-symbol.js",
+    "access": null,
+    "description": null,
+    "lineNumber": 1
+  },
+  {
+    "__docId__": 7,
+    "kind": "variable",
+    "name": "__extends",
+    "memberof": "dist/lib/pipe-symbol.js",
+    "static": true,
+    "longname": "dist/lib/pipe-symbol.js~__extends",
+    "access": null,
+    "export": false,
+    "importPath": "ngast/dist/lib/pipe-symbol.js",
+    "importStyle": null,
+    "description": null,
+    "lineNumber": 1,
+    "undocument": true,
+    "unknown": [
+      {
+        "tagName": "@_undocument",
+        "tagValue": ""
+      }
+    ],
+    "type": {
+      "types": [
+        "*"
+      ]
+    }
+  },
+  {
+    "__docId__": 8,
+    "kind": "variable",
+    "name": "PipeSymbol",
+    "memberof": "dist/lib/pipe-symbol.js",
+    "static": true,
+    "longname": "dist/lib/pipe-symbol.js~PipeSymbol",
+    "access": null,
+    "export": true,
+    "importPath": "ngast/dist/lib/pipe-symbol.js",
+    "importStyle": "{PipeSymbol}",
+    "description": "A wrapper around the pipe symbol.",
+    "lineNumber": 15,
+    "unknown": [
+      {
+        "tagName": "@class",
+        "tagValue": "PipeSymbol"
+      },
+      {
+        "tagName": "@extends",
+        "tagValue": "{Symbol}"
+      }
+    ],
+    "type": {
+      "types": [
+        "*"
+      ]
+    }
+  },
+  {
+    "__docId__": 9,
+    "kind": "file",
+    "name": "dist/lib/project-symbols.js",
+    "content": "import { UrlResolver } from '@angular/compiler';\nimport { ContextSymbols } from './context-symbols';\n/**\n * Implementation of the `LazyModuleResolver` which resolves\n * lazy module URL or path in cases when `loadChildren` has a string value.\n *\n * @export\n * @class BasicLazyModuleResolver\n * @implements {LazyModuleResolver}\n */\nvar BasicLazyModuleResolver = (function () {\n    function BasicLazyModuleResolver() {\n        this.resolver = new UrlResolver();\n    }\n    /**\n     * Returns URL or path to given lazy loaded module.\n     *\n     * @param {string} basePath\n     * @param {Route} routeDefinition\n     * @returns\n     *\n     * @memberOf BasicLazyModuleResolver\n     */\n    BasicLazyModuleResolver.prototype.resolve = function (basePath, routeDefinition) {\n        if (typeof routeDefinition.loadChildren === 'string') {\n            return this.resolver.resolve(basePath, (routeDefinition.loadChildren.split('#').shift() || '') + '.ts');\n        }\n        return undefined;\n    };\n    return BasicLazyModuleResolver;\n}());\nexport { BasicLazyModuleResolver };\n/**\n * This class is a wrapper around an Angular project.\n * It provides access to the root module of the project as well\n * as to it's lazy loaded modules which can be resolved.\n *\n * @export\n * @class ProjectSymbols\n */\nvar ProjectSymbols = (function () {\n    /**\n     * Creates an instance of ProjectSymbols.\n     *\n     * @param {ProgramFactory} programFactory\n     * @param {ResourceResolver} resolver\n     * @param {any} [lazyModuleResolver=new BasicLazyModuleResolver()]\n     *\n     * @memberOf ProjectSymbols\n     */\n    function ProjectSymbols(programFactory, resolver, lazyModuleResolver) {\n        if (lazyModuleResolver === void 0) { lazyModuleResolver = new BasicLazyModuleResolver(); }\n        this.programFactory = programFactory;\n        this.resolver = resolver;\n        this.lazyModuleResolver = lazyModuleResolver;\n    }\n    /**\n     * Provides access to the `ContextSymbols` corresponding\n     * to the root module of the project that is not loaded lazily.\n     *\n     * @returns {ContextSymbols}\n     *\n     * @memberOf ProjectSymbols\n     */\n    ProjectSymbols.prototype.getRootContext = function () {\n        if (this.rootContext) {\n            return this.rootContext;\n        }\n        var program = this.programFactory.create();\n        this.rootContext = new ContextSymbols(program, this.resolver);\n        return this.rootContext;\n    };\n    /**\n     * Returns a list of all modules in the project:\n     * - All lazy loaded modules\n     * - The root module\n     *\n     * @returns {ContextSymbols[]}\n     *\n     * @memberOf ProjectSymbols\n     */\n    ProjectSymbols.prototype.getLazyLoadedContexts = function () {\n        var _this = this;\n        if (!this.rootContext) {\n            this.getRootContext();\n        }\n        var summary = this.rootContext.getContextSummary();\n        // If struggles with performance make it more imperative\n        var discoverModules = function (summary) {\n            if (!summary || !summary.type || !summary.type.reference)\n                return [];\n            var routes = summary.providers\n                .filter(function (p) { return 'ANALYZE_FOR_ENTRY_COMPONENTS' === p.provider.token.identifier.reference.name; })\n                .map(function (p) { return p.provider.useValue; });\n            var contexts = [].concat.apply([], routes)\n                .filter(function (r) { return !!r.loadChildren; })\n                .map(function (r) { return _this.lazyModuleResolver.resolve(summary.type.reference.filePath, r); })\n                .filter(function (r) { return !!r; })\n                .map(function (p) { return new ContextSymbols(_this.programFactory.create([p]), _this.resolver); });\n            return contexts.concat([].concat.apply([], contexts.map(function (c) { return c.getContextSummary(); }).map(discoverModules)));\n        };\n        return [this.rootContext].concat(discoverModules(summary));\n    };\n    return ProjectSymbols;\n}());\nexport { ProjectSymbols };\n//# sourceMappingURL=project-symbols.js.map",
+    "static": true,
+    "longname": "dist/lib/project-symbols.js",
+    "access": null,
+    "description": null,
+    "lineNumber": 1
+  },
+  {
+    "__docId__": 10,
+    "kind": "variable",
+    "name": "BasicLazyModuleResolver",
+    "memberof": "dist/lib/project-symbols.js",
+    "static": true,
+    "longname": "dist/lib/project-symbols.js~BasicLazyModuleResolver",
+    "access": null,
+    "export": true,
+    "importPath": "ngast/dist/lib/project-symbols.js",
+    "importStyle": "{BasicLazyModuleResolver}",
+    "description": "Implementation of the `LazyModuleResolver` which resolves\nlazy module URL or path in cases when `loadChildren` has a string value.",
+    "lineNumber": 11,
+    "unknown": [
+      {
+        "tagName": "@class",
+        "tagValue": "BasicLazyModuleResolver"
+      },
+      {
+        "tagName": "@implements",
+        "tagValue": "{LazyModuleResolver}"
+      }
+    ],
+    "type": {
+      "types": [
+        "*"
+      ]
+    }
+  },
+  {
+    "__docId__": 11,
+    "kind": "variable",
+    "name": "ProjectSymbols",
+    "memberof": "dist/lib/project-symbols.js",
+    "static": true,
+    "longname": "dist/lib/project-symbols.js~ProjectSymbols",
+    "access": null,
+    "export": true,
+    "importPath": "ngast/dist/lib/project-symbols.js",
+    "importStyle": "{ProjectSymbols}",
+    "description": "This class is a wrapper around an Angular project.\nIt provides access to the root module of the project as well\nas to it's lazy loaded modules which can be resolved.",
+    "lineNumber": 41,
+    "unknown": [
+      {
+        "tagName": "@class",
+        "tagValue": "ProjectSymbols"
+      }
+    ],
+    "type": {
+      "types": [
+        "*"
+      ]
+    }
+  },
+  {
+    "__docId__": 12,
+    "kind": "file",
+    "name": "dist/lib/resource-resolver.js",
+    "content": "//# sourceMappingURL=resource-resolver.js.map",
+    "static": true,
+    "longname": "dist/lib/resource-resolver.js",
+    "access": null,
+    "description": null,
+    "lineNumber": 1
+  },
+  {
+    "__docId__": 13,
+    "kind": "file",
+    "name": "dist/lib/symbol.js",
+    "content": "import * as ts from 'typescript';\n/**\n * Base class which provides primitive for the DirectiveSymbol and\n * PipeSymbol. It contains some functionality common between these classes.\n *\n * @export\n * @class Symbol\n */\nvar Symbol = (function () {\n    /**\n     * Creates an instance of Symbol.\n     *\n     * @param {ts.Program} _program\n     * @param {StaticSymbol} _symbol\n     *\n     * @memberOf Symbol\n     */\n    function Symbol(_program, _symbol) {\n        this._program = _program;\n        this._symbol = _symbol;\n    }\n    /**\n     * Gets the ts.node which corresponds to the controller of the DirectiveSymbol\n     * or the implementation of the pipe.\n     *\n     * @returns {(ts.ClassDeclaration | undefined)}\n     *\n     * @memberOf Symbol\n     */\n    Symbol.prototype.getNode = function () {\n        var _this = this;\n        var program = this._program.getSourceFile(this._symbol.filePath);\n        var findNode = function (node) {\n            if (node.kind === ts.SyntaxKind.ClassDeclaration &&\n                (node.name || { text: undefined }).text === _this._symbol.name) {\n                return node;\n            }\n            else {\n                return ts.forEachChild(node, findNode);\n            }\n        };\n        return findNode(program);\n    };\n    Object.defineProperty(Symbol.prototype, \"symbol\", {\n        /**\n         * The wrapped `StaticSymbol` from `@angular/compiler`.\n         *\n         * @readonly\n         *\n         * @memberOf Symbol\n         */\n        get: function () {\n            return this._symbol;\n        },\n        enumerable: true,\n        configurable: true\n    });\n    return Symbol;\n}());\nexport { Symbol };\n//# sourceMappingURL=symbol.js.map",
+    "static": true,
+    "longname": "dist/lib/symbol.js",
+    "access": null,
+    "description": null,
+    "lineNumber": 1
+  },
+  {
+    "__docId__": 14,
+    "kind": "variable",
+    "name": "Symbol",
+    "memberof": "dist/lib/symbol.js",
+    "static": true,
+    "longname": "dist/lib/symbol.js~Symbol",
+    "access": null,
+    "export": true,
+    "importPath": "ngast/dist/lib/symbol.js",
+    "importStyle": "{Symbol}",
+    "description": "Base class which provides primitive for the DirectiveSymbol and\nPipeSymbol. It contains some functionality common between these classes.",
+    "lineNumber": 9,
+    "unknown": [
+      {
+        "tagName": "@class",
+        "tagValue": "Symbol"
+      }
+    ],
+    "type": {
+      "types": [
+        "*"
+      ]
+    }
+  },
+  {
+    "__docId__": 15,
+    "kind": "file",
+    "name": "dist/ngast.bundle.js",
+    "content": "(function (global, factory) {\n\ttypeof exports === 'object' && typeof module !== 'undefined' ? factory(exports, require('@angular/core'), require('@angular/compiler'), require('@angular/compiler-cli'), require('typescript')) :\n\ttypeof define === 'function' && define.amd ? define(['exports', '@angular/core', '@angular/compiler', '@angular/compiler-cli', 'typescript'], factory) :\n\t(factory((global.ngast = global.ngast || {}),global._angular_core,global._angular_compiler,global._angular_compilerCli,global.ts));\n}(this, (function (exports,_angular_core,_angular_compiler,_angular_compilerCli,ts) { 'use strict';\n\n/**\n * Base class which provides primitive for the DirectiveSymbol and\n * PipeSymbol. It contains some functionality common between these classes.\n *\n * @export\n * @class Symbol\n */\nvar Symbol = (function () {\n    /**\n     * Creates an instance of Symbol.\n     *\n     * @param {ts.Program} _program\n     * @param {StaticSymbol} _symbol\n     *\n     * @memberOf Symbol\n     */\n    function Symbol(_program, _symbol) {\n        this._program = _program;\n        this._symbol = _symbol;\n    }\n    /**\n     * Gets the ts.node which corresponds to the controller of the DirectiveSymbol\n     * or the implementation of the pipe.\n     *\n     * @returns {(ts.ClassDeclaration | undefined)}\n     *\n     * @memberOf Symbol\n     */\n    Symbol.prototype.getNode = function () {\n        var _this = this;\n        var program = this._program.getSourceFile(this._symbol.filePath);\n        var findNode = function (node) {\n            if (node.kind === ts.SyntaxKind.ClassDeclaration &&\n                (node.name || { text: undefined }).text === _this._symbol.name) {\n                return node;\n            }\n            else {\n                return ts.forEachChild(node, findNode);\n            }\n        };\n        return findNode(program);\n    };\n    Object.defineProperty(Symbol.prototype, \"symbol\", {\n        /**\n         * The wrapped `StaticSymbol` from `@angular/compiler`.\n         *\n         * @readonly\n         *\n         * @memberOf Symbol\n         */\n        get: function () {\n            return this._symbol;\n        },\n        enumerable: true,\n        configurable: true\n    });\n    return Symbol;\n}());\n\nvar __extends = (undefined && undefined.__extends) || function (d, b) {\n    for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];\n    function __() { this.constructor = d; }\n    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());\n};\n/**\n * A wrapper around the pipe symbol.\n *\n * @export\n * @class PipeSymbol\n * @extends {Symbol}\n */\nvar PipeSymbol = (function (_super) {\n    __extends(PipeSymbol, _super);\n    /**\n     * Creates an instance of PipeSymbol.\n     *\n     * @param {Program} program\n     * @param {StaticSymbol} symbol\n     * @param {PipeResolver} resolver\n     * @param {ContextSymbols} projectSymbols\n     *\n     * @memberOf PipeSymbol\n     */\n    function PipeSymbol(program, symbol, resolver, projectSymbols) {\n        var _this = _super.call(this, program, symbol) || this;\n        _this.resolver = resolver;\n        _this.projectSymbols = projectSymbols;\n        return _this;\n    }\n    /**\n     * Returns the module where the wrapped pipe was defined.\n     *\n     * @returns {(CompileNgModuleMetadata | undefined)}\n     *\n     * @memberOf PipeSymbol\n     */\n    PipeSymbol.prototype.getModule = function () {\n        return this.projectSymbols.getAnalyzedModules()\n            .ngModuleByPipeOrDirective.get(this.symbol);\n    };\n    /**\n     * Returns the pipe metadata.\n     *\n     * @returns {Pipe}\n     *\n     * @memberOf PipeSymbol\n     */\n    PipeSymbol.prototype.getMetadata = function () {\n        return this.resolver.resolve(_angular_core.resolveForwardRef(this.symbol));\n    };\n    return PipeSymbol;\n}(Symbol));\n\n/**\n * @license\n * Copyright Google Inc. All Rights Reserved.\n *\n * Use of this source code is governed by an MIT-style license that can be\n * found in the LICENSE file at https://angular.io/license\n */\n/**\n * @license\n * Copyright Google Inc. All Rights Reserved.\n *\n * Use of this source code is governed by an MIT-style license that can be\n * found in the LICENSE file at https://angular.io/license\n */ var $EOF = 0;\nvar $TAB = 9;\nvar $LF = 10;\nvar $VTAB = 11;\nvar $FF = 12;\nvar $CR = 13;\nvar $SPACE = 32;\nvar $BANG = 33;\nvar $DQ = 34;\nvar $HASH = 35;\nvar $$ = 36;\nvar $PERCENT = 37;\nvar $AMPERSAND = 38;\nvar $SQ = 39;\nvar $LPAREN = 40;\nvar $RPAREN = 41;\nvar $STAR = 42;\nvar $PLUS = 43;\nvar $COMMA = 44;\nvar $MINUS = 45;\nvar $PERIOD = 46;\nvar $SLASH = 47;\nvar $COLON = 58;\nvar $SEMICOLON = 59;\n\nvar $EQ = 61;\nvar $GT = 62;\nvar $QUESTION = 63;\nvar $0 = 48;\nvar $9 = 57;\nvar $A = 65;\n\n\n\nvar $Z = 90;\nvar $LBRACKET = 91;\nvar $BACKSLASH = 92;\nvar $RBRACKET = 93;\nvar $CARET = 94;\nvar $_ = 95;\nvar $a = 97;\n\n\n\n\n\n\n\n\nvar $z = 122;\nvar $LBRACE = 123;\n\nvar $RBRACE = 125;\nvar $NBSP = 160;\nvar $PIPE = 124;\nvar $TILDA = 126;\nvar $AT = 64;\n\nfunction isWhitespace(code) {\n    return (code >= $TAB && code <= $SPACE) || (code == $NBSP);\n}\nfunction isDigit(code) {\n    return $0 <= code && code <= $9;\n}\nfunction isAsciiLetter(code) {\n    return code >= $a && code <= $z || code >= $A && code <= $Z;\n}\n\nvar ParseLocation = (function () {\n    function ParseLocation(file, offset, line, col) {\n        this.file = file;\n        this.offset = offset;\n        this.line = line;\n        this.col = col;\n    }\n    ParseLocation.prototype.toString = function () {\n        return this.offset ? this.file.url + \"@\" + this.line + \":\" + this.col : this.file.url;\n    };\n    return ParseLocation;\n}());\nvar ParseSourceFile = (function () {\n    function ParseSourceFile(content, url) {\n        this.content = content;\n        this.url = url;\n    }\n    return ParseSourceFile;\n}());\nvar ParseSourceSpan = (function () {\n    function ParseSourceSpan(start, end, details) {\n        if (details === void 0) { details = null; }\n        this.start = start;\n        this.end = end;\n        this.details = details;\n    }\n    ParseSourceSpan.prototype.toString = function () {\n        return this.start.file.content.substring(this.start.offset, this.end.offset);\n    };\n    return ParseSourceSpan;\n}());\nvar ParseErrorLevel;\n(function (ParseErrorLevel) {\n    ParseErrorLevel[ParseErrorLevel[\"WARNING\"] = 0] = \"WARNING\";\n    ParseErrorLevel[ParseErrorLevel[\"FATAL\"] = 1] = \"FATAL\";\n})(ParseErrorLevel || (ParseErrorLevel = {}));\nvar ParseError = (function () {\n    function ParseError(span, msg, level) {\n        if (level === void 0) { level = ParseErrorLevel.FATAL; }\n        this.span = span;\n        this.msg = msg;\n        this.level = level;\n    }\n    ParseError.prototype.toString = function () {\n        var source = this.span.start.file.content;\n        var ctxStart = this.span.start.offset;\n        var contextStr = '';\n        var details = '';\n        if (ctxStart) {\n            if (ctxStart > source.length - 1) {\n                ctxStart = source.length - 1;\n            }\n            var ctxEnd = ctxStart;\n            var ctxLen = 0;\n            var ctxLines = 0;\n            while (ctxLen < 100 && ctxStart > 0) {\n                ctxStart--;\n                ctxLen++;\n                if (source[ctxStart] == '\\n') {\n                    if (++ctxLines == 3) {\n                        break;\n                    }\n                }\n            }\n            ctxLen = 0;\n            ctxLines = 0;\n            while (ctxLen < 100 && ctxEnd < source.length - 1) {\n                ctxEnd++;\n                ctxLen++;\n                if (source[ctxEnd] == '\\n') {\n                    if (++ctxLines == 3) {\n                        break;\n                    }\n                }\n            }\n            var context = source.substring(ctxStart, this.span.start.offset) + '[ERROR ->]' +\n                source.substring(this.span.start.offset, ctxEnd + 1);\n            contextStr = \" (\\\"\" + context + \"\\\")\";\n        }\n        if (this.span.details) {\n            details = \", \" + this.span.details;\n        }\n        return \"\" + this.msg + contextStr + \": \" + this.span.start + details;\n    };\n    return ParseError;\n}());\n\n/* tslint:disable */\n/**\n * @license\n * Copyright Google Inc. All Rights Reserved.\n *\n * Use of this source code is governed by an MIT-style license that can be\n * found in the LICENSE file at https://angular.io/license\n */\nvar CssTokenType;\n(function (CssTokenType) {\n    CssTokenType[CssTokenType[\"EOF\"] = 0] = \"EOF\";\n    CssTokenType[CssTokenType[\"String\"] = 1] = \"String\";\n    CssTokenType[CssTokenType[\"Comment\"] = 2] = \"Comment\";\n    CssTokenType[CssTokenType[\"Identifier\"] = 3] = \"Identifier\";\n    CssTokenType[CssTokenType[\"Number\"] = 4] = \"Number\";\n    CssTokenType[CssTokenType[\"IdentifierOrNumber\"] = 5] = \"IdentifierOrNumber\";\n    CssTokenType[CssTokenType[\"AtKeyword\"] = 6] = \"AtKeyword\";\n    CssTokenType[CssTokenType[\"Character\"] = 7] = \"Character\";\n    CssTokenType[CssTokenType[\"Whitespace\"] = 8] = \"Whitespace\";\n    CssTokenType[CssTokenType[\"Invalid\"] = 9] = \"Invalid\";\n})(CssTokenType || (CssTokenType = {}));\nvar CssLexerMode;\n(function (CssLexerMode) {\n    CssLexerMode[CssLexerMode[\"ALL\"] = 0] = \"ALL\";\n    CssLexerMode[CssLexerMode[\"ALL_TRACK_WS\"] = 1] = \"ALL_TRACK_WS\";\n    CssLexerMode[CssLexerMode[\"SELECTOR\"] = 2] = \"SELECTOR\";\n    CssLexerMode[CssLexerMode[\"PSEUDO_SELECTOR\"] = 3] = \"PSEUDO_SELECTOR\";\n    CssLexerMode[CssLexerMode[\"PSEUDO_SELECTOR_WITH_ARGUMENTS\"] = 4] = \"PSEUDO_SELECTOR_WITH_ARGUMENTS\";\n    CssLexerMode[CssLexerMode[\"ATTRIBUTE_SELECTOR\"] = 5] = \"ATTRIBUTE_SELECTOR\";\n    CssLexerMode[CssLexerMode[\"AT_RULE_QUERY\"] = 6] = \"AT_RULE_QUERY\";\n    CssLexerMode[CssLexerMode[\"MEDIA_QUERY\"] = 7] = \"MEDIA_QUERY\";\n    CssLexerMode[CssLexerMode[\"BLOCK\"] = 8] = \"BLOCK\";\n    CssLexerMode[CssLexerMode[\"KEYFRAME_BLOCK\"] = 9] = \"KEYFRAME_BLOCK\";\n    CssLexerMode[CssLexerMode[\"STYLE_BLOCK\"] = 10] = \"STYLE_BLOCK\";\n    CssLexerMode[CssLexerMode[\"STYLE_VALUE\"] = 11] = \"STYLE_VALUE\";\n    CssLexerMode[CssLexerMode[\"STYLE_VALUE_FUNCTION\"] = 12] = \"STYLE_VALUE_FUNCTION\";\n    CssLexerMode[CssLexerMode[\"STYLE_CALC_FUNCTION\"] = 13] = \"STYLE_CALC_FUNCTION\";\n})(CssLexerMode || (CssLexerMode = {}));\nvar LexedCssResult = (function () {\n    function LexedCssResult(error, token) {\n        this.error = error;\n        this.token = token;\n    }\n    return LexedCssResult;\n}());\nfunction generateErrorMessage(input, message, errorValue, index, row, column) {\n    return message + \" at column \" + row + \":\" + column + \" in expression [\" +\n        findProblemCode(input, errorValue, index, column) + ']';\n}\nfunction findProblemCode(input, errorValue, index, column) {\n    var endOfProblemLine = index;\n    var current = charCode(input, index);\n    while (current > 0 && !isNewline(current)) {\n        current = charCode(input, ++endOfProblemLine);\n    }\n    var choppedString = input.substring(0, endOfProblemLine);\n    var pointerPadding = '';\n    for (var i = 0; i < column; i++) {\n        pointerPadding += ' ';\n    }\n    var pointerString = '';\n    for (var i = 0; i < errorValue.length; i++) {\n        pointerString += '^';\n    }\n    return choppedString + '\\n' + pointerPadding + pointerString + '\\n';\n}\nvar CssToken = (function () {\n    function CssToken(index, column, line, type, strValue) {\n        this.index = index;\n        this.column = column;\n        this.line = line;\n        this.type = type;\n        this.strValue = strValue;\n        this.numValue = charCode(strValue, 0);\n    }\n    return CssToken;\n}());\nvar CssLexer = (function () {\n    function CssLexer() {\n    }\n    CssLexer.prototype.scan = function (text, trackComments) {\n        if (trackComments === void 0) { trackComments = false; }\n        return new CssScanner(text, trackComments);\n    };\n    return CssLexer;\n}());\nvar CssScannerError = (function () {\n    function CssScannerError(token, message) {\n        this.token = token;\n        this.rawMessage = message;\n    }\n    CssScannerError.prototype.toString = function () { return this.message; };\n    return CssScannerError;\n}());\nfunction _trackWhitespace(mode) {\n    switch (mode) {\n        case CssLexerMode.SELECTOR:\n        case CssLexerMode.PSEUDO_SELECTOR:\n        case CssLexerMode.ALL_TRACK_WS:\n        case CssLexerMode.STYLE_VALUE:\n            return true;\n        default:\n            return false;\n    }\n}\nvar CssScanner = (function () {\n    function CssScanner(input, _trackComments) {\n        if (_trackComments === void 0) { _trackComments = false; }\n        this.input = input;\n        this._trackComments = _trackComments;\n        this.length = 0;\n        this.index = -1;\n        this.column = -1;\n        this.line = 0;\n        /** @internal */\n        this._currentMode = CssLexerMode.BLOCK;\n        /** @internal */\n        this._currentError = null;\n        this.length = this.input.length;\n        this.peekPeek = this.peekAt(0);\n        this.advance();\n    }\n    CssScanner.prototype.getMode = function () { return this._currentMode; };\n    CssScanner.prototype.setMode = function (mode) {\n        if (this._currentMode != mode) {\n            if (_trackWhitespace(this._currentMode) && !_trackWhitespace(mode)) {\n                this.consumeWhitespace();\n            }\n            this._currentMode = mode;\n        }\n    };\n    CssScanner.prototype.advance = function () {\n        if (isNewline(this.peek)) {\n            this.column = 0;\n            this.line++;\n        }\n        else {\n            this.column++;\n        }\n        this.index++;\n        this.peek = this.peekPeek;\n        this.peekPeek = this.peekAt(this.index + 1);\n    };\n    CssScanner.prototype.peekAt = function (index) {\n        return index >= this.length ? $EOF : this.input.charCodeAt(index);\n    };\n    CssScanner.prototype.consumeEmptyStatements = function () {\n        this.consumeWhitespace();\n        while (this.peek == $SEMICOLON) {\n            this.advance();\n            this.consumeWhitespace();\n        }\n    };\n    CssScanner.prototype.consumeWhitespace = function () {\n        while (isWhitespace(this.peek) || isNewline(this.peek)) {\n            this.advance();\n            if (!this._trackComments && isCommentStart(this.peek, this.peekPeek)) {\n                this.advance(); // /\n                this.advance(); // *\n                while (!isCommentEnd(this.peek, this.peekPeek)) {\n                    if (this.peek == $EOF) {\n                        this.error('Unterminated comment');\n                    }\n                    this.advance();\n                }\n                this.advance(); // *\n                this.advance(); // /\n            }\n        }\n    };\n    CssScanner.prototype.consume = function (type, value) {\n        if (value === void 0) { value = null; }\n        var mode = this._currentMode;\n        this.setMode(_trackWhitespace(mode) ? CssLexerMode.ALL_TRACK_WS : CssLexerMode.ALL);\n        var previousIndex = this.index;\n        var previousLine = this.line;\n        var previousColumn = this.column;\n        var next;\n        var output = this.scan();\n        if (output) {\n            // just incase the inner scan method returned an error\n            if (output.error) {\n                this.setMode(mode);\n                return output;\n            }\n            next = output.token;\n        }\n        if (!next) {\n            next = new CssToken(this.index, this.column, this.line, CssTokenType.EOF, 'end of file');\n        }\n        var isMatchingType = false;\n        if (type == CssTokenType.IdentifierOrNumber) {\n            // TODO (matsko): implement array traversal for lookup here\n            isMatchingType = next.type == CssTokenType.Number || next.type == CssTokenType.Identifier;\n        }\n        else {\n            isMatchingType = next.type == type;\n        }\n        // before throwing the error we need to bring back the former\n        // mode so that the parser can recover...\n        this.setMode(mode);\n        var error = null;\n        if (!isMatchingType || (value && value != next.strValue)) {\n            var errorMessage = CssTokenType[next.type] + ' does not match expected ' +\n                CssTokenType[type] + ' value';\n            if (value) {\n                errorMessage += ' (\"' + next.strValue + '\" should match \"' + value + '\")';\n            }\n            error = new CssScannerError(next, generateErrorMessage(this.input, errorMessage, next.strValue, previousIndex, previousLine, previousColumn));\n        }\n        return new LexedCssResult(error, next);\n    };\n    CssScanner.prototype.scan = function () {\n        var trackWS = _trackWhitespace(this._currentMode);\n        if (this.index == 0 && !trackWS) {\n            this.consumeWhitespace();\n        }\n        var token = this._scan();\n        if (token == null)\n            return null;\n        var error = this._currentError;\n        this._currentError = null;\n        if (!trackWS) {\n            this.consumeWhitespace();\n        }\n        return new LexedCssResult(error, token);\n    };\n    /** @internal */\n    CssScanner.prototype._scan = function () {\n        var peek = this.peek;\n        var peekPeek = this.peekPeek;\n        if (peek == $EOF)\n            return null;\n        if (isCommentStart(peek, peekPeek)) {\n            // even if comments are not tracked we still lex the\n            // comment so we can move the pointer forward\n            var commentToken = this.scanComment();\n            if (this._trackComments) {\n                return commentToken;\n            }\n        }\n        if (_trackWhitespace(this._currentMode) && (isWhitespace(peek) || isNewline(peek))) {\n            return this.scanWhitespace();\n        }\n        peek = this.peek;\n        peekPeek = this.peekPeek;\n        if (peek == $EOF)\n            return null;\n        if (isStringStart(peek, peekPeek)) {\n            return this.scanString();\n        }\n        // something like url(cool)\n        if (this._currentMode == CssLexerMode.STYLE_VALUE_FUNCTION) {\n            return this.scanCssValueFunction();\n        }\n        var isModifier = peek == $PLUS || peek == $MINUS;\n        var digitA = isModifier ? false : isDigit(peek);\n        var digitB = isDigit(peekPeek);\n        if (digitA || (isModifier && (peekPeek == $PERIOD || digitB)) ||\n            (peek == $PERIOD && digitB)) {\n            return this.scanNumber();\n        }\n        if (peek == $AT) {\n            return this.scanAtExpression();\n        }\n        if (isIdentifierStart(peek, peekPeek)) {\n            return this.scanIdentifier();\n        }\n        if (isValidCssCharacter(peek, this._currentMode)) {\n            return this.scanCharacter();\n        }\n        return this.error(\"Unexpected character [\" + String.fromCharCode(peek) + \"]\");\n    };\n    CssScanner.prototype.scanComment = function () {\n        if (this.assertCondition(isCommentStart(this.peek, this.peekPeek), 'Expected comment start value')) {\n            return null;\n        }\n        var start = this.index;\n        var startingColumn = this.column;\n        var startingLine = this.line;\n        this.advance(); // /\n        this.advance(); // *\n        while (!isCommentEnd(this.peek, this.peekPeek)) {\n            if (this.peek == $EOF) {\n                this.error('Unterminated comment');\n            }\n            this.advance();\n        }\n        this.advance(); // *\n        this.advance(); // /\n        var str = this.input.substring(start, this.index);\n        return new CssToken(start, startingColumn, startingLine, CssTokenType.Comment, str);\n    };\n    CssScanner.prototype.scanWhitespace = function () {\n        var start = this.index;\n        var startingColumn = this.column;\n        var startingLine = this.line;\n        while (isWhitespace(this.peek) && this.peek != $EOF) {\n            this.advance();\n        }\n        var str = this.input.substring(start, this.index);\n        return new CssToken(start, startingColumn, startingLine, CssTokenType.Whitespace, str);\n    };\n    CssScanner.prototype.scanString = function () {\n        if (this.assertCondition(isStringStart(this.peek, this.peekPeek), 'Unexpected non-string starting value')) {\n            return null;\n        }\n        var target = this.peek;\n        var start = this.index;\n        var startingColumn = this.column;\n        var startingLine = this.line;\n        var previous = target;\n        this.advance();\n        while (!isCharMatch(target, previous, this.peek)) {\n            if (this.peek == $EOF || isNewline(this.peek)) {\n                this.error('Unterminated quote');\n            }\n            previous = this.peek;\n            this.advance();\n        }\n        if (this.assertCondition(this.peek == target, 'Unterminated quote')) {\n            return null;\n        }\n        this.advance();\n        var str = this.input.substring(start, this.index);\n        return new CssToken(start, startingColumn, startingLine, CssTokenType.String, str);\n    };\n    CssScanner.prototype.scanNumber = function () {\n        var start = this.index;\n        var startingColumn = this.column;\n        if (this.peek == $PLUS || this.peek == $MINUS) {\n            this.advance();\n        }\n        var periodUsed = false;\n        while (isDigit(this.peek) || this.peek == $PERIOD) {\n            if (this.peek == $PERIOD) {\n                if (periodUsed) {\n                    this.error('Unexpected use of a second period value');\n                }\n                periodUsed = true;\n            }\n            this.advance();\n        }\n        var strValue = this.input.substring(start, this.index);\n        return new CssToken(start, startingColumn, this.line, CssTokenType.Number, strValue);\n    };\n    CssScanner.prototype.scanIdentifier = function () {\n        if (this.assertCondition(isIdentifierStart(this.peek, this.peekPeek), 'Expected identifier starting value')) {\n            return null;\n        }\n        var start = this.index;\n        var startingColumn = this.column;\n        while (isIdentifierPart(this.peek)) {\n            this.advance();\n        }\n        var strValue = this.input.substring(start, this.index);\n        return new CssToken(start, startingColumn, this.line, CssTokenType.Identifier, strValue);\n    };\n    CssScanner.prototype.scanCssValueFunction = function () {\n        var start = this.index;\n        var startingColumn = this.column;\n        var parenBalance = 1;\n        while (this.peek != $EOF && parenBalance > 0) {\n            this.advance();\n            if (this.peek == $LPAREN) {\n                parenBalance++;\n            }\n            else if (this.peek == $RPAREN) {\n                parenBalance--;\n            }\n        }\n        var strValue = this.input.substring(start, this.index);\n        return new CssToken(start, startingColumn, this.line, CssTokenType.Identifier, strValue);\n    };\n    CssScanner.prototype.scanCharacter = function () {\n        var start = this.index;\n        var startingColumn = this.column;\n        if (this.assertCondition(isValidCssCharacter(this.peek, this._currentMode), charStr(this.peek) + ' is not a valid CSS character')) {\n            return null;\n        }\n        var c = this.input.substring(start, start + 1);\n        this.advance();\n        return new CssToken(start, startingColumn, this.line, CssTokenType.Character, c);\n    };\n    CssScanner.prototype.scanAtExpression = function () {\n        if (this.assertCondition(this.peek == $AT, 'Expected @ value')) {\n            return null;\n        }\n        var start = this.index;\n        var startingColumn = this.column;\n        this.advance();\n        if (isIdentifierStart(this.peek, this.peekPeek)) {\n            var ident = this.scanIdentifier();\n            var strValue = '@' + ident.strValue;\n            return new CssToken(start, startingColumn, this.line, CssTokenType.AtKeyword, strValue);\n        }\n        else {\n            return this.scanCharacter();\n        }\n    };\n    CssScanner.prototype.assertCondition = function (status, errorMessage) {\n        if (!status) {\n            this.error(errorMessage);\n            return true;\n        }\n        return false;\n    };\n    CssScanner.prototype.error = function (message, errorTokenValue, doNotAdvance) {\n        if (errorTokenValue === void 0) { errorTokenValue = null; }\n        if (doNotAdvance === void 0) { doNotAdvance = false; }\n        var index = this.index;\n        var column = this.column;\n        var line = this.line;\n        errorTokenValue =\n            errorTokenValue ? errorTokenValue : String.fromCharCode(this.peek);\n        var invalidToken = new CssToken(index, column, line, CssTokenType.Invalid, errorTokenValue);\n        var errorMessage = generateErrorMessage(this.input, message, errorTokenValue, index, line, column);\n        if (!doNotAdvance) {\n            this.advance();\n        }\n        this._currentError = new CssScannerError(invalidToken, errorMessage);\n        return invalidToken;\n    };\n    return CssScanner;\n}());\nfunction isCharMatch(target, previous, code) {\n    return code == target && previous != $BACKSLASH;\n}\nfunction isCommentStart(code, next) {\n    return code == $SLASH && next == $STAR;\n}\nfunction isCommentEnd(code, next) {\n    return code == $STAR && next == $SLASH;\n}\nfunction isStringStart(code, next) {\n    var target = code;\n    if (target == $BACKSLASH) {\n        target = next;\n    }\n    return target == $DQ || target == $SQ;\n}\nfunction isIdentifierStart(code, next) {\n    var target = code;\n    if (target == $MINUS) {\n        target = next;\n    }\n    return isAsciiLetter(target) || target == $BACKSLASH || target == $MINUS ||\n        target == $_;\n}\nfunction isIdentifierPart(target) {\n    return isAsciiLetter(target) || target == $BACKSLASH || target == $MINUS ||\n        target == $_ || isDigit(target);\n}\nfunction isValidPseudoSelectorCharacter(code) {\n    switch (code) {\n        case $LPAREN:\n        case $RPAREN:\n            return true;\n        default:\n            return false;\n    }\n}\nfunction isValidKeyframeBlockCharacter(code) {\n    return code == $PERCENT;\n}\nfunction isValidAttributeSelectorCharacter(code) {\n    // value^*|$~=something\n    switch (code) {\n        case $$:\n        case $PIPE:\n        case $CARET:\n        case $TILDA:\n        case $STAR:\n        case $EQ:\n            return true;\n        default:\n            return false;\n    }\n}\nfunction isValidSelectorCharacter(code) {\n    // selector [ key   = value ]\n    // IDENT    C IDENT C IDENT C\n    // #id, .class, *+~>\n    // tag:PSEUDO\n    switch (code) {\n        case $HASH:\n        case $PERIOD:\n        case $TILDA:\n        case $STAR:\n        case $PLUS:\n        case $GT:\n        case $COLON:\n        case $PIPE:\n        case $COMMA:\n        case $LBRACKET:\n        case $RBRACKET:\n            return true;\n        default:\n            return false;\n    }\n}\nfunction isValidStyleBlockCharacter(code) {\n    // key:value;\n    // key:calc(something ... )\n    switch (code) {\n        case $HASH:\n        case $SEMICOLON:\n        case $COLON:\n        case $PERCENT:\n        case $SLASH:\n        case $BACKSLASH:\n        case $BANG:\n        case $PERIOD:\n        case $LPAREN:\n        case $RPAREN:\n            return true;\n        default:\n            return false;\n    }\n}\nfunction isValidMediaQueryRuleCharacter(code) {\n    // (min-width: 7.5em) and (orientation: landscape)\n    switch (code) {\n        case $LPAREN:\n        case $RPAREN:\n        case $COLON:\n        case $PERCENT:\n        case $PERIOD:\n            return true;\n        default:\n            return false;\n    }\n}\nfunction isValidAtRuleCharacter(code) {\n    // @document url(http://www.w3.org/page?something=on#hash),\n    switch (code) {\n        case $LPAREN:\n        case $RPAREN:\n        case $COLON:\n        case $PERCENT:\n        case $PERIOD:\n        case $SLASH:\n        case $BACKSLASH:\n        case $HASH:\n        case $EQ:\n        case $QUESTION:\n        case $AMPERSAND:\n        case $STAR:\n        case $COMMA:\n        case $MINUS:\n        case $PLUS:\n            return true;\n        default:\n            return false;\n    }\n}\nfunction isValidStyleFunctionCharacter(code) {\n    switch (code) {\n        case $PERIOD:\n        case $MINUS:\n        case $PLUS:\n        case $STAR:\n        case $SLASH:\n        case $LPAREN:\n        case $RPAREN:\n        case $COMMA:\n            return true;\n        default:\n            return false;\n    }\n}\nfunction isValidBlockCharacter(code) {\n    // @something { }\n    // IDENT\n    return code == $AT;\n}\nfunction isValidCssCharacter(code, mode) {\n    switch (mode) {\n        case CssLexerMode.ALL:\n        case CssLexerMode.ALL_TRACK_WS:\n            return true;\n        case CssLexerMode.SELECTOR:\n            return isValidSelectorCharacter(code);\n        case CssLexerMode.PSEUDO_SELECTOR_WITH_ARGUMENTS:\n            return isValidPseudoSelectorCharacter(code);\n        case CssLexerMode.ATTRIBUTE_SELECTOR:\n            return isValidAttributeSelectorCharacter(code);\n        case CssLexerMode.MEDIA_QUERY:\n            return isValidMediaQueryRuleCharacter(code);\n        case CssLexerMode.AT_RULE_QUERY:\n            return isValidAtRuleCharacter(code);\n        case CssLexerMode.KEYFRAME_BLOCK:\n            return isValidKeyframeBlockCharacter(code);\n        case CssLexerMode.STYLE_BLOCK:\n        case CssLexerMode.STYLE_VALUE:\n            return isValidStyleBlockCharacter(code);\n        case CssLexerMode.STYLE_CALC_FUNCTION:\n            return isValidStyleFunctionCharacter(code);\n        case CssLexerMode.BLOCK:\n            return isValidBlockCharacter(code);\n        default:\n            return false;\n    }\n}\nfunction charCode(input, index) {\n    return index >= input.length ? $EOF : input.charCodeAt(index);\n}\nfunction charStr(code) {\n    return String.fromCharCode(code);\n}\nfunction isNewline(code) {\n    switch (code) {\n        case $FF:\n        case $CR:\n        case $LF:\n        case $VTAB:\n            return true;\n        default:\n            return false;\n    }\n}\n\n/* tslint:disable */\n/**\n * @license\n * Copyright Google Inc. All Rights Reserved.\n *\n * Use of this source code is governed by an MIT-style license that can be\n * found in the LICENSE file at https://angular.io/license\n */\nvar __extends$3 = (undefined && undefined.__extends) || function (d, b) {\n    for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];\n    function __() { this.constructor = d; }\n    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());\n};\nvar BlockType;\n(function (BlockType) {\n    BlockType[BlockType[\"Import\"] = 0] = \"Import\";\n    BlockType[BlockType[\"Charset\"] = 1] = \"Charset\";\n    BlockType[BlockType[\"Namespace\"] = 2] = \"Namespace\";\n    BlockType[BlockType[\"Supports\"] = 3] = \"Supports\";\n    BlockType[BlockType[\"Keyframes\"] = 4] = \"Keyframes\";\n    BlockType[BlockType[\"MediaQuery\"] = 5] = \"MediaQuery\";\n    BlockType[BlockType[\"Selector\"] = 6] = \"Selector\";\n    BlockType[BlockType[\"FontFace\"] = 7] = \"FontFace\";\n    BlockType[BlockType[\"Page\"] = 8] = \"Page\";\n    BlockType[BlockType[\"Document\"] = 9] = \"Document\";\n    BlockType[BlockType[\"Viewport\"] = 10] = \"Viewport\";\n    BlockType[BlockType[\"Unsupported\"] = 11] = \"Unsupported\";\n})(BlockType || (BlockType = {}));\nvar CssAst = (function () {\n    function CssAst(location) {\n        this.location = location;\n    }\n    Object.defineProperty(CssAst.prototype, \"start\", {\n        get: function () { return this.location.start; },\n        enumerable: true,\n        configurable: true\n    });\n    Object.defineProperty(CssAst.prototype, \"end\", {\n        get: function () { return this.location.end; },\n        enumerable: true,\n        configurable: true\n    });\n    return CssAst;\n}());\nvar CssStyleValueAst = (function (_super) {\n    __extends$3(CssStyleValueAst, _super);\n    function CssStyleValueAst(location, tokens, strValue) {\n        var _this = _super.call(this, location) || this;\n        _this.tokens = tokens;\n        _this.strValue = strValue;\n        return _this;\n    }\n    CssStyleValueAst.prototype.visit = function (visitor, context) { return visitor.visitCssValue(this); };\n    return CssStyleValueAst;\n}(CssAst));\nvar CssRuleAst = (function (_super) {\n    __extends$3(CssRuleAst, _super);\n    function CssRuleAst(location) {\n        return _super.call(this, location) || this;\n    }\n    return CssRuleAst;\n}(CssAst));\nvar CssBlockRuleAst = (function (_super) {\n    __extends$3(CssBlockRuleAst, _super);\n    function CssBlockRuleAst(location, type, block, name) {\n        if (name === void 0) { name = null; }\n        var _this = _super.call(this, location) || this;\n        _this.location = location;\n        _this.type = type;\n        _this.block = block;\n        _this.name = name;\n        return _this;\n    }\n    CssBlockRuleAst.prototype.visit = function (visitor, context) {\n        return visitor.visitCssBlock(this.block, context);\n    };\n    return CssBlockRuleAst;\n}(CssRuleAst));\nvar CssKeyframeRuleAst = (function (_super) {\n    __extends$3(CssKeyframeRuleAst, _super);\n    function CssKeyframeRuleAst(location, name, block) {\n        return _super.call(this, location, BlockType.Keyframes, block, name) || this;\n    }\n    CssKeyframeRuleAst.prototype.visit = function (visitor, context) {\n        return visitor.visitCssKeyframeRule(this, context);\n    };\n    return CssKeyframeRuleAst;\n}(CssBlockRuleAst));\nvar CssKeyframeDefinitionAst = (function (_super) {\n    __extends$3(CssKeyframeDefinitionAst, _super);\n    function CssKeyframeDefinitionAst(location, steps, block) {\n        var _this = _super.call(this, location, BlockType.Keyframes, block, mergeTokens(steps, ',')) || this;\n        _this.steps = steps;\n        return _this;\n    }\n    CssKeyframeDefinitionAst.prototype.visit = function (visitor, context) {\n        return visitor.visitCssKeyframeDefinition(this, context);\n    };\n    return CssKeyframeDefinitionAst;\n}(CssBlockRuleAst));\nvar CssBlockDefinitionRuleAst = (function (_super) {\n    __extends$3(CssBlockDefinitionRuleAst, _super);\n    function CssBlockDefinitionRuleAst(location, strValue, type, query, block) {\n        var _this = _super.call(this, location, type, block) || this;\n        _this.strValue = strValue;\n        _this.query = query;\n        var firstCssToken = query.tokens[0];\n        _this.name = new CssToken(firstCssToken.index, firstCssToken.column, firstCssToken.line, CssTokenType.Identifier, _this.strValue);\n        return _this;\n    }\n    CssBlockDefinitionRuleAst.prototype.visit = function (visitor, context) {\n        return visitor.visitCssBlock(this.block, context);\n    };\n    return CssBlockDefinitionRuleAst;\n}(CssBlockRuleAst));\nvar CssMediaQueryRuleAst = (function (_super) {\n    __extends$3(CssMediaQueryRuleAst, _super);\n    function CssMediaQueryRuleAst(location, strValue, query, block) {\n        return _super.call(this, location, strValue, BlockType.MediaQuery, query, block) || this;\n    }\n    CssMediaQueryRuleAst.prototype.visit = function (visitor, context) {\n        return visitor.visitCssMediaQueryRule(this, context);\n    };\n    return CssMediaQueryRuleAst;\n}(CssBlockDefinitionRuleAst));\nvar CssAtRulePredicateAst = (function (_super) {\n    __extends$3(CssAtRulePredicateAst, _super);\n    function CssAtRulePredicateAst(location, strValue, tokens) {\n        var _this = _super.call(this, location) || this;\n        _this.strValue = strValue;\n        _this.tokens = tokens;\n        return _this;\n    }\n    CssAtRulePredicateAst.prototype.visit = function (visitor, context) {\n        return visitor.visitCssAtRulePredicate(this, context);\n    };\n    return CssAtRulePredicateAst;\n}(CssAst));\nvar CssInlineRuleAst = (function (_super) {\n    __extends$3(CssInlineRuleAst, _super);\n    function CssInlineRuleAst(location, type, value) {\n        var _this = _super.call(this, location) || this;\n        _this.type = type;\n        _this.value = value;\n        return _this;\n    }\n    CssInlineRuleAst.prototype.visit = function (visitor, context) {\n        return visitor.visitCssInlineRule(this, context);\n    };\n    return CssInlineRuleAst;\n}(CssRuleAst));\nvar CssSelectorRuleAst = (function (_super) {\n    __extends$3(CssSelectorRuleAst, _super);\n    function CssSelectorRuleAst(location, selectors, block) {\n        var _this = _super.call(this, location, BlockType.Selector, block) || this;\n        _this.selectors = selectors;\n        _this.strValue = selectors.map(function (selector) { return selector.strValue; }).join(',');\n        return _this;\n    }\n    CssSelectorRuleAst.prototype.visit = function (visitor, context) {\n        return visitor.visitCssSelectorRule(this, context);\n    };\n    return CssSelectorRuleAst;\n}(CssBlockRuleAst));\nvar CssDefinitionAst = (function (_super) {\n    __extends$3(CssDefinitionAst, _super);\n    function CssDefinitionAst(location, property, value) {\n        var _this = _super.call(this, location) || this;\n        _this.property = property;\n        _this.value = value;\n        return _this;\n    }\n    CssDefinitionAst.prototype.visit = function (visitor, context) {\n        return visitor.visitCssDefinition(this, context);\n    };\n    return CssDefinitionAst;\n}(CssAst));\nvar CssSelectorPartAst = (function (_super) {\n    __extends$3(CssSelectorPartAst, _super);\n    function CssSelectorPartAst(location) {\n        return _super.call(this, location) || this;\n    }\n    return CssSelectorPartAst;\n}(CssAst));\nvar CssSelectorAst = (function (_super) {\n    __extends$3(CssSelectorAst, _super);\n    function CssSelectorAst(location, selectorParts) {\n        var _this = _super.call(this, location) || this;\n        _this.selectorParts = selectorParts;\n        _this.strValue = selectorParts.map(function (part) { return part.strValue; }).join('');\n        return _this;\n    }\n    CssSelectorAst.prototype.visit = function (visitor, context) {\n        return visitor.visitCssSelector(this, context);\n    };\n    return CssSelectorAst;\n}(CssSelectorPartAst));\nvar CssSimpleSelectorAst = (function (_super) {\n    __extends$3(CssSimpleSelectorAst, _super);\n    function CssSimpleSelectorAst(location, tokens, strValue, pseudoSelectors, operator) {\n        var _this = _super.call(this, location) || this;\n        _this.tokens = tokens;\n        _this.strValue = strValue;\n        _this.pseudoSelectors = pseudoSelectors;\n        _this.operator = operator;\n        return _this;\n    }\n    CssSimpleSelectorAst.prototype.visit = function (visitor, context) {\n        return visitor.visitCssSimpleSelector(this, context);\n    };\n    return CssSimpleSelectorAst;\n}(CssSelectorPartAst));\nvar CssPseudoSelectorAst = (function (_super) {\n    __extends$3(CssPseudoSelectorAst, _super);\n    function CssPseudoSelectorAst(location, strValue, name, tokens, innerSelectors) {\n        var _this = _super.call(this, location) || this;\n        _this.strValue = strValue;\n        _this.name = name;\n        _this.tokens = tokens;\n        _this.innerSelectors = innerSelectors;\n        return _this;\n    }\n    CssPseudoSelectorAst.prototype.visit = function (visitor, context) {\n        return visitor.visitCssPseudoSelector(this, context);\n    };\n    return CssPseudoSelectorAst;\n}(CssSelectorPartAst));\nvar CssBlockAst = (function (_super) {\n    __extends$3(CssBlockAst, _super);\n    function CssBlockAst(location, entries) {\n        var _this = _super.call(this, location) || this;\n        _this.entries = entries;\n        return _this;\n    }\n    CssBlockAst.prototype.visit = function (visitor, context) { return visitor.visitCssBlock(this, context); };\n    return CssBlockAst;\n}(CssAst));\n/*\n a style block is different from a standard block because it contains\n css prop:value definitions. A regular block can contain a list of Ast entries.\n */\nvar CssStylesBlockAst = (function (_super) {\n    __extends$3(CssStylesBlockAst, _super);\n    function CssStylesBlockAst(location, definitions) {\n        var _this = _super.call(this, location, definitions) || this;\n        _this.definitions = definitions;\n        return _this;\n    }\n    CssStylesBlockAst.prototype.visit = function (visitor, context) {\n        return visitor.visitCssStylesBlock(this, context);\n    };\n    return CssStylesBlockAst;\n}(CssBlockAst));\nvar CssStyleSheetAst = (function (_super) {\n    __extends$3(CssStyleSheetAst, _super);\n    function CssStyleSheetAst(location, rules) {\n        var _this = _super.call(this, location) || this;\n        _this.rules = rules;\n        return _this;\n    }\n    CssStyleSheetAst.prototype.visit = function (visitor, context) {\n        return visitor.visitCssStyleSheet(this, context);\n    };\n    return CssStyleSheetAst;\n}(CssAst));\nvar CssUnknownRuleAst = (function (_super) {\n    __extends$3(CssUnknownRuleAst, _super);\n    function CssUnknownRuleAst(location, ruleName, tokens) {\n        var _this = _super.call(this, location) || this;\n        _this.ruleName = ruleName;\n        _this.tokens = tokens;\n        return _this;\n    }\n    CssUnknownRuleAst.prototype.visit = function (visitor, context) {\n        return visitor.visitCssUnknownRule(this, context);\n    };\n    return CssUnknownRuleAst;\n}(CssRuleAst));\nvar CssUnknownTokenListAst = (function (_super) {\n    __extends$3(CssUnknownTokenListAst, _super);\n    function CssUnknownTokenListAst(location, name, tokens) {\n        var _this = _super.call(this, location) || this;\n        _this.name = name;\n        _this.tokens = tokens;\n        return _this;\n    }\n    CssUnknownTokenListAst.prototype.visit = function (visitor, context) {\n        return visitor.visitCssUnknownTokenList(this, context);\n    };\n    return CssUnknownTokenListAst;\n}(CssRuleAst));\nfunction mergeTokens(tokens, separator) {\n    if (separator === void 0) { separator = ''; }\n    var mainToken = tokens[0];\n    var str = mainToken.strValue;\n    for (var i = 1; i < tokens.length; i++) {\n        str += separator + tokens[i].strValue;\n    }\n    return new CssToken(mainToken.index, mainToken.column, mainToken.line, mainToken.type, str);\n}\n\n/* tslint:disable */\nvar __extends$2 = (undefined && undefined.__extends) || function (d, b) {\n    for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];\n    function __() { this.constructor = d; }\n    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());\n};\n/**\n * @license\n * Copyright Google Inc. All Rights Reserved.\n *\n * Use of this source code is governed by an MIT-style license that can be\n * found in the LICENSE file at https://angular.io/license\n */\nvar SPACE_OPERATOR = ' ';\nvar SLASH_CHARACTER = '/';\nvar GT_CHARACTER = '>';\nvar TRIPLE_GT_OPERATOR_STR = '>>>';\nvar DEEP_OPERATOR_STR = '/deep/';\nvar EOF_DELIM_FLAG = 1;\nvar RBRACE_DELIM_FLAG = 2;\nvar LBRACE_DELIM_FLAG = 4;\nvar COMMA_DELIM_FLAG = 8;\nvar COLON_DELIM_FLAG = 16;\nvar SEMICOLON_DELIM_FLAG = 32;\nvar NEWLINE_DELIM_FLAG = 64;\nvar RPAREN_DELIM_FLAG = 128;\nvar LPAREN_DELIM_FLAG = 256;\nvar SPACE_DELIM_FLAG = 512;\nfunction _pseudoSelectorSupportsInnerSelectors(name) {\n    return ['not', 'host', 'host-context'].indexOf(name) >= 0;\n}\nfunction isSelectorOperatorCharacter(code) {\n    switch (code) {\n        case $SLASH:\n        case $TILDA:\n        case $PLUS:\n        case $GT:\n            return true;\n        default:\n            return isWhitespace(code);\n    }\n}\nfunction getDelimFromCharacter(code) {\n    switch (code) {\n        case $EOF:\n            return EOF_DELIM_FLAG;\n        case $COMMA:\n            return COMMA_DELIM_FLAG;\n        case $COLON:\n            return COLON_DELIM_FLAG;\n        case $SEMICOLON:\n            return SEMICOLON_DELIM_FLAG;\n        case $RBRACE:\n            return RBRACE_DELIM_FLAG;\n        case $LBRACE:\n            return LBRACE_DELIM_FLAG;\n        case $RPAREN:\n            return RPAREN_DELIM_FLAG;\n        case $SPACE:\n        case $TAB:\n            return SPACE_DELIM_FLAG;\n        default:\n            return isNewline(code) ? NEWLINE_DELIM_FLAG : 0;\n    }\n}\nfunction characterContainsDelimiter(code, delimiters) {\n    return (getDelimFromCharacter(code) & delimiters) > 0;\n}\nvar ParsedCssResult = (function () {\n    function ParsedCssResult(errors, ast) {\n        this.errors = errors;\n        this.ast = ast;\n    }\n    return ParsedCssResult;\n}());\nvar CssParser = (function () {\n    function CssParser() {\n        this._errors = [];\n    }\n    /**\n     * @param css the CSS code that will be parsed\n     * @param url the name of the CSS file containing the CSS source code\n     */\n    CssParser.prototype.parse = function (css, url) {\n        var lexer = new CssLexer();\n        this._file = new ParseSourceFile(css, url);\n        this._scanner = lexer.scan(css, false);\n        var ast = this._parseStyleSheet(EOF_DELIM_FLAG);\n        var errors = this._errors;\n        this._errors = [];\n        var result = new ParsedCssResult(errors, ast);\n        this._file = null;\n        this._scanner = null;\n        return result;\n    };\n    /** @internal */\n    CssParser.prototype._parseStyleSheet = function (delimiters) {\n        var results = [];\n        this._scanner.consumeEmptyStatements();\n        while (this._scanner.peek != $EOF) {\n            this._scanner.setMode(CssLexerMode.BLOCK);\n            results.push(this._parseRule(delimiters));\n        }\n        var span = null;\n        if (results.length > 0) {\n            var firstRule = results[0];\n            // we collect the last token like so incase there was an\n            // EOF token that was emitted sometime during the lexing\n            span = this._generateSourceSpan(firstRule, this._lastToken);\n        }\n        return new CssStyleSheetAst(span, results);\n    };\n    /** @internal */\n    CssParser.prototype._getSourceContent = function () { return this._scanner ? this._scanner.input : ''; };\n    /** @internal */\n    CssParser.prototype._extractSourceContent = function (start, end) {\n        return this._getSourceContent().substring(start, end + 1);\n    };\n    /** @internal */\n    CssParser.prototype._generateSourceSpan = function (start, end) {\n        if (end === void 0) { end = null; }\n        var startLoc;\n        if (start instanceof CssAst) {\n            startLoc = start.location.start;\n        }\n        else {\n            var token = start;\n            if (!token) {\n                // the data here is invalid, however, if and when this does\n                // occur, any other errors associated with this will be collected\n                token = this._lastToken;\n            }\n            startLoc = new ParseLocation(this._file, token.index, token.line, token.column);\n        }\n        if (!end) {\n            end = this._lastToken;\n        }\n        var endLine;\n        var endColumn;\n        var endIndex;\n        if (end instanceof CssAst) {\n            endLine = end.location.end.line;\n            endColumn = end.location.end.col;\n            endIndex = end.location.end.offset;\n        }\n        else if (end instanceof CssToken) {\n            endLine = end.line;\n            endColumn = end.column;\n            endIndex = end.index;\n        }\n        var endLoc = new ParseLocation(this._file, endIndex, endLine, endColumn);\n        return new ParseSourceSpan(startLoc, endLoc);\n    };\n    /** @internal */\n    CssParser.prototype._resolveBlockType = function (token) {\n        switch (token.strValue) {\n            case '@-o-keyframes':\n            case '@-moz-keyframes':\n            case '@-webkit-keyframes':\n            case '@keyframes':\n                return BlockType.Keyframes;\n            case '@charset':\n                return BlockType.Charset;\n            case '@import':\n                return BlockType.Import;\n            case '@namespace':\n                return BlockType.Namespace;\n            case '@page':\n                return BlockType.Page;\n            case '@document':\n                return BlockType.Document;\n            case '@media':\n                return BlockType.MediaQuery;\n            case '@font-face':\n                return BlockType.FontFace;\n            case '@viewport':\n                return BlockType.Viewport;\n            case '@supports':\n                return BlockType.Supports;\n            default:\n                return BlockType.Unsupported;\n        }\n    };\n    /** @internal */\n    CssParser.prototype._parseRule = function (delimiters) {\n        if (this._scanner.peek == $AT) {\n            return this._parseAtRule(delimiters);\n        }\n        return this._parseSelectorRule(delimiters);\n    };\n    /** @internal */\n    CssParser.prototype._parseAtRule = function (delimiters) {\n        var start = this._getScannerIndex();\n        this._scanner.setMode(CssLexerMode.BLOCK);\n        var token = this._scan();\n        var startToken = token;\n        this._assertCondition(token.type == CssTokenType.AtKeyword, \"The CSS Rule \" + token.strValue + \" is not a valid [@] rule.\", token);\n        var block;\n        var type = this._resolveBlockType(token);\n        var span;\n        var tokens;\n        var endToken;\n        var end;\n        var strValue;\n        var query;\n        switch (type) {\n            case BlockType.Charset:\n            case BlockType.Namespace:\n            case BlockType.Import:\n                var value = this._parseValue(delimiters);\n                this._scanner.setMode(CssLexerMode.BLOCK);\n                this._scanner.consumeEmptyStatements();\n                span = this._generateSourceSpan(startToken, value);\n                return new CssInlineRuleAst(span, type, value);\n            case BlockType.Viewport:\n            case BlockType.FontFace:\n                block = this._parseStyleBlock(delimiters);\n                span = this._generateSourceSpan(startToken, block);\n                return new CssBlockRuleAst(span, type, block);\n            case BlockType.Keyframes:\n                tokens = this._collectUntilDelim(delimiters | RBRACE_DELIM_FLAG | LBRACE_DELIM_FLAG);\n                // keyframes only have one identifier name\n                var name_1 = tokens[0];\n                block = this._parseKeyframeBlock(delimiters);\n                span = this._generateSourceSpan(startToken, block);\n                return new CssKeyframeRuleAst(span, name_1, block);\n            case BlockType.MediaQuery:\n                this._scanner.setMode(CssLexerMode.MEDIA_QUERY);\n                tokens = this._collectUntilDelim(delimiters | RBRACE_DELIM_FLAG | LBRACE_DELIM_FLAG);\n                endToken = tokens[tokens.length - 1];\n                // we do not track the whitespace after the mediaQuery predicate ends\n                // so we have to calculate the end string value on our own\n                end = endToken.index + endToken.strValue.length - 1;\n                strValue = this._extractSourceContent(start, end);\n                span = this._generateSourceSpan(startToken, endToken);\n                query = new CssAtRulePredicateAst(span, strValue, tokens);\n                block = this._parseBlock(delimiters);\n                strValue = this._extractSourceContent(start, this._getScannerIndex() - 1);\n                span = this._generateSourceSpan(startToken, block);\n                return new CssMediaQueryRuleAst(span, strValue, query, block);\n            case BlockType.Document:\n            case BlockType.Supports:\n            case BlockType.Page:\n                this._scanner.setMode(CssLexerMode.AT_RULE_QUERY);\n                tokens = this._collectUntilDelim(delimiters | RBRACE_DELIM_FLAG | LBRACE_DELIM_FLAG);\n                endToken = tokens[tokens.length - 1];\n                // we do not track the whitespace after this block rule predicate ends\n                // so we have to calculate the end string value on our own\n                end = endToken.index + endToken.strValue.length - 1;\n                strValue = this._extractSourceContent(start, end);\n                span = this._generateSourceSpan(startToken, tokens[tokens.length - 1]);\n                query = new CssAtRulePredicateAst(span, strValue, tokens);\n                block = this._parseBlock(delimiters);\n                strValue = this._extractSourceContent(start, block.end.offset);\n                span = this._generateSourceSpan(startToken, block);\n                return new CssBlockDefinitionRuleAst(span, strValue, type, query, block);\n            // if a custom @rule { ... } is used it should still tokenize the insides\n            default:\n                var listOfTokens_1 = [];\n                var tokenName = token.strValue;\n                this._scanner.setMode(CssLexerMode.ALL);\n                this._error(generateErrorMessage(this._getSourceContent(), \"The CSS \\\"at\\\" rule \\\"\" + tokenName + \"\\\" is not allowed to used here\", token.strValue, token.index, token.line, token.column), token);\n                this._collectUntilDelim(delimiters | LBRACE_DELIM_FLAG | SEMICOLON_DELIM_FLAG)\n                    .forEach(function (token) { listOfTokens_1.push(token); });\n                if (this._scanner.peek == $LBRACE) {\n                    listOfTokens_1.push(this._consume(CssTokenType.Character, '{'));\n                    this._collectUntilDelim(delimiters | RBRACE_DELIM_FLAG | LBRACE_DELIM_FLAG)\n                        .forEach(function (token) { listOfTokens_1.push(token); });\n                    listOfTokens_1.push(this._consume(CssTokenType.Character, '}'));\n                }\n                endToken = listOfTokens_1[listOfTokens_1.length - 1];\n                span = this._generateSourceSpan(startToken, endToken);\n                return new CssUnknownRuleAst(span, tokenName, listOfTokens_1);\n        }\n    };\n    /** @internal */\n    CssParser.prototype._parseSelectorRule = function (delimiters) {\n        var start = this._getScannerIndex();\n        var selectors = this._parseSelectors(delimiters);\n        var block = this._parseStyleBlock(delimiters);\n        var ruleAst;\n        var span;\n        var startSelector = selectors[0];\n        if (block) {\n            var span = this._generateSourceSpan(startSelector, block);\n            ruleAst = new CssSelectorRuleAst(span, selectors, block);\n        }\n        else {\n            var name = this._extractSourceContent(start, this._getScannerIndex() - 1);\n            var innerTokens = [];\n            selectors.forEach(function (selector) {\n                selector.selectorParts.forEach(function (part) {\n                    part.tokens.forEach(function (token) { innerTokens.push(token); });\n                });\n            });\n            var endToken = innerTokens[innerTokens.length - 1];\n            span = this._generateSourceSpan(startSelector, endToken);\n            ruleAst = new CssUnknownTokenListAst(span, name, innerTokens);\n        }\n        this._scanner.setMode(CssLexerMode.BLOCK);\n        this._scanner.consumeEmptyStatements();\n        return ruleAst;\n    };\n    /** @internal */\n    CssParser.prototype._parseSelectors = function (delimiters) {\n        delimiters |= LBRACE_DELIM_FLAG | SEMICOLON_DELIM_FLAG;\n        var selectors = [];\n        var isParsingSelectors = true;\n        while (isParsingSelectors) {\n            selectors.push(this._parseSelector(delimiters));\n            isParsingSelectors = !characterContainsDelimiter(this._scanner.peek, delimiters);\n            if (isParsingSelectors) {\n                this._consume(CssTokenType.Character, ',');\n                isParsingSelectors = !characterContainsDelimiter(this._scanner.peek, delimiters);\n                if (isParsingSelectors) {\n                    this._scanner.consumeWhitespace();\n                }\n            }\n        }\n        return selectors;\n    };\n    /** @internal */\n    CssParser.prototype._scan = function () {\n        var output = this._scanner.scan();\n        var token = output.token;\n        var error = output.error;\n        if (error) {\n            this._error(error.rawMessage, token);\n        }\n        this._lastToken = token;\n        return token;\n    };\n    /** @internal */\n    CssParser.prototype._getScannerIndex = function () { return this._scanner.index; };\n    /** @internal */\n    CssParser.prototype._consume = function (type, value) {\n        if (value === void 0) { value = null; }\n        var output = this._scanner.consume(type, value);\n        var token = output.token;\n        var error = output.error;\n        if (error) {\n            this._error(error.rawMessage, token);\n        }\n        this._lastToken = token;\n        return token;\n    };\n    /** @internal */\n    CssParser.prototype._parseKeyframeBlock = function (delimiters) {\n        delimiters |= RBRACE_DELIM_FLAG;\n        this._scanner.setMode(CssLexerMode.KEYFRAME_BLOCK);\n        var startToken = this._consume(CssTokenType.Character, '{');\n        var definitions = [];\n        while (!characterContainsDelimiter(this._scanner.peek, delimiters)) {\n            definitions.push(this._parseKeyframeDefinition(delimiters));\n        }\n        var endToken = this._consume(CssTokenType.Character, '}');\n        var span = this._generateSourceSpan(startToken, endToken);\n        return new CssBlockAst(span, definitions);\n    };\n    /** @internal */\n    CssParser.prototype._parseKeyframeDefinition = function (delimiters) {\n        var start = this._getScannerIndex();\n        var stepTokens = [];\n        delimiters |= LBRACE_DELIM_FLAG;\n        while (!characterContainsDelimiter(this._scanner.peek, delimiters)) {\n            stepTokens.push(this._parseKeyframeLabel(delimiters | COMMA_DELIM_FLAG));\n            if (this._scanner.peek != $LBRACE) {\n                this._consume(CssTokenType.Character, ',');\n            }\n        }\n        var stylesBlock = this._parseStyleBlock(delimiters | RBRACE_DELIM_FLAG);\n        var span = this._generateSourceSpan(stepTokens[0], stylesBlock);\n        var ast = new CssKeyframeDefinitionAst(span, stepTokens, stylesBlock);\n        this._scanner.setMode(CssLexerMode.BLOCK);\n        return ast;\n    };\n    /** @internal */\n    CssParser.prototype._parseKeyframeLabel = function (delimiters) {\n        this._scanner.setMode(CssLexerMode.KEYFRAME_BLOCK);\n        return mergeTokens(this._collectUntilDelim(delimiters));\n    };\n    /** @internal */\n    CssParser.prototype._parsePseudoSelector = function (delimiters) {\n        var start = this._getScannerIndex();\n        delimiters &= ~COMMA_DELIM_FLAG;\n        // we keep the original value since we may use it to recurse when :not, :host are used\n        var startingDelims = delimiters;\n        var startToken = this._consume(CssTokenType.Character, ':');\n        var tokens = [startToken];\n        if (this._scanner.peek == $COLON) {\n            tokens.push(this._consume(CssTokenType.Character, ':'));\n        }\n        var innerSelectors = [];\n        this._scanner.setMode(CssLexerMode.PSEUDO_SELECTOR);\n        // host, host-context, lang, not, nth-child are all identifiers\n        var pseudoSelectorToken = this._consume(CssTokenType.Identifier);\n        var pseudoSelectorName = pseudoSelectorToken.strValue;\n        tokens.push(pseudoSelectorToken);\n        // host(), lang(), nth-child(), etc...\n        if (this._scanner.peek == $LPAREN) {\n            this._scanner.setMode(CssLexerMode.PSEUDO_SELECTOR_WITH_ARGUMENTS);\n            var openParenToken = this._consume(CssTokenType.Character, '(');\n            tokens.push(openParenToken);\n            // :host(innerSelector(s)), :not(selector), etc...\n            if (_pseudoSelectorSupportsInnerSelectors(pseudoSelectorName)) {\n                var innerDelims = startingDelims | LPAREN_DELIM_FLAG | RPAREN_DELIM_FLAG;\n                if (pseudoSelectorName == 'not') {\n                    // the inner selector inside of :not(...) can only be one\n                    // CSS selector (no commas allowed) ... This is according\n                    // to the CSS specification\n                    innerDelims |= COMMA_DELIM_FLAG;\n                }\n                // :host(a, b, c) {\n                this._parseSelectors(innerDelims).forEach(function (selector, index) {\n                    innerSelectors.push(selector);\n                });\n            }\n            else {\n                // this branch is for things like \"en-us, 2k + 1, etc...\"\n                // which all end up in pseudoSelectors like :lang, :nth-child, etc..\n                var innerValueDelims = delimiters | LBRACE_DELIM_FLAG | COLON_DELIM_FLAG |\n                    RPAREN_DELIM_FLAG | LPAREN_DELIM_FLAG;\n                while (!characterContainsDelimiter(this._scanner.peek, innerValueDelims)) {\n                    var token = this._scan();\n                    tokens.push(token);\n                }\n            }\n            var closeParenToken = this._consume(CssTokenType.Character, ')');\n            tokens.push(closeParenToken);\n        }\n        var end = this._getScannerIndex() - 1;\n        var strValue = this._extractSourceContent(start, end);\n        var endToken = tokens[tokens.length - 1];\n        var span = this._generateSourceSpan(startToken, endToken);\n        return new CssPseudoSelectorAst(span, strValue, pseudoSelectorName, tokens, innerSelectors);\n    };\n    /** @internal */\n    CssParser.prototype._parseSimpleSelector = function (delimiters) {\n        var start = this._getScannerIndex();\n        delimiters |= COMMA_DELIM_FLAG;\n        this._scanner.setMode(CssLexerMode.SELECTOR);\n        var selectorCssTokens = [];\n        var pseudoSelectors = [];\n        var previousToken;\n        var selectorPartDelimiters = delimiters | SPACE_DELIM_FLAG;\n        var loopOverSelector = !characterContainsDelimiter(this._scanner.peek, selectorPartDelimiters);\n        var hasAttributeError = false;\n        while (loopOverSelector) {\n            var peek = this._scanner.peek;\n            switch (peek) {\n                case $COLON:\n                    var innerPseudo = this._parsePseudoSelector(delimiters);\n                    pseudoSelectors.push(innerPseudo);\n                    this._scanner.setMode(CssLexerMode.SELECTOR);\n                    break;\n                case $LBRACKET:\n                    // we set the mode after the scan because attribute mode does not\n                    // allow attribute [] values. And this also will catch any errors\n                    // if an extra \"[\" is used inside.\n                    selectorCssTokens.push(this._scan());\n                    this._scanner.setMode(CssLexerMode.ATTRIBUTE_SELECTOR);\n                    break;\n                case $RBRACKET:\n                    if (this._scanner.getMode() != CssLexerMode.ATTRIBUTE_SELECTOR) {\n                        hasAttributeError = true;\n                    }\n                    // we set the mode early because attribute mode does not\n                    // allow attribute [] values\n                    this._scanner.setMode(CssLexerMode.SELECTOR);\n                    selectorCssTokens.push(this._scan());\n                    break;\n                default:\n                    if (isSelectorOperatorCharacter(peek)) {\n                        loopOverSelector = false;\n                        continue;\n                    }\n                    var token = this._scan();\n                    previousToken = token;\n                    selectorCssTokens.push(token);\n                    break;\n            }\n            loopOverSelector = !characterContainsDelimiter(this._scanner.peek, selectorPartDelimiters);\n        }\n        hasAttributeError =\n            hasAttributeError || this._scanner.getMode() == CssLexerMode.ATTRIBUTE_SELECTOR;\n        if (hasAttributeError) {\n            this._error(\"Unbalanced CSS attribute selector at column \" + previousToken.line + \":\" + previousToken.column, previousToken);\n        }\n        var end = this._getScannerIndex() - 1;\n        // this happens if the selector is not directly followed by\n        // a comma or curly brace without a space in between\n        if (!characterContainsDelimiter(this._scanner.peek, delimiters)) {\n            var operator = null;\n            var operatorScanCount = 0;\n            var lastOperatorToken = null;\n            while (operator == null && !characterContainsDelimiter(this._scanner.peek, delimiters) &&\n                isSelectorOperatorCharacter(this._scanner.peek)) {\n                var token = this._scan();\n                var tokenOperator = token.strValue;\n                operatorScanCount++;\n                lastOperatorToken = token;\n                if (tokenOperator != SPACE_OPERATOR) {\n                    switch (tokenOperator) {\n                        case SLASH_CHARACTER:\n                            // /deep/ operator\n                            var deepToken = this._consume(CssTokenType.Identifier);\n                            var deepSlash = this._consume(CssTokenType.Character);\n                            var index = lastOperatorToken.index;\n                            var line = lastOperatorToken.line;\n                            var column = lastOperatorToken.column;\n                            if (deepToken && deepToken.strValue.toLowerCase() == 'deep' &&\n                                deepSlash.strValue == SLASH_CHARACTER) {\n                                token = new CssToken(lastOperatorToken.index, lastOperatorToken.column, lastOperatorToken.line, CssTokenType.Identifier, DEEP_OPERATOR_STR);\n                            }\n                            else {\n                                var text = SLASH_CHARACTER + deepToken.strValue + deepSlash.strValue;\n                                this._error(generateErrorMessage(this._getSourceContent(), text + \" is an invalid CSS operator\", text, index, line, column), lastOperatorToken);\n                                token = new CssToken(index, column, line, CssTokenType.Invalid, text);\n                            }\n                            break;\n                        case GT_CHARACTER:\n                            // >>> operator\n                            if (this._scanner.peek == $GT && this._scanner.peekPeek == $GT) {\n                                this._consume(CssTokenType.Character, GT_CHARACTER);\n                                this._consume(CssTokenType.Character, GT_CHARACTER);\n                                token = new CssToken(lastOperatorToken.index, lastOperatorToken.column, lastOperatorToken.line, CssTokenType.Identifier, TRIPLE_GT_OPERATOR_STR);\n                            }\n                            break;\n                    }\n                    operator = token;\n                }\n            }\n            // so long as there is an operator then we can have an\n            // ending value that is beyond the selector value ...\n            // otherwise it's just a bunch of trailing whitespace\n            if (operator) {\n                end = operator.index;\n            }\n        }\n        this._scanner.consumeWhitespace();\n        var strValue = this._extractSourceContent(start, end);\n        // if we do come across one or more spaces inside of\n        // the operators loop then an empty space is still a\n        // valid operator to use if something else was not found\n        if (operator == null && operatorScanCount > 0 && this._scanner.peek != $LBRACE) {\n            operator = lastOperatorToken;\n        }\n        // please note that `endToken` is reassigned multiple times below\n        // so please do not optimize the if statements into if/elseif\n        var startTokenOrAst = null;\n        var endTokenOrAst = null;\n        if (selectorCssTokens.length > 0) {\n            startTokenOrAst = startTokenOrAst || selectorCssTokens[0];\n            endTokenOrAst = selectorCssTokens[selectorCssTokens.length - 1];\n        }\n        if (pseudoSelectors.length > 0) {\n            startTokenOrAst = startTokenOrAst || pseudoSelectors[0];\n            endTokenOrAst = pseudoSelectors[pseudoSelectors.length - 1];\n        }\n        if (operator) {\n            startTokenOrAst = startTokenOrAst || operator;\n            endTokenOrAst = operator;\n        }\n        var span = this._generateSourceSpan(startTokenOrAst, endTokenOrAst);\n        return new CssSimpleSelectorAst(span, selectorCssTokens, strValue, pseudoSelectors, operator);\n    };\n    /** @internal */\n    CssParser.prototype._parseSelector = function (delimiters) {\n        delimiters |= COMMA_DELIM_FLAG;\n        this._scanner.setMode(CssLexerMode.SELECTOR);\n        var simpleSelectors = [];\n        while (!characterContainsDelimiter(this._scanner.peek, delimiters)) {\n            simpleSelectors.push(this._parseSimpleSelector(delimiters));\n            this._scanner.consumeWhitespace();\n        }\n        var firstSelector = simpleSelectors[0];\n        var lastSelector = simpleSelectors[simpleSelectors.length - 1];\n        var span = this._generateSourceSpan(firstSelector, lastSelector);\n        return new CssSelectorAst(span, simpleSelectors);\n    };\n    /** @internal */\n    CssParser.prototype._parseValue = function (delimiters) {\n        delimiters |= RBRACE_DELIM_FLAG | SEMICOLON_DELIM_FLAG | NEWLINE_DELIM_FLAG;\n        this._scanner.setMode(CssLexerMode.STYLE_VALUE);\n        var start = this._getScannerIndex();\n        var tokens = [];\n        var wsStr = '';\n        var previous;\n        while (!characterContainsDelimiter(this._scanner.peek, delimiters)) {\n            var token;\n            if (previous && previous.type == CssTokenType.Identifier &&\n                this._scanner.peek == $LPAREN) {\n                token = this._consume(CssTokenType.Character, '(');\n                tokens.push(token);\n                this._scanner.setMode(CssLexerMode.STYLE_VALUE_FUNCTION);\n                token = this._scan();\n                tokens.push(token);\n                this._scanner.setMode(CssLexerMode.STYLE_VALUE);\n                token = this._consume(CssTokenType.Character, ')');\n                tokens.push(token);\n            }\n            else {\n                token = this._scan();\n                if (token.type == CssTokenType.Whitespace) {\n                    wsStr += token.strValue;\n                }\n                else {\n                    wsStr = '';\n                    tokens.push(token);\n                }\n            }\n            previous = token;\n        }\n        var end = this._getScannerIndex() - 1;\n        this._scanner.consumeWhitespace();\n        var code = this._scanner.peek;\n        if (code == $SEMICOLON) {\n            this._consume(CssTokenType.Character, ';');\n        }\n        else if (code != $RBRACE) {\n            this._error(generateErrorMessage(this._getSourceContent(), \"The CSS key/value definition did not end with a semicolon\", previous.strValue, previous.index, previous.line, previous.column), previous);\n        }\n        var strValue = this._extractSourceContent(start, end);\n        var startToken = tokens[0];\n        var endToken = tokens[tokens.length - 1];\n        var span = this._generateSourceSpan(startToken, endToken);\n        return new CssStyleValueAst(span, tokens, strValue);\n    };\n    /** @internal */\n    CssParser.prototype._collectUntilDelim = function (delimiters, assertType) {\n        if (assertType === void 0) { assertType = null; }\n        var tokens = [];\n        while (!characterContainsDelimiter(this._scanner.peek, delimiters)) {\n            var val = assertType ? this._consume(assertType) : this._scan();\n            tokens.push(val);\n        }\n        return tokens;\n    };\n    /** @internal */\n    CssParser.prototype._parseBlock = function (delimiters) {\n        delimiters |= RBRACE_DELIM_FLAG;\n        this._scanner.setMode(CssLexerMode.BLOCK);\n        var startToken = this._consume(CssTokenType.Character, '{');\n        this._scanner.consumeEmptyStatements();\n        var results = [];\n        while (!characterContainsDelimiter(this._scanner.peek, delimiters)) {\n            results.push(this._parseRule(delimiters));\n        }\n        var endToken = this._consume(CssTokenType.Character, '}');\n        this._scanner.setMode(CssLexerMode.BLOCK);\n        this._scanner.consumeEmptyStatements();\n        var span = this._generateSourceSpan(startToken, endToken);\n        return new CssBlockAst(span, results);\n    };\n    /** @internal */\n    CssParser.prototype._parseStyleBlock = function (delimiters) {\n        delimiters |= RBRACE_DELIM_FLAG | LBRACE_DELIM_FLAG;\n        this._scanner.setMode(CssLexerMode.STYLE_BLOCK);\n        var startToken = this._consume(CssTokenType.Character, '{');\n        if (startToken.numValue != $LBRACE) {\n            return null;\n        }\n        var definitions = [];\n        this._scanner.consumeEmptyStatements();\n        while (!characterContainsDelimiter(this._scanner.peek, delimiters)) {\n            definitions.push(this._parseDefinition(delimiters));\n            this._scanner.consumeEmptyStatements();\n        }\n        var endToken = this._consume(CssTokenType.Character, '}');\n        this._scanner.setMode(CssLexerMode.STYLE_BLOCK);\n        this._scanner.consumeEmptyStatements();\n        var span = this._generateSourceSpan(startToken, endToken);\n        return new CssStylesBlockAst(span, definitions);\n    };\n    /** @internal */\n    CssParser.prototype._parseDefinition = function (delimiters) {\n        this._scanner.setMode(CssLexerMode.STYLE_BLOCK);\n        var prop = this._consume(CssTokenType.Identifier);\n        var parseValue = false;\n        var value = null;\n        var endToken = prop;\n        // the colon value separates the prop from the style.\n        // there are a few cases as to what could happen if it\n        // is missing\n        switch (this._scanner.peek) {\n            case $SEMICOLON:\n            case $RBRACE:\n            case $EOF:\n                parseValue = false;\n                break;\n            default:\n                var propStr = [prop.strValue];\n                if (this._scanner.peek != $COLON) {\n                    // this will throw the error\n                    var nextValue = this._consume(CssTokenType.Character, ':');\n                    propStr.push(nextValue.strValue);\n                    var remainingTokens = this._collectUntilDelim(delimiters | COLON_DELIM_FLAG | SEMICOLON_DELIM_FLAG, CssTokenType.Identifier);\n                    if (remainingTokens.length > 0) {\n                        remainingTokens.forEach(function (token) { propStr.push(token.strValue); });\n                    }\n                    endToken = prop =\n                        new CssToken(prop.index, prop.column, prop.line, prop.type, propStr.join(' '));\n                }\n                // this means we've reached the end of the definition and/or block\n                if (this._scanner.peek == $COLON) {\n                    this._consume(CssTokenType.Character, ':');\n                    parseValue = true;\n                }\n                break;\n        }\n        if (parseValue) {\n            value = this._parseValue(delimiters);\n            endToken = value;\n        }\n        else {\n            this._error(generateErrorMessage(this._getSourceContent(), \"The CSS property was not paired with a style value\", prop.strValue, prop.index, prop.line, prop.column), prop);\n        }\n        var span = this._generateSourceSpan(prop, endToken);\n        return new CssDefinitionAst(span, prop, value);\n    };\n    /** @internal */\n    CssParser.prototype._assertCondition = function (status, errorMessage, problemToken) {\n        if (!status) {\n            this._error(errorMessage, problemToken);\n            return true;\n        }\n        return false;\n    };\n    /** @internal */\n    CssParser.prototype._error = function (message, problemToken) {\n        var length = problemToken.strValue.length;\n        var error = CssParseError.create(this._file, 0, problemToken.line, problemToken.column, length, message);\n        this._errors.push(error);\n    };\n    return CssParser;\n}());\nvar CssParseError = (function (_super) {\n    __extends$2(CssParseError, _super);\n    function CssParseError(span, message) {\n        return _super.call(this, span, message) || this;\n    }\n    CssParseError.create = function (file, offset, line, col, length, errMsg) {\n        var start = new ParseLocation(file, offset, line, col);\n        var end = new ParseLocation(file, offset, line, col + length);\n        var span = new ParseSourceSpan(start, end);\n        return new CssParseError(span, 'CSS Parse Error: ' + errMsg);\n    };\n    return CssParseError;\n}(ParseError));\n\nvar parseCss = function (text) {\n    var parser = new CssParser();\n    return parser.parse(text, '').ast;\n};\n\nvar __extends$1 = (undefined && undefined.__extends) || function (d, b) {\n    for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];\n    function __() { this.constructor = d; }\n    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());\n};\n/**\n * This class represents the individual directives and wrapps\n * their `StaticSymbol`s produced by the `@angular/compiler`.\n *\n * @export\n * @class DirectiveSymbol\n * @extends {Symbol}\n */\nvar DirectiveSymbol = (function (_super) {\n    __extends$1(DirectiveSymbol, _super);\n    /**\n     * Creates an instance of DirectiveSymbol.\n     *\n     * @param {Program} program\n     * @param {StaticSymbol} symbol\n     * @param {CompileMetadataResolver} metadataResolver\n     * @param {DirectiveNormalizer} directiveNormalizer\n     * @param {DirectiveResolver} resolver\n     * @param {StaticReflector} reflector\n     * @param {ResourceResolver} resourceResolver\n     * @param {ContextSymbols} projectSymbols\n     *\n     * @memberOf DirectiveSymbol\n     */\n    function DirectiveSymbol(program, symbol, metadataResolver, directiveNormalizer, resolver, reflector, resourceResolver, projectSymbols) {\n        var _this = _super.call(this, program, symbol) || this;\n        _this.metadataResolver = metadataResolver;\n        _this.directiveNormalizer = directiveNormalizer;\n        _this.resolver = resolver;\n        _this.reflector = reflector;\n        _this.resourceResolver = resourceResolver;\n        _this.projectSymbols = projectSymbols;\n        _this.urlResolver = new _angular_compiler.UrlResolver();\n        return _this;\n    }\n    /**\n     * Returns the non-resolved metadata for given directive.\n     * If it is a component, this means that the external templates\n     * and styles won't be read from the drive. Also, the paths to\n     * external metadata won't be resolved.\n     *\n     * @returns {CompileDirectiveMetadata}\n     *\n     * @memberOf DirectiveSymbol\n     */\n    DirectiveSymbol.prototype.getNonResolvedMetadata = function () {\n        return this.metadataResolver.getNonNormalizedDirectiveMetadata(this.symbol).metadata;\n    };\n    // TODO: use the normalizer's cache in order to prevent repetative I/O operations\n    /**\n     * Returns the normalized and resolved metadata for given directive or component.\n     * For components, all the external templates and styles will be read and\n     * set as values of the returned `CompileTemplateMetadata` properties.\n     *\n     * @returns {CompileTemplateMetadata}\n     *\n     * @memberOf DirectiveSymbol\n     */\n    DirectiveSymbol.prototype.getResolvedMetadata = function () {\n        var _this = this;\n        var metadata = this.metadataResolver.getNonNormalizedDirectiveMetadata(this.symbol);\n        var componentType = _angular_core.resolveForwardRef(this.symbol);\n        var componentUrl = _angular_compiler.componentModuleUrl(this.reflector, componentType, metadata);\n        var templateMetadata = metadata.metadata.template;\n        // Required because otherwise the normalizer gets confused.\n        if (!templateMetadata.template) {\n            templateMetadata.templateUrl = this.urlResolver.resolve(componentUrl, templateMetadata.templateUrl);\n            templateMetadata.template = this.resourceResolver.getSync(templateMetadata.templateUrl);\n        }\n        var currentMetadata = this.directiveNormalizer.normalizeTemplateSync(Object.assign(templateMetadata, {\n            moduleUrl: componentUrl,\n            componentType: componentType\n        }));\n        if (templateMetadata.templateUrl) {\n            currentMetadata.template = this.resourceResolver.getSync(templateMetadata.templateUrl);\n            currentMetadata.templateUrl = templateMetadata.templateUrl;\n        }\n        currentMetadata.styles = currentMetadata.styles.concat(currentMetadata.styleUrls.map(function (path) {\n            return _this.resourceResolver.getSync(path);\n        }));\n        return currentMetadata;\n    };\n    /**\n     * Returns the module where the given directive has been declared.\n     *\n     * @returns {(CompileNgModuleMetadata | undefined)}\n     *\n     * @memberOf DirectiveSymbol\n     */\n    DirectiveSymbol.prototype.getModule = function () {\n        return this.projectSymbols\n            .getAnalyzedModules().ngModuleByPipeOrDirective.get(this.symbol);\n    };\n    /**\n     * Returns the ASTs of all styles of the target directive.\n     *\n     * @returns {CssAst[]}\n     *\n     * @memberOf DirectiveSymbol\n     */\n    DirectiveSymbol.prototype.getStyleAsts = function () {\n        return this.getResolvedMetadata()\n            .styles.map(function (s) { return parseCss(s); });\n    };\n    /**\n     * Returns the context into which the template of given\n     * component is going to be compiled.\n     *\n     * @returns {DirectiveContext}\n     *\n     * @memberOf DirectiveSymbol\n     */\n    DirectiveSymbol.prototype.getDirectiveContext = function () {\n        var _this = this;\n        var analyzedModules = this.projectSymbols.getAnalyzedModules();\n        var ngModule = analyzedModules.ngModuleByPipeOrDirective.get(this.symbol);\n        if (!ngModule) {\n            throw new Error('Cannot find module associated with the directive ' + this.symbol.name);\n        }\n        var resolvedDirectives = ngModule.transitiveModule.directives.map(function (d) { return _this.metadataResolver.getNonNormalizedDirectiveMetadata(d.reference); });\n        var directives = resolvedDirectives.filter(function (d) { return d !== null; }).map(function (d) { return d.metadata.toSummary(); });\n        var pipes = ngModule.transitiveModule.pipes.map(function (p) { return _this.metadataResolver.getOrLoadPipeMetadata(p.reference).toSummary(); });\n        var schemas = ngModule.schemas;\n        return {\n            pipes: pipes, directives: directives, schemas: schemas\n        };\n    };\n    /**\n     * Returns the compiled template of the target component.\n     *\n     * @returns {TemplateAstResult}\n     *\n     * @memberOf DirectiveSymbol\n     */\n    DirectiveSymbol.prototype.getTemplateAst = function () {\n        var result;\n        try {\n            var resolvedMetadata = this.metadataResolver.getNonNormalizedDirectiveMetadata(this.symbol);\n            var dirMetadata = this.getResolvedMetadata();\n            var source = dirMetadata.template;\n            var metadata = resolvedMetadata && resolvedMetadata.metadata;\n            if (metadata) {\n                var rawHtmlParser = new _angular_compiler.HtmlParser();\n                var htmlParser = new _angular_compiler.I18NHtmlParser(rawHtmlParser);\n                var expressionParser = new _angular_compiler.Parser(new _angular_compiler.Lexer());\n                var parser = new _angular_compiler.TemplateParser(expressionParser, new _angular_compiler.DomElementSchemaRegistry(), htmlParser, undefined, []);\n                var htmlResult = htmlParser.parse(source, '');\n                var _a = this.getDirectiveContext(), directives = _a.directives, pipes = _a.pipes, schemas = _a.schemas;\n                var parseResult = parser.tryParseHtml(htmlResult, metadata, source, directives, pipes, schemas, '');\n                result = {\n                    templateAst: parseResult.templateAst,\n                    parseErrors: parseResult.errors,\n                    errors: []\n                };\n            }\n            else {\n                result = { errors: [{ message: 'Cannot find metadata for the directive' }] };\n            }\n        }\n        catch (e) {\n            result = { errors: [{ message: e.message }] };\n        }\n        return result;\n    };\n    /**\n     * Returns if the target directive is a component.\n     *\n     * @returns {boolean}\n     *\n     * @memberOf DirectiveSymbol\n     */\n    DirectiveSymbol.prototype.isComponent = function () {\n        return !!this.getResolvedMetadata().template;\n    };\n    return DirectiveSymbol;\n}(Symbol));\n\n/**\n * Creates a proxy which provides us access to the symbols\n * defined in given context (could be lazy loaded module or the root module).\n *\n * @export\n * @class ContextSymbols\n */\nvar ContextSymbols = (function () {\n    /**\n     * Creates an instance of ContextSymbols.\n     *\n     * @param {ts.Program} program\n     * @param {ResourceResolver} resourceResolver\n     *\n     * @memberOf ContextSymbols\n     */\n    function ContextSymbols(program, resourceResolver) {\n        this.program = program;\n        this.resourceResolver = resourceResolver;\n        this.options = this.program.getCompilerOptions();\n        this.init();\n    }\n    /**\n     * Returns the metadata associated to this module.\n     *\n     * @returns {CompileNgModuleMetadata[]}\n     *\n     * @memberOf ContextSymbols\n     */\n    ContextSymbols.prototype.getModules = function () {\n        this.validate();\n        var result = [];\n        this.getAnalyzedModules()\n            .ngModuleByPipeOrDirective\n            .forEach(function (m, s) {\n            result.push(m);\n        });\n        return result;\n    };\n    /**\n     * Returns all the directives available in the context.\n     *\n     * @returns {DirectiveSymbol[]}\n     *\n     * @memberOf ContextSymbols\n     */\n    ContextSymbols.prototype.getDirectives = function () {\n        var _this = this;\n        return this.extractProgramSymbols()\n            .filter(function (symbol) { return _this.metadataResolver.isDirective(symbol); })\n            .map(function (symbol) { return new DirectiveSymbol(_this.program, symbol, _this.metadataResolver, _this.directiveNormalizer, _this.directiveResolver, _this.reflector, _this.resourceResolver, _this); });\n    };\n    /**\n     * Returns all the pipes available in this module.\n     *\n     * @returns {PipeSymbol[]}\n     *\n     * @memberOf ContextSymbols\n     */\n    ContextSymbols.prototype.getPipes = function () {\n        var _this = this;\n        return this.extractProgramSymbols()\n            .filter(function (v) { return _this.metadataResolver.isPipe(v); })\n            .map(function (p) { return new PipeSymbol(_this.program, p, _this.pipeResolver, _this); });\n    };\n    /**\n     * Returns the summary of this context.\n     *\n     * @returns {(CompileNgModuleSummary | undefined)}\n     *\n     * @memberOf ContextSymbols\n     */\n    ContextSymbols.prototype.getContextSummary = function () {\n        var module = this.getModules().pop();\n        if (module) {\n            return this.metadataResolver.getNgModuleSummary(module.type.reference);\n        }\n        return undefined;\n    };\n    /**\n     * Updates the program which has impact over the loaded symbols.\n     * In case the `udpate` method is called with program different from\n     * the current one, all the internal caches will be cleared.\n     *\n     * @param {ts.Program} program\n     *\n     * @memberOf ContextSymbols\n     */\n    ContextSymbols.prototype.updateProgram = function (program) {\n        if (program !== this.program) {\n            this.program = program;\n            this.validate();\n        }\n    };\n    /** @internal */\n    ContextSymbols.prototype.getAnalyzedModules = function () {\n        var analyzedModules = this.analyzedModules;\n        if (!analyzedModules) {\n            var analyzeHost = { isSourceFile: function (filePath) { return true; } };\n            var programSymbols = _angular_compiler.extractProgramSymbols(this.staticSymbolResolver, this.program.getSourceFiles().map(function (sf) { return sf.fileName; }), analyzeHost);\n            analyzedModules = this.analyzedModules =\n                _angular_compiler.analyzeNgModules(programSymbols, analyzeHost, this.metadataResolver);\n        }\n        return analyzedModules;\n    };\n    ContextSymbols.prototype.extractProgramSymbols = function () {\n        return _angular_compiler.extractProgramSymbols(this.staticSymbolResolver, this.program.getSourceFiles().map(function (sf) { return sf.fileName; }), {\n            isSourceFile: function () { return true; }\n        });\n    };\n    ContextSymbols.prototype.validate = function () {\n        var program = this.program;\n        if (this.lastProgram !== program) {\n            this.clearCaches();\n            this.lastProgram = program;\n            this.init();\n        }\n    };\n    ContextSymbols.prototype.clearCaches = function () {\n        this.metadataResolver.clearCache();\n        this.directiveNormalizer.clearCache();\n    };\n    ContextSymbols.prototype.init = function () {\n        var staticSymbolCache = new _angular_compiler.StaticSymbolCache();\n        var summaryResolver = new _angular_compiler.AotSummaryResolver({\n            loadSummary: function (filePath) { return ''; },\n            isSourceFile: function (sourceFilePath) { return true; },\n        }, staticSymbolCache);\n        var parser = new _angular_compiler.HtmlParser();\n        var config = new _angular_compiler.CompilerConfig({\n            genDebugInfo: false,\n            defaultEncapsulation: _angular_core.ViewEncapsulation.Emulated,\n            logBindingUpdate: false,\n            useJit: false\n        });\n        this.staticResolverHost = new _angular_compilerCli.CompilerHost(this.program, this.options, new _angular_compilerCli.NodeCompilerHostContext());\n        this.staticSymbolResolver = new _angular_compiler.StaticSymbolResolver(\n        // The strict null check gets confused here\n        this.staticResolverHost, staticSymbolCache, summaryResolver, function (e, filePath) {\n            console.log(e, filePath);\n        });\n        this.reflector = new _angular_compiler.StaticReflector(this.staticSymbolResolver, [], [], function (e, filePath) {\n            console.log(e, filePath);\n        });\n        var ngModuleResolver = new _angular_compiler.NgModuleResolver(this.reflector);\n        this.directiveResolver = new _angular_compiler.DirectiveResolver(this.reflector);\n        this.pipeResolver = new _angular_compiler.PipeResolver(this.reflector);\n        this.urlResolver = _angular_compiler.createOfflineCompileUrlResolver();\n        this.directiveNormalizer = new _angular_compiler.DirectiveNormalizer(this.resourceResolver, this.urlResolver, parser, config);\n        this.metadataResolver = new _angular_compiler.CompileMetadataResolver(ngModuleResolver, this.directiveResolver, this.pipeResolver, summaryResolver, new _angular_compiler.DomElementSchemaRegistry(), this.directiveNormalizer, this.reflector);\n    };\n    return ContextSymbols;\n}());\n\n/**\n * Implementation of the `LazyModuleResolver` which resolves\n * lazy module URL or path in cases when `loadChildren` has a string value.\n *\n * @export\n * @class BasicLazyModuleResolver\n * @implements {LazyModuleResolver}\n */\nvar BasicLazyModuleResolver = (function () {\n    function BasicLazyModuleResolver() {\n        this.resolver = new _angular_compiler.UrlResolver();\n    }\n    /**\n     * Returns URL or path to given lazy loaded module.\n     *\n     * @param {string} basePath\n     * @param {Route} routeDefinition\n     * @returns\n     *\n     * @memberOf BasicLazyModuleResolver\n     */\n    BasicLazyModuleResolver.prototype.resolve = function (basePath, routeDefinition) {\n        if (typeof routeDefinition.loadChildren === 'string') {\n            return this.resolver.resolve(basePath, (routeDefinition.loadChildren.split('#').shift() || '') + '.ts');\n        }\n        return undefined;\n    };\n    return BasicLazyModuleResolver;\n}());\n/**\n * This class is a wrapper around an Angular project.\n * It provides access to the root module of the project as well\n * as to it's lazy loaded modules which can be resolved.\n *\n * @export\n * @class ProjectSymbols\n */\nvar ProjectSymbols = (function () {\n    /**\n     * Creates an instance of ProjectSymbols.\n     *\n     * @param {ProgramFactory} programFactory\n     * @param {ResourceResolver} resolver\n     * @param {any} [lazyModuleResolver=new BasicLazyModuleResolver()]\n     *\n     * @memberOf ProjectSymbols\n     */\n    function ProjectSymbols(programFactory, resolver, lazyModuleResolver) {\n        if (lazyModuleResolver === void 0) { lazyModuleResolver = new BasicLazyModuleResolver(); }\n        this.programFactory = programFactory;\n        this.resolver = resolver;\n        this.lazyModuleResolver = lazyModuleResolver;\n    }\n    /**\n     * Provides access to the `ContextSymbols` corresponding\n     * to the root module of the project that is not loaded lazily.\n     *\n     * @returns {ContextSymbols}\n     *\n     * @memberOf ProjectSymbols\n     */\n    ProjectSymbols.prototype.getRootContext = function () {\n        if (this.rootContext) {\n            return this.rootContext;\n        }\n        var program = this.programFactory.create();\n        this.rootContext = new ContextSymbols(program, this.resolver);\n        return this.rootContext;\n    };\n    /**\n     * Returns a list of all modules in the project:\n     * - All lazy loaded modules\n     * - The root module\n     *\n     * @returns {ContextSymbols[]}\n     *\n     * @memberOf ProjectSymbols\n     */\n    ProjectSymbols.prototype.getLazyLoadedContexts = function () {\n        var _this = this;\n        if (!this.rootContext) {\n            this.getRootContext();\n        }\n        var summary = this.rootContext.getContextSummary();\n        // If struggles with performance make it more imperative\n        var discoverModules = function (summary) {\n            if (!summary || !summary.type || !summary.type.reference)\n                return [];\n            var routes = summary.providers\n                .filter(function (p) { return 'ANALYZE_FOR_ENTRY_COMPONENTS' === p.provider.token.identifier.reference.name; })\n                .map(function (p) { return p.provider.useValue; });\n            var contexts = [].concat.apply([], routes)\n                .filter(function (r) { return !!r.loadChildren; })\n                .map(function (r) { return _this.lazyModuleResolver.resolve(summary.type.reference.filePath, r); })\n                .filter(function (r) { return !!r; })\n                .map(function (p) { return new ContextSymbols(_this.programFactory.create([p]), _this.resolver); });\n            return contexts.concat([].concat.apply([], contexts.map(function (c) { return c.getContextSummary(); }).map(discoverModules)));\n        };\n        return [this.rootContext].concat(discoverModules(summary));\n    };\n    return ProjectSymbols;\n}());\n\nexports.ContextSymbols = ContextSymbols;\nexports.ProjectSymbols = ProjectSymbols;\nexports.DirectiveSymbol = DirectiveSymbol;\nexports.PipeSymbol = PipeSymbol;\nexports.Symbol = Symbol;\n\nObject.defineProperty(exports, '__esModule', { value: true });\n\n})));\n",
+    "static": true,
+    "longname": "dist/ngast.bundle.js",
+    "access": null,
+    "description": null,
+    "lineNumber": 1
+  },
+  {
+    "__docId__": 17,
+    "kind": "external",
+    "name": "Infinity",
+    "externalLink": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Infinity",
+    "memberof": "BuiltinExternal/ECMAScriptExternal.js",
+    "static": true,
+    "longname": "BuiltinExternal/ECMAScriptExternal.js~Infinity",
+    "access": null,
+    "description": "",
+    "builtinExternal": true
+  },
+  {
+    "__docId__": 18,
+    "kind": "external",
+    "name": "NaN",
+    "externalLink": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/NaN",
+    "memberof": "BuiltinExternal/ECMAScriptExternal.js",
+    "static": true,
+    "longname": "BuiltinExternal/ECMAScriptExternal.js~NaN",
+    "access": null,
+    "description": "",
+    "builtinExternal": true
+  },
+  {
+    "__docId__": 19,
+    "kind": "external",
+    "name": "undefined",
+    "externalLink": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/undefined",
+    "memberof": "BuiltinExternal/ECMAScriptExternal.js",
+    "static": true,
+    "longname": "BuiltinExternal/ECMAScriptExternal.js~undefined",
+    "access": null,
+    "description": "",
+    "builtinExternal": true
+  },
+  {
+    "__docId__": 20,
+    "kind": "external",
+    "name": "null",
+    "externalLink": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/null",
+    "memberof": "BuiltinExternal/ECMAScriptExternal.js",
+    "static": true,
+    "longname": "BuiltinExternal/ECMAScriptExternal.js~null",
+    "access": null,
+    "description": "",
+    "builtinExternal": true
+  },
+  {
+    "__docId__": 21,
+    "kind": "external",
+    "name": "Object",
+    "externalLink": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object",
+    "memberof": "BuiltinExternal/ECMAScriptExternal.js",
+    "static": true,
+    "longname": "BuiltinExternal/ECMAScriptExternal.js~Object",
+    "access": null,
+    "description": "",
+    "builtinExternal": true
+  },
+  {
+    "__docId__": 22,
+    "kind": "external",
+    "name": "object",
+    "externalLink": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object",
+    "memberof": "BuiltinExternal/ECMAScriptExternal.js",
+    "static": true,
+    "longname": "BuiltinExternal/ECMAScriptExternal.js~object",
+    "access": null,
+    "description": "",
+    "builtinExternal": true
+  },
+  {
+    "__docId__": 23,
+    "kind": "external",
+    "name": "Function",
+    "externalLink": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Function",
+    "memberof": "BuiltinExternal/ECMAScriptExternal.js",
+    "static": true,
+    "longname": "BuiltinExternal/ECMAScriptExternal.js~Function",
+    "access": null,
+    "description": "",
+    "builtinExternal": true
+  },
+  {
+    "__docId__": 24,
+    "kind": "external",
+    "name": "function",
+    "externalLink": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Function",
+    "memberof": "BuiltinExternal/ECMAScriptExternal.js",
+    "static": true,
+    "longname": "BuiltinExternal/ECMAScriptExternal.js~function",
+    "access": null,
+    "description": "",
+    "builtinExternal": true
+  },
+  {
+    "__docId__": 25,
+    "kind": "external",
+    "name": "Boolean",
+    "externalLink": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Boolean",
+    "memberof": "BuiltinExternal/ECMAScriptExternal.js",
+    "static": true,
+    "longname": "BuiltinExternal/ECMAScriptExternal.js~Boolean",
+    "access": null,
+    "description": "",
+    "builtinExternal": true
+  },
+  {
+    "__docId__": 26,
+    "kind": "external",
+    "name": "boolean",
+    "externalLink": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Boolean",
+    "memberof": "BuiltinExternal/ECMAScriptExternal.js",
+    "static": true,
+    "longname": "BuiltinExternal/ECMAScriptExternal.js~boolean",
+    "access": null,
+    "description": "",
+    "builtinExternal": true
+  },
+  {
+    "__docId__": 27,
+    "kind": "external",
+    "name": "Symbol",
+    "externalLink": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Symbol",
+    "memberof": "BuiltinExternal/ECMAScriptExternal.js",
+    "static": true,
+    "longname": "BuiltinExternal/ECMAScriptExternal.js~Symbol",
+    "access": null,
+    "description": "",
+    "builtinExternal": true
+  },
+  {
+    "__docId__": 28,
+    "kind": "external",
+    "name": "Error",
+    "externalLink": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Error",
+    "memberof": "BuiltinExternal/ECMAScriptExternal.js",
+    "static": true,
+    "longname": "BuiltinExternal/ECMAScriptExternal.js~Error",
+    "access": null,
+    "description": "",
+    "builtinExternal": true
+  },
+  {
+    "__docId__": 29,
+    "kind": "external",
+    "name": "EvalError",
+    "externalLink": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/EvalError",
+    "memberof": "BuiltinExternal/ECMAScriptExternal.js",
+    "static": true,
+    "longname": "BuiltinExternal/ECMAScriptExternal.js~EvalError",
+    "access": null,
+    "description": "",
+    "builtinExternal": true
+  },
+  {
+    "__docId__": 30,
+    "kind": "external",
+    "name": "InternalError",
+    "externalLink": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/InternalError",
+    "memberof": "BuiltinExternal/ECMAScriptExternal.js",
+    "static": true,
+    "longname": "BuiltinExternal/ECMAScriptExternal.js~InternalError",
+    "access": null,
+    "description": "",
+    "builtinExternal": true
+  },
+  {
+    "__docId__": 31,
+    "kind": "external",
+    "name": "RangeError",
+    "externalLink": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/RangeError",
+    "memberof": "BuiltinExternal/ECMAScriptExternal.js",
+    "static": true,
+    "longname": "BuiltinExternal/ECMAScriptExternal.js~RangeError",
+    "access": null,
+    "description": "",
+    "builtinExternal": true
+  },
+  {
+    "__docId__": 32,
+    "kind": "external",
+    "name": "ReferenceError",
+    "externalLink": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/ReferenceError",
+    "memberof": "BuiltinExternal/ECMAScriptExternal.js",
+    "static": true,
+    "longname": "BuiltinExternal/ECMAScriptExternal.js~ReferenceError",
+    "access": null,
+    "description": "",
+    "builtinExternal": true
+  },
+  {
+    "__docId__": 33,
+    "kind": "external",
+    "name": "SyntaxError",
+    "externalLink": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/SyntaxError",
+    "memberof": "BuiltinExternal/ECMAScriptExternal.js",
+    "static": true,
+    "longname": "BuiltinExternal/ECMAScriptExternal.js~SyntaxError",
+    "access": null,
+    "description": "",
+    "builtinExternal": true
+  },
+  {
+    "__docId__": 34,
+    "kind": "external",
+    "name": "TypeError",
+    "externalLink": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/TypeError",
+    "memberof": "BuiltinExternal/ECMAScriptExternal.js",
+    "static": true,
+    "longname": "BuiltinExternal/ECMAScriptExternal.js~TypeError",
+    "access": null,
+    "description": "",
+    "builtinExternal": true
+  },
+  {
+    "__docId__": 35,
+    "kind": "external",
+    "name": "URIError",
+    "externalLink": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/URIError",
+    "memberof": "BuiltinExternal/ECMAScriptExternal.js",
+    "static": true,
+    "longname": "BuiltinExternal/ECMAScriptExternal.js~URIError",
+    "access": null,
+    "description": "",
+    "builtinExternal": true
+  },
+  {
+    "__docId__": 36,
+    "kind": "external",
+    "name": "Number",
+    "externalLink": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Number",
+    "memberof": "BuiltinExternal/ECMAScriptExternal.js",
+    "static": true,
+    "longname": "BuiltinExternal/ECMAScriptExternal.js~Number",
+    "access": null,
+    "description": "",
+    "builtinExternal": true
+  },
+  {
+    "__docId__": 37,
+    "kind": "external",
+    "name": "number",
+    "externalLink": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Number",
+    "memberof": "BuiltinExternal/ECMAScriptExternal.js",
+    "static": true,
+    "longname": "BuiltinExternal/ECMAScriptExternal.js~number",
+    "access": null,
+    "description": "",
+    "builtinExternal": true
+  },
+  {
+    "__docId__": 38,
+    "kind": "external",
+    "name": "Date",
+    "externalLink": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Date",
+    "memberof": "BuiltinExternal/ECMAScriptExternal.js",
+    "static": true,
+    "longname": "BuiltinExternal/ECMAScriptExternal.js~Date",
+    "access": null,
+    "description": "",
+    "builtinExternal": true
+  },
+  {
+    "__docId__": 39,
+    "kind": "external",
+    "name": "String",
+    "externalLink": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String",
+    "memberof": "BuiltinExternal/ECMAScriptExternal.js",
+    "static": true,
+    "longname": "BuiltinExternal/ECMAScriptExternal.js~String",
+    "access": null,
+    "description": "",
+    "builtinExternal": true
+  },
+  {
+    "__docId__": 40,
+    "kind": "external",
+    "name": "string",
+    "externalLink": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String",
+    "memberof": "BuiltinExternal/ECMAScriptExternal.js",
+    "static": true,
+    "longname": "BuiltinExternal/ECMAScriptExternal.js~string",
+    "access": null,
+    "description": "",
+    "builtinExternal": true
+  },
+  {
+    "__docId__": 41,
+    "kind": "external",
+    "name": "RegExp",
+    "externalLink": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/RegExp",
+    "memberof": "BuiltinExternal/ECMAScriptExternal.js",
+    "static": true,
+    "longname": "BuiltinExternal/ECMAScriptExternal.js~RegExp",
+    "access": null,
+    "description": "",
+    "builtinExternal": true
+  },
+  {
+    "__docId__": 42,
+    "kind": "external",
+    "name": "Array",
+    "externalLink": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array",
+    "memberof": "BuiltinExternal/ECMAScriptExternal.js",
+    "static": true,
+    "longname": "BuiltinExternal/ECMAScriptExternal.js~Array",
+    "access": null,
+    "description": "",
+    "builtinExternal": true
+  },
+  {
+    "__docId__": 43,
+    "kind": "external",
+    "name": "Int8Array",
+    "externalLink": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Int8Array",
+    "memberof": "BuiltinExternal/ECMAScriptExternal.js",
+    "static": true,
+    "longname": "BuiltinExternal/ECMAScriptExternal.js~Int8Array",
+    "access": null,
+    "description": "",
+    "builtinExternal": true
+  },
+  {
+    "__docId__": 44,
+    "kind": "external",
+    "name": "Uint8Array",
+    "externalLink": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Uint8Array",
+    "memberof": "BuiltinExternal/ECMAScriptExternal.js",
+    "static": true,
+    "longname": "BuiltinExternal/ECMAScriptExternal.js~Uint8Array",
+    "access": null,
+    "description": "",
+    "builtinExternal": true
+  },
+  {
+    "__docId__": 45,
+    "kind": "external",
+    "name": "Uint8ClampedArray",
+    "externalLink": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Uint8ClampedArray",
+    "memberof": "BuiltinExternal/ECMAScriptExternal.js",
+    "static": true,
+    "longname": "BuiltinExternal/ECMAScriptExternal.js~Uint8ClampedArray",
+    "access": null,
+    "description": "",
+    "builtinExternal": true
+  },
+  {
+    "__docId__": 46,
+    "kind": "external",
+    "name": "Int16Array",
+    "externalLink": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Int16Array",
+    "memberof": "BuiltinExternal/ECMAScriptExternal.js",
+    "static": true,
+    "longname": "BuiltinExternal/ECMAScriptExternal.js~Int16Array",
+    "access": null,
+    "description": "",
+    "builtinExternal": true
+  },
+  {
+    "__docId__": 47,
+    "kind": "external",
+    "name": "Uint16Array",
+    "externalLink": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Uint16Array",
+    "memberof": "BuiltinExternal/ECMAScriptExternal.js",
+    "static": true,
+    "longname": "BuiltinExternal/ECMAScriptExternal.js~Uint16Array",
+    "access": null,
+    "description": "",
+    "builtinExternal": true
+  },
+  {
+    "__docId__": 48,
+    "kind": "external",
+    "name": "Int32Array",
+    "externalLink": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Int32Array",
+    "memberof": "BuiltinExternal/ECMAScriptExternal.js",
+    "static": true,
+    "longname": "BuiltinExternal/ECMAScriptExternal.js~Int32Array",
+    "access": null,
+    "description": "",
+    "builtinExternal": true
+  },
+  {
+    "__docId__": 49,
+    "kind": "external",
+    "name": "Uint32Array",
+    "externalLink": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Uint32Array",
+    "memberof": "BuiltinExternal/ECMAScriptExternal.js",
+    "static": true,
+    "longname": "BuiltinExternal/ECMAScriptExternal.js~Uint32Array",
+    "access": null,
+    "description": "",
+    "builtinExternal": true
+  },
+  {
+    "__docId__": 50,
+    "kind": "external",
+    "name": "Float32Array",
+    "externalLink": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Float32Array",
+    "memberof": "BuiltinExternal/ECMAScriptExternal.js",
+    "static": true,
+    "longname": "BuiltinExternal/ECMAScriptExternal.js~Float32Array",
+    "access": null,
+    "description": "",
+    "builtinExternal": true
+  },
+  {
+    "__docId__": 51,
+    "kind": "external",
+    "name": "Float64Array",
+    "externalLink": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Float64Array",
+    "memberof": "BuiltinExternal/ECMAScriptExternal.js",
+    "static": true,
+    "longname": "BuiltinExternal/ECMAScriptExternal.js~Float64Array",
+    "access": null,
+    "description": "",
+    "builtinExternal": true
+  },
+  {
+    "__docId__": 52,
+    "kind": "external",
+    "name": "Map",
+    "externalLink": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Map",
+    "memberof": "BuiltinExternal/ECMAScriptExternal.js",
+    "static": true,
+    "longname": "BuiltinExternal/ECMAScriptExternal.js~Map",
+    "access": null,
+    "description": "",
+    "builtinExternal": true
+  },
+  {
+    "__docId__": 53,
+    "kind": "external",
+    "name": "Set",
+    "externalLink": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Set",
+    "memberof": "BuiltinExternal/ECMAScriptExternal.js",
+    "static": true,
+    "longname": "BuiltinExternal/ECMAScriptExternal.js~Set",
+    "access": null,
+    "description": "",
+    "builtinExternal": true
+  },
+  {
+    "__docId__": 54,
+    "kind": "external",
+    "name": "WeakMap",
+    "externalLink": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/WeakMap",
+    "memberof": "BuiltinExternal/ECMAScriptExternal.js",
+    "static": true,
+    "longname": "BuiltinExternal/ECMAScriptExternal.js~WeakMap",
+    "access": null,
+    "description": "",
+    "builtinExternal": true
+  },
+  {
+    "__docId__": 55,
+    "kind": "external",
+    "name": "WeakSet",
+    "externalLink": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/WeakSet",
+    "memberof": "BuiltinExternal/ECMAScriptExternal.js",
+    "static": true,
+    "longname": "BuiltinExternal/ECMAScriptExternal.js~WeakSet",
+    "access": null,
+    "description": "",
+    "builtinExternal": true
+  },
+  {
+    "__docId__": 56,
+    "kind": "external",
+    "name": "ArrayBuffer",
+    "externalLink": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/ArrayBuffer",
+    "memberof": "BuiltinExternal/ECMAScriptExternal.js",
+    "static": true,
+    "longname": "BuiltinExternal/ECMAScriptExternal.js~ArrayBuffer",
+    "access": null,
+    "description": "",
+    "builtinExternal": true
+  },
+  {
+    "__docId__": 57,
+    "kind": "external",
+    "name": "DataView",
+    "externalLink": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/DataView",
+    "memberof": "BuiltinExternal/ECMAScriptExternal.js",
+    "static": true,
+    "longname": "BuiltinExternal/ECMAScriptExternal.js~DataView",
+    "access": null,
+    "description": "",
+    "builtinExternal": true
+  },
+  {
+    "__docId__": 58,
+    "kind": "external",
+    "name": "JSON",
+    "externalLink": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/JSON",
+    "memberof": "BuiltinExternal/ECMAScriptExternal.js",
+    "static": true,
+    "longname": "BuiltinExternal/ECMAScriptExternal.js~JSON",
+    "access": null,
+    "description": "",
+    "builtinExternal": true
+  },
+  {
+    "__docId__": 59,
+    "kind": "external",
+    "name": "Promise",
+    "externalLink": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise",
+    "memberof": "BuiltinExternal/ECMAScriptExternal.js",
+    "static": true,
+    "longname": "BuiltinExternal/ECMAScriptExternal.js~Promise",
+    "access": null,
+    "description": "",
+    "builtinExternal": true
+  },
+  {
+    "__docId__": 60,
+    "kind": "external",
+    "name": "Generator",
+    "externalLink": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Generator",
+    "memberof": "BuiltinExternal/ECMAScriptExternal.js",
+    "static": true,
+    "longname": "BuiltinExternal/ECMAScriptExternal.js~Generator",
+    "access": null,
+    "description": "",
+    "builtinExternal": true
+  },
+  {
+    "__docId__": 61,
+    "kind": "external",
+    "name": "GeneratorFunction",
+    "externalLink": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/GeneratorFunction",
+    "memberof": "BuiltinExternal/ECMAScriptExternal.js",
+    "static": true,
+    "longname": "BuiltinExternal/ECMAScriptExternal.js~GeneratorFunction",
+    "access": null,
+    "description": "",
+    "builtinExternal": true
+  },
+  {
+    "__docId__": 62,
+    "kind": "external",
+    "name": "Reflect",
+    "externalLink": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Reflect",
+    "memberof": "BuiltinExternal/ECMAScriptExternal.js",
+    "static": true,
+    "longname": "BuiltinExternal/ECMAScriptExternal.js~Reflect",
+    "access": null,
+    "description": "",
+    "builtinExternal": true
+  },
+  {
+    "__docId__": 63,
+    "kind": "external",
+    "name": "Proxy",
+    "externalLink": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Proxy",
+    "memberof": "BuiltinExternal/ECMAScriptExternal.js",
+    "static": true,
+    "longname": "BuiltinExternal/ECMAScriptExternal.js~Proxy",
+    "access": null,
+    "description": "",
+    "lineNumber": 193,
+    "builtinExternal": true
+  },
+  {
+    "__docId__": 65,
+    "kind": "external",
+    "name": "CanvasRenderingContext2D",
+    "externalLink": "https://developer.mozilla.org/en-US/docs/Web/API/CanvasRenderingContext2D",
+    "memberof": "BuiltinExternal/WebAPIExternal.js",
+    "static": true,
+    "longname": "BuiltinExternal/WebAPIExternal.js~CanvasRenderingContext2D",
+    "access": null,
+    "description": "",
+    "builtinExternal": true
+  },
+  {
+    "__docId__": 66,
+    "kind": "external",
+    "name": "DocumentFragment",
+    "externalLink": "https://developer.mozilla.org/en-US/docs/Web/API/DocumentFragment",
+    "memberof": "BuiltinExternal/WebAPIExternal.js",
+    "static": true,
+    "longname": "BuiltinExternal/WebAPIExternal.js~DocumentFragment",
+    "access": null,
+    "description": "",
+    "builtinExternal": true
+  },
+  {
+    "__docId__": 67,
+    "kind": "external",
+    "name": "Element",
+    "externalLink": "https://developer.mozilla.org/en-US/docs/Web/API/Element",
+    "memberof": "BuiltinExternal/WebAPIExternal.js",
+    "static": true,
+    "longname": "BuiltinExternal/WebAPIExternal.js~Element",
+    "access": null,
+    "description": "",
+    "builtinExternal": true
+  },
+  {
+    "__docId__": 68,
+    "kind": "external",
+    "name": "Event",
+    "externalLink": "https://developer.mozilla.org/en-US/docs/Web/API/Event",
+    "memberof": "BuiltinExternal/WebAPIExternal.js",
+    "static": true,
+    "longname": "BuiltinExternal/WebAPIExternal.js~Event",
+    "access": null,
+    "description": "",
+    "builtinExternal": true
+  },
+  {
+    "__docId__": 69,
+    "kind": "external",
+    "name": "Node",
+    "externalLink": "https://developer.mozilla.org/en-US/docs/Web/API/Node",
+    "memberof": "BuiltinExternal/WebAPIExternal.js",
+    "static": true,
+    "longname": "BuiltinExternal/WebAPIExternal.js~Node",
+    "access": null,
+    "description": "",
+    "builtinExternal": true
+  },
+  {
+    "__docId__": 70,
+    "kind": "external",
+    "name": "NodeList",
+    "externalLink": "https://developer.mozilla.org/en-US/docs/Web/API/NodeList",
+    "memberof": "BuiltinExternal/WebAPIExternal.js",
+    "static": true,
+    "longname": "BuiltinExternal/WebAPIExternal.js~NodeList",
+    "access": null,
+    "description": "",
+    "builtinExternal": true
+  },
+  {
+    "__docId__": 71,
+    "kind": "external",
+    "name": "XMLHttpRequest",
+    "externalLink": "https://developer.mozilla.org/en/docs/Web/API/XMLHttpRequest",
+    "memberof": "BuiltinExternal/WebAPIExternal.js",
+    "static": true,
+    "longname": "BuiltinExternal/WebAPIExternal.js~XMLHttpRequest",
+    "access": null,
+    "description": "",
+    "builtinExternal": true
+  },
+  {
+    "__docId__": 72,
+    "kind": "external",
+    "name": "AudioContext",
+    "externalLink": "https://developer.mozilla.org/en/docs/Web/API/AudioContext",
+    "memberof": "BuiltinExternal/WebAPIExternal.js",
+    "static": true,
+    "longname": "BuiltinExternal/WebAPIExternal.js~AudioContext",
+    "access": null,
+    "description": "",
+    "lineNumber": 34,
+    "builtinExternal": true
+  }
+]
