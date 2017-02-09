@@ -40,6 +40,24 @@ describe('ProjectSymbols', () => {
       expect(rootContext.getContextSummary().type.reference.name).toBe('AppModule');
     });
 
+    it('should invoke the getRootContext when the getLazyLoadedContexts is called', () => {
+      const original = ProjectSymbols.prototype.getRootContext;
+      let totalCalls = 0;
+      // getRootContext doesn't like spies
+      const project = new ProjectSymbols(factory, resourceResolver);
+      ProjectSymbols.prototype.getRootContext = function () {
+        if (this === project) {
+          totalCalls += 1;
+        }
+        return original.call(this);
+      };
+      project.getLazyLoadedContexts();
+      expect(totalCalls).toEqual(1);
+      project.getLazyLoadedContexts();
+      expect(totalCalls).toEqual(1);
+      ProjectSymbols.prototype.getRootContext = original;
+    });
+
     it('should return all the referenced lazy modules', () => {
       const project = new ProjectSymbols(factory, resourceResolver);
       const lazyContexts = project.getLazyLoadedContexts();

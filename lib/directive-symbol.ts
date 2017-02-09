@@ -41,7 +41,7 @@ export interface TemplateAstResult {
   templateAst?: TemplateAst[];
   directive?: CompileDirectiveMetadata;
   parseErrors?: ParseError[];
-  errors?: [{message: string}];
+  errors?: {message: string}[];
 }
 
 export class DirectiveSymbol extends Symbol {
@@ -59,13 +59,13 @@ export class DirectiveSymbol extends Symbol {
       super(program, symbol);
     }
 
-  getNonResolvedMetadata(): { annotation: Directive, metadata: CompileDirectiveMetadata } {
-    return this.metadataResolver.getNonNormalizedDirectiveMetadata(this.symbol);
+  getNonResolvedMetadata(): CompileDirectiveMetadata {
+    return this.metadataResolver.getNonNormalizedDirectiveMetadata(this.symbol).metadata;
   }
 
   // TODO: use the normalizer's cache in order to prevent repetative I/O operations
   getResolvedMetadata(): CompileTemplateMetadata {
-    const metadata = this.getNonResolvedMetadata();
+    const metadata = this.metadataResolver.getNonNormalizedDirectiveMetadata(this.symbol);
     const componentType = resolveForwardRef(this.symbol);
     const componentUrl = componentModuleUrl(this.reflector, componentType, metadata);
     const templateMetadata = metadata.metadata.template;
@@ -78,7 +78,10 @@ export class DirectiveSymbol extends Symbol {
       moduleUrl: componentUrl,
       componentType
     }));
-    currentMetadata.template = this.resourceResolver.getSync(templateMetadata.templateUrl);
+    if (templateMetadata.templateUrl) {
+      currentMetadata.template = this.resourceResolver.getSync(templateMetadata.templateUrl);
+      currentMetadata.templateUrl = templateMetadata.templateUrl;
+    }
     currentMetadata.styles = currentMetadata.styles.concat(currentMetadata.styleUrls.map(path =>
       this.resourceResolver.getSync(path)));
     return currentMetadata;
@@ -134,7 +137,8 @@ export class DirectiveSymbol extends Symbol {
           htmlAst: htmlResult.rootNodes,
           templateAst: parseResult.templateAst,
           directive: metadata,
-          parseErrors: parseResult.errors
+          parseErrors: parseResult.errors,
+          errors: []
         };
       } else {
         result = { errors: [ {message: 'Cannot find metadata for the directive'} ] };

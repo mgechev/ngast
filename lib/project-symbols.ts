@@ -37,7 +37,10 @@ export class ProjectSymbols {
     private resolver: ResourceResolver,
     private lazyModuleResolver = new BasicLazyModuleResolver()) {}
 
-  getRootContext() {
+  getRootContext(): ContextSymbols {
+    if (this.rootContext) {
+      return this.rootContext;
+    }
     const program = this.programFactory.create();
     this.rootContext = new ContextSymbols(program, this.resolver);
     return this.rootContext;
@@ -61,6 +64,6 @@ export class ProjectSymbols {
         .map(p => new ContextSymbols(this.programFactory.create([p]), this.resolver));
       return contexts.concat([].concat.apply([], contexts.map(c => c.getContextSummary()).map(discoverModules)));
     };
-    return [this.getRootContext()].concat(discoverModules(summary));
+    return [this.rootContext].concat(discoverModules(summary));
   }
 }
