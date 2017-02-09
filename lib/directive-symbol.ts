@@ -1,5 +1,5 @@
 import {Program} from 'typescript';
-import {resolveForwardRef, SchemaMetadata, Directive} from '@angular/core';
+import {SchemaMetadata, resolveForwardRef} from '@angular/core';
 import {
   StaticSymbol,
   DirectiveResolver,
@@ -30,23 +30,105 @@ import {ResourceResolver} from './resource-resolver';
 import {CssAst} from './css-parser/css-ast';
 import {parseCss} from './css-parser/parse-css';
 
+
+/**
+ * The context into which the template of given
+ * directive will be compiled.
+ *
+ * @export
+ * @interface DirectiveContext
+ */
 export interface DirectiveContext {
+
+  /**
+   * The directives that are available for the compilation
+   * of the compilation of given template.
+   *
+   * @type {CompileDirectiveSummary[]}
+   * @memberOf DirectiveContext
+   */
   directives: CompileDirectiveSummary[];
+
+  /**
+   * The pipes which are available for the compilation
+   * of the template of given target component.
+   *
+   * @type {CompilePipeSummary[]}
+   * @memberOf DirectiveContext
+   */
   pipes: CompilePipeSummary[];
+
+  /**
+   * The schemas that are used for the compilation of the template
+   * of given component.
+   *
+   * @type {SchemaMetadata[]}
+   * @memberOf DirectiveContext
+   */
   schemas: SchemaMetadata[];
 }
 
+
+/**
+ * The result of the compilation of the template of given component.
+ *
+ * @export
+ * @interface TemplateAstResult
+ */
 export interface TemplateAstResult {
-  htmlAst?: any[];
+
+  /**
+   * The root template nodes.
+   *
+   * @type {TemplateAst[]}
+   * @memberOf TemplateAstResult
+   */
   templateAst?: TemplateAst[];
-  directive?: CompileDirectiveMetadata;
+
+  /**
+   * All the parse errors.
+   *
+   * @type {ParseError[]}
+   * @memberOf TemplateAstResult
+   */
   parseErrors?: ParseError[];
+
+  /**
+   * Non-parse errors occured during compilation.
+   *
+   * @type {{message: string}[]}
+   * @memberOf TemplateAstResult
+   */
   errors?: {message: string}[];
 }
 
+
+/**
+ * This class represents the individual directives and wrapps
+ * their `StaticSymbol`s produced by the `@angular/compiler`.
+ * 
+ * @export
+ * @class DirectiveSymbol
+ * @extends {Symbol}
+ */
 export class DirectiveSymbol extends Symbol {
   private urlResolver = new UrlResolver();
 
+
+  /**
+   * Creates an instance of DirectiveSymbol.
+   * 
+   * @param {Program} program
+   * @param {StaticSymbol} symbol
+   * @param {CompileMetadataResolver} metadataResolver
+   * @param {DirectiveNormalizer} directiveNormalizer
+   * @param {DirectiveResolver} resolver
+   * @param {StaticReflector} reflector
+   * @param {ResourceResolver} resourceResolver
+   * @param {ContextSymbols} projectSymbols
+   *
+   * @memberOf DirectiveSymbol
+   */
   constructor(
     program: Program,
     symbol: StaticSymbol,
@@ -59,11 +141,33 @@ export class DirectiveSymbol extends Symbol {
       super(program, symbol);
     }
 
+
+  /**
+   * Returns the non-resolved metadata for given directive.
+   * If it is a component, this means that the external templates
+   * and styles won't be read from the drive. Also, the paths to
+   * external metadata won't be resolved.
+   *
+   * @returns {CompileDirectiveMetadata}
+   *
+   * @memberOf DirectiveSymbol
+   */
   getNonResolvedMetadata(): CompileDirectiveMetadata {
     return this.metadataResolver.getNonNormalizedDirectiveMetadata(this.symbol).metadata;
   }
 
+
   // TODO: use the normalizer's cache in order to prevent repetative I/O operations
+
+  /**
+   * Returns the normalized and resolved metadata for given directive or component.
+   * For components, all the external templates and styles will be read and
+   * set as values of the returned `CompileTemplateMetadata` properties.
+   *
+   * @returns {CompileTemplateMetadata}
+   *
+   * @memberOf DirectiveSymbol
+   */
   getResolvedMetadata(): CompileTemplateMetadata {
     const metadata = this.metadataResolver.getNonNormalizedDirectiveMetadata(this.symbol);
     const componentType = resolveForwardRef(this.symbol);
@@ -87,16 +191,40 @@ export class DirectiveSymbol extends Symbol {
     return currentMetadata;
   }
 
+
+  /**
+   * Returns the module where the given directive has been declared.
+   *
+   * @returns {(CompileNgModuleMetadata | undefined)}
+   *
+   * @memberOf DirectiveSymbol
+   */
   getModule(): CompileNgModuleMetadata | undefined {
     return this.projectSymbols
       .getAnalyzedModules().ngModuleByPipeOrDirective.get(this.symbol);
   }
 
+
+  /**
+   * Returns the ASTs of all styles of the target directive.
+   *
+   * @returns {CssAst[]}
+   *
+   * @memberOf DirectiveSymbol
+   */
   getStyleAsts(): CssAst[] {
     return this.getResolvedMetadata()
       .styles.map(s => parseCss(s));
   }
 
+  /**
+   * Returns the context into which the template of given
+   * component is going to be compiled.
+   *
+   * @returns {DirectiveContext}
+   *
+   * @memberOf DirectiveSymbol
+   */
   getDirectiveContext(): DirectiveContext {
     const analyzedModules = this.projectSymbols.getAnalyzedModules();
     let ngModule = analyzedModules.ngModuleByPipeOrDirective.get(this.symbol);
@@ -115,6 +243,14 @@ export class DirectiveSymbol extends Symbol {
     };
   }
 
+
+  /**
+   * Returns the compiled template of the target component.
+   *
+   * @returns {TemplateAstResult}
+   *
+   * @memberOf DirectiveSymbol
+   */
   getTemplateAst(): TemplateAstResult {
     let result: TemplateAstResult;
     try {
@@ -134,9 +270,7 @@ export class DirectiveSymbol extends Symbol {
         const parseResult = parser.tryParseHtml(
             htmlResult, metadata, source, directives, pipes, schemas, '');
         result = {
-          htmlAst: htmlResult.rootNodes,
           templateAst: parseResult.templateAst,
-          directive: metadata,
           parseErrors: parseResult.errors,
           errors: []
         };
@@ -149,6 +283,14 @@ export class DirectiveSymbol extends Symbol {
     return result;
   }
 
+
+  /**
+   * Returns if the target directive is a component.
+   *
+   * @returns {boolean}
+   *
+   * @memberOf DirectiveSymbol
+   */
   isComponent(): boolean {
     return !!this.getResolvedMetadata().template;
   }
