@@ -72,6 +72,12 @@ describe('DirectiveSymbol', () => {
       expect(contextSymbols.getDirectives().some(d => d.getNonResolvedMetadata().selector === '[dir]')).toBeTruthy();
     });
 
+    it('should find directive\'s ts.Node', () => {
+      const contextSymbols = new ContextSymbols(program, resourceResolver);
+      const dir = contextSymbols.getDirectives().filter(d => d.getNonResolvedMetadata().selector === '[dir]').pop();
+      expect(dir.getNode().name.text).toBe('SampleDirective');
+    });
+
     it('should work with custom pipes', () => {
       const contextSymbols = new ContextSymbols(program, resourceResolver);
       const directive = contextSymbols.getDirectives().pop();
