@@ -13,7 +13,7 @@ export class Symbol {
 
   /**
    * Creates an instance of Symbol.
-   * 
+   *
    * @param {ts.Program} _program
    * @param {StaticSymbol} _symbol
    *

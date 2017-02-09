@@ -34,6 +34,14 @@ import {
 import {PipeSymbol} from './pipe-symbol';
 import {DirectiveSymbol} from './directive-symbol';
 
+
+/**
+ * Creates a proxy which provides us access to the symbols
+ * defined in given context (could be lazy loaded module or the root module).
+ *
+ * @export
+ * @class ContextSymbols
+ */
 export class ContextSymbols {
   private metadataResolver: CompileMetadataResolver;
   private reflector: StaticReflector;
@@ -47,12 +55,29 @@ export class ContextSymbols {
   private options: AngularCompilerOptions;
   private analyzedModules: NgAnalyzedModules;
 
+
+  /**
+   * Creates an instance of ContextSymbols.
+   *
+   * @param {ts.Program} program
+   * @param {ResourceResolver} resourceResolver
+   *
+   * @memberOf ContextSymbols
+   */
   constructor(private program: ts.Program,
      private resourceResolver: ResourceResolver) {
     this.options = this.program.getCompilerOptions();
     this.init();
   }
 
+
+  /**
+   * Returns the metadata associated to this module.
+   *
+   * @returns {CompileNgModuleMetadata[]}
+   *
+   * @memberOf ContextSymbols
+   */
   getModules(): CompileNgModuleMetadata[] {
     this.validate();
     const result: CompileNgModuleMetadata[] = [];
@@ -64,6 +89,14 @@ export class ContextSymbols {
     return result;
   }
 
+
+  /**
+   * Returns all the directives available in the context.
+   *
+   * @returns {DirectiveSymbol[]}
+   *
+   * @memberOf ContextSymbols
+   */
   getDirectives(): DirectiveSymbol[] {
     return this.extractProgramSymbols()
       .filter(symbol => this.metadataResolver.isDirective(symbol))
@@ -79,12 +112,28 @@ export class ContextSymbols {
       ));
   }
 
+
+  /**
+   * Returns all the pipes available in this module.
+   * 
+   * @returns {PipeSymbol[]}
+   * 
+   * @memberOf ContextSymbols
+   */
   getPipes(): PipeSymbol[] {
     return this.extractProgramSymbols()
       .filter(v => this.metadataResolver.isPipe(v))
       .map(p => new PipeSymbol(this.program, p, this.pipeResolver, this));
   }
 
+
+  /**
+   * Returns the summary of this context.
+   *
+   * @returns {(CompileNgModuleSummary | undefined)}
+   *
+   * @memberOf ContextSymbols
+   */
   getContextSummary(): CompileNgModuleSummary | undefined {
     const module = this.getModules().pop();
     if (module) {
@@ -93,6 +142,16 @@ export class ContextSymbols {
     return undefined;
   }
 
+
+  /**
+   * Updates the program which has impact over the loaded symbols.
+   * In case the `udpate` method is called with program different from
+   * the current one, all the internal caches will be cleared.
+   *
+   * @param {ts.Program} program
+   *
+   * @memberOf ContextSymbols
+   */
   updateProgram(program: ts.Program): void {
     if (program !== this.program) {
       this.program = program;
