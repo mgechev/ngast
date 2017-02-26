@@ -50,7 +50,7 @@ describe('ContextSymbols', () => {
 
     it('should update the program', () => {
       const contextSymbols = new ContextSymbols(program, resourceResolver);
-      const spy = spyOn(ContextSymbols.prototype, 'validate');
+      const spy = spyOn(ContextSymbols.prototype as any, 'validate');
       contextSymbols.updateProgram(createProgramFromTsConfig(__dirname + '/../../test/fixture/basic/tsconfig.json'));
       expect(spy).toHaveBeenCalled();
     });
