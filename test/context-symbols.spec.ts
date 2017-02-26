@@ -17,7 +17,7 @@ describe('ContextSymbols', () => {
       const contextSymbols = new ContextSymbols(program, resourceResolver);
       const summary = contextSymbols.getContextSummary();
       expect(summary.type.reference.name).toBe('AppModule');
-      expect(summary.entryComponents[0].reference.name).toBe('MainComponent');
+      expect(summary.entryComponents[0].componentType.name).toBe('MainComponent');
       expect(summary.exportedDirectives[0].reference.name).toBe('MainComponent');
       expect(summary.modules[0].reference.name).toBe('CommonModule');
     });

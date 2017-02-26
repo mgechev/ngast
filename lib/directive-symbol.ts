@@ -20,6 +20,7 @@ import {
   CompileTemplateMetadata,
   CompileDirectiveMetadata,
   TemplateAst,
+  CompilerConfig,
   ParseError
 } from '@angular/compiler';
 
@@ -29,7 +30,6 @@ import {ResourceResolver} from './resource-resolver';
 
 import {CssAst} from './css-parser/css-ast';
 import {parseCss} from './css-parser/parse-css';
-
 
 /**
  * The context into which the template of given
@@ -263,8 +263,9 @@ export class DirectiveSymbol extends Symbol {
         const rawHtmlParser = new HtmlParser();
         const htmlParser = new I18NHtmlParser(rawHtmlParser);
         const expressionParser = new Parser(new Lexer());
-        const parser = new TemplateParser(
-            expressionParser, new DomElementSchemaRegistry(), htmlParser, undefined, []);
+        let parser: TemplateParser;
+        parser = new TemplateParser(new CompilerConfig,
+          expressionParser, new DomElementSchemaRegistry(), htmlParser, undefined, []);
         const htmlResult = htmlParser.parse(source, '');
         const { directives, pipes, schemas } = this.getDirectiveContext();
         const parseResult = parser.tryParseHtml(

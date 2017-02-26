@@ -11,13 +11,13 @@ describe('Symbol', () => {
       `
     };
     const program = createProgram(project, {});
-    const staticSymbolA = new StaticSymbol('a.ts', 'A');
+    const staticSymbolA = new StaticSymbol('a.ts', 'A', []);
     const sa = new Symbol(program, staticSymbolA);
-    const staticSymbolB = new StaticSymbol('a.ts', 'B');
+    const staticSymbolB = new StaticSymbol('a.ts', 'B', []);
     const sb = new Symbol(program, staticSymbolB);
     expect(sa.getNode().name.text).toBe('A');
     expect(sb.getNode().name.text).toBe('B');
-    const nonExistingStaticSymbol = new StaticSymbol('a.ts', 'NonExisting');
+    const nonExistingStaticSymbol = new StaticSymbol('a.ts', 'NonExisting', []);
     const nonExistingSymbol = new Symbol(program, nonExistingStaticSymbol);
     expect(nonExistingSymbol.getNode()).toBe(undefined);
   });
@@ -30,7 +30,7 @@ describe('Symbol', () => {
       `
     };
     const program = createProgram(project, {});
-    const nonExistingStaticSymbol = new StaticSymbol('a.ts', 'NonExisting');
+    const nonExistingStaticSymbol = new StaticSymbol('a.ts', 'NonExisting', []);
     const nonExistingSymbol = new Symbol(program, nonExistingStaticSymbol);
     expect(nonExistingSymbol.getNode()).toBe(undefined);
   });

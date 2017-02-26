@@ -201,7 +201,8 @@ export class ContextSymbols {
     const summaryResolver = new AotSummaryResolver({
       loadSummary(filePath: string) { return ''; },
       isSourceFile(sourceFilePath: string) { return true; },
-    }, staticSymbolCache);
+      getOutputFileName() { return ''; }
+    } as any, staticSymbolCache);
 
     const parser = new HtmlParser();
     const config = new CompilerConfig({
@@ -233,7 +234,7 @@ export class ContextSymbols {
     this.directiveNormalizer = new DirectiveNormalizer(this.resourceResolver, this.urlResolver, parser, config);
 
     this.metadataResolver = new CompileMetadataResolver(
-            ngModuleResolver, this.directiveResolver, this.pipeResolver, summaryResolver,
-            new DomElementSchemaRegistry(), this.directiveNormalizer, this.reflector);
+            new CompilerConfig(), ngModuleResolver, this.directiveResolver, this.pipeResolver, summaryResolver,
+            new DomElementSchemaRegistry(), this.directiveNormalizer, new StaticSymbolCache(), this.reflector);
   }
 }
