@@ -22,6 +22,15 @@ describe('ContextSymbols', () => {
       expect(summary.modules[0].reference.name).toBe('CommonModule');
     });
 
+    it('should return directive based on node and file name', () => {
+      const contextSymbols = new ContextSymbols(program, resourceResolver);
+      const sourceFile = program.getSourceFiles().filter(f => f.fileName.indexOf('fixture') >= 0).pop();
+      const node = (sourceFile.getSourceFile().statements[3] as any);
+      const dir = contextSymbols.getDirectiveFromNode(node, sourceFile.fileName);
+      expect(dir.isComponent()).toBeTruthy();
+      expect(dir.getNonResolvedMetadata().selector).toBe('main-component');
+    });
+
     it('should return reference to the analyzed modules', () => {
       const contextSymbols = new ContextSymbols(program, resourceResolver);
       const result = contextSymbols.getAnalyzedModules();

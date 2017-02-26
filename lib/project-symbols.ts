@@ -116,7 +116,7 @@ export class ProjectSymbols {
    * @param {ProgramFactory} programFactory
    * @param {ResourceResolver} resolver
    * @param {any} [lazyModuleResolver=new BasicLazyModuleResolver()]
-   * 
+   *
    * @memberOf ProjectSymbols
    */
   constructor(

@@ -118,9 +118,9 @@ export class ContextSymbols {
 
   /**
    * Returns all the pipes available in this module.
-   * 
+   *
    * @returns {PipeSymbol[]}
-   * 
+   *
    * @memberOf ContextSymbols
    */
   getPipes(): PipeSymbol[] {
@@ -160,6 +160,28 @@ export class ContextSymbols {
       this.program = program;
       this.validate();
     }
+  }
+
+  /**
+   * Returns directive based on `ClassDeclaration` node and a filename.
+   *
+   * @param {ts.ClassDeclaration} declaration
+   * @param {string} fileName
+   *
+   * @memberOf DirectiveSymbol
+   */
+  getDirectiveFromNode(declaration: ts.ClassDeclaration, fileName: string) {
+    const sourceFile = this.program.getSourceFile(fileName);
+    return new DirectiveSymbol(
+      this.program,
+      this.reflector.getStaticSymbol(sourceFile.fileName, declaration.name.text),
+      this.metadataResolver,
+      this.directiveNormalizer,
+      this.directiveResolver,
+      this.reflector,
+      this.resourceResolver,
+      this
+    );
   }
 
   /** @internal */
