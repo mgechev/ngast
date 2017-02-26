@@ -17,12 +17,13 @@ import {
   extractProgramSymbols,
   StaticSymbolResolver,
   StaticSymbolCache,
+  StaticSymbol,
   StaticReflector,
   createOfflineCompileUrlResolver,
   analyzeNgModules,
   NgAnalyzedModules,
-  CompileNgModuleMetadata,
-  CompileNgModuleSummary
+  CompileNgModuleSummary,
+  CompileNgModuleMetadata
 } from '@angular/compiler';
 
 import {
@@ -80,12 +81,14 @@ export class ContextSymbols {
    */
   getModules(): CompileNgModuleMetadata[] {
     this.validate();
-    const result: CompileNgModuleMetadata[] = [];
+    const resultMap: Map<StaticSymbol, CompileNgModuleMetadata> = new Map();
     this.getAnalyzedModules()
       .ngModuleByPipeOrDirective
       .forEach((m, s) => {
-        result.push(m);
+        resultMap.set(m.type.reference, m);
       });
+    const result: CompileNgModuleMetadata[] = [];
+    resultMap.forEach(v => result.push(v));
     return result;
   }
 

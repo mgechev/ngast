@@ -54,6 +54,19 @@ describe('ContextSymbols', () => {
       contextSymbols.updateProgram(createProgramFromTsConfig(__dirname + '/../../test/fixture/basic/tsconfig.json'));
       expect(spy).toHaveBeenCalled();
     });
+
+    it('should not return duplicate modules', () => {
+      const contextSymbols = new ContextSymbols(program, resourceResolver);
+      const modules = contextSymbols.getModules();
+      const modulesMap = {};
+      modules.forEach(m => {
+        const n = m.type.reference.name;
+        modulesMap[n] = modulesMap[n] || 0;
+        modulesMap[n] += 1;
+        expect(modulesMap[n]).toBe(1);
+      });
+      contextSymbols.updateProgram(createProgramFromTsConfig(__dirname + '/../../test/fixture/basic/tsconfig.json'));
+    });
   });
 
   describe('routing project', () => {
