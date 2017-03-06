@@ -35,9 +35,6 @@ import {
 import {PipeSymbol} from './pipe-symbol';
 import {DirectiveSymbol} from './directive-symbol';
 
-const DEFAULT_GEN = '.';
-const DEFAULT_BASE = '.';
-
 /**
  * Creates a proxy which provides us access to the symbols
  * defined in given context (could be lazy loaded module or the root module).
@@ -239,9 +236,10 @@ export class ContextSymbols {
       useJit: false
     });
 
-    this.options.baseUrl = this.options.baseUrl || DEFAULT_BASE;
-    this.options.basePath = this.options.basePath || DEFAULT_BASE;
-    this.options.genDir = this.options.genDir || DEFAULT_GEN;
+    const defaultDir = this.program.getCurrentDirectory();
+    this.options.baseUrl = defaultDir;
+    this.options.basePath = defaultDir;
+    this.options.genDir = defaultDir;
     this.staticResolverHost = new CompilerHost(this.program, this.options, new NodeCompilerHostContext());
 
     this.staticSymbolResolver = new StaticSymbolResolver(
