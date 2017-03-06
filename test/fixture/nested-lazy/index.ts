@@ -4,8 +4,10 @@ import {CommonModule} from '@angular/common';
 import {RouterModule} from '@angular/router';
 import {RoutingComponent} from './regular';
 
+const selector = 'main-' + 'component';
+
 @Component({
-  selector: 'main-component',
+  selector,
   template: '<div *ngIf="visible">Hello world</div>'
 })
 export class MainComponent {
