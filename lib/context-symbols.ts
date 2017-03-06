@@ -237,9 +237,9 @@ export class ContextSymbols {
     });
 
     const defaultDir = this.program.getCurrentDirectory();
-    this.options.baseUrl = defaultDir;
-    this.options.basePath = defaultDir;
-    this.options.genDir = defaultDir;
+    this.options.baseUrl = this.options.baseUrl || defaultDir;
+    this.options.basePath = this.options.basePath || defaultDir;
+    this.options.genDir = this.options.genDir || defaultDir;
     this.staticResolverHost = new CompilerHost(this.program, this.options, new NodeCompilerHostContext());
 
     this.staticSymbolResolver = new StaticSymbolResolver(
