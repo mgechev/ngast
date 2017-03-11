@@ -22,7 +22,7 @@ export class PipeSymbol extends Symbol {
    * @param {StaticSymbol} symbol
    * @param {PipeResolver} resolver
    * @param {ContextSymbols} projectSymbols
-   * 
+   *
    * @memberOf PipeSymbol
    */
   constructor(

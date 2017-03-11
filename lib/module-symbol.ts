@@ -15,6 +15,7 @@ import { Symbol } from './symbol';
 import { DirectiveSymbol } from './directive-symbol';
 import { PipeSymbol } from './pipe-symbol';
 import { CompileNgModuleSummary } from '@angular/compiler';
+import { ProviderSymbol } from './provider-symbol';
 
 export class ModuleSymbol extends Symbol {
   private module: CompileNgModuleMetadata;
@@ -59,6 +60,12 @@ export class ModuleSymbol extends Symbol {
 
   getExportedModules() {
     return this.getWrappedModules(this.module.exportedModules);
+  }
+
+  getProviders() {
+    return this.module.providers.map(p => {
+      return new ProviderSymbol(this._program, p, this.metadataResolver);
+    });
   }
 
   private getWrappedModules(modules: CompileNgModuleSummary[]) {
