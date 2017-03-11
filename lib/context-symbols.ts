@@ -34,6 +34,7 @@ import {
 
 import {PipeSymbol} from './pipe-symbol';
 import {DirectiveSymbol} from './directive-symbol';
+import { ModuleSymbol } from './module-symbol';
 
 /**
  * Creates a proxy which provides us access to the symbols
@@ -74,11 +75,11 @@ export class ContextSymbols {
   /**
    * Returns the metadata associated to this module.
    *
-   * @returns {CompileNgModuleMetadata[]}
+   * @returns {ModuleSymbol[]}
    *
    * @memberOf ContextSymbols
    */
-  getModules(): CompileNgModuleMetadata[] {
+  getModules(): ModuleSymbol[] {
     this.validate();
     const resultMap: Map<StaticSymbol, CompileNgModuleMetadata> = new Map();
     this.getAnalyzedModules()
@@ -86,8 +87,20 @@ export class ContextSymbols {
       .forEach((m, s) => {
         resultMap.set(m.type.reference, m);
       });
-    const result: CompileNgModuleMetadata[] = [];
-    resultMap.forEach(v => result.push(v));
+    const result: ModuleSymbol[] = [];
+    resultMap.forEach(v => result.push(
+      new ModuleSymbol(
+        this.program,
+        v,
+        this.metadataResolver,
+        this.directiveNormalizer,
+        this.directiveResolver,
+        this.pipeResolver,
+        this.reflector,
+        this.resourceResolver,
+        this
+      )
+    ));
     return result;
   }
 
@@ -139,7 +152,7 @@ export class ContextSymbols {
   getContextSummary(): CompileNgModuleSummary | undefined {
     const module = this.getModules().pop();
     if (module) {
-      return this.metadataResolver.getNgModuleSummary(module.type.reference);
+      return this.metadataResolver.getNgModuleSummary(module.symbol);
     }
     return undefined;
   }

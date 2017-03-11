@@ -48,7 +48,7 @@ describe('ContextSymbols', () => {
     it('should return set of all modules', () => {
       const contextSymbols = new ContextSymbols(program, resourceResolver);
       const result = contextSymbols.getModules();
-      expect(result.some(m => m.type.reference.name === 'AppModule')).toBeTruthy();
+      expect(result.some(m => m.symbol.name === 'AppModule')).toBeTruthy();
     });
 
     it('should return set of pipes', () => {
@@ -69,7 +69,7 @@ describe('ContextSymbols', () => {
       const modules = contextSymbols.getModules();
       const modulesMap = {};
       modules.forEach(m => {
-        const n = m.type.reference.name;
+        const n = m.symbol.name;
         modulesMap[n] = modulesMap[n] || 0;
         modulesMap[n] += 1;
         expect(modulesMap[n]).toBe(1);
