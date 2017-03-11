@@ -16,7 +16,7 @@ export class ProviderSymbol extends Symbol {
   }
 
   getDependencies() {
-    return this.provider.deps.map(d => {
+    return (this.provider.deps || []).map(d => {
       const meta = new ProviderMeta(d.token.identifier.reference, d);
       return new ProviderSymbol(
         this._program,
