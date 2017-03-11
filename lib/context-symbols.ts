@@ -91,7 +91,7 @@ export class ContextSymbols {
     resultMap.forEach(v => result.push(
       new ModuleSymbol(
         this.program,
-        v,
+        v.type.reference,
         this.metadataResolver,
         this.directiveNormalizer,
         this.directiveResolver,
