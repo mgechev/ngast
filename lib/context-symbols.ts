@@ -243,9 +243,7 @@ export class ContextSymbols {
 
     const parser = new HtmlParser();
     const config = new CompilerConfig({
-      genDebugInfo: false,
       defaultEncapsulation: ViewEncapsulation.Emulated,
-      logBindingUpdate: false,
       useJit: false
     });
 
