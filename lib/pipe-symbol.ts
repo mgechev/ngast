@@ -1,9 +1,10 @@
 import {Program} from 'typescript';
 import {resolveForwardRef, Pipe} from '@angular/core';
-import {StaticSymbol, PipeResolver, CompileNgModuleMetadata} from '@angular/compiler';
+import { StaticSymbol, PipeResolver, CompileNgModuleMetadata, CompileMetadataResolver, ProviderMeta } from '@angular/compiler';
 
 import {ContextSymbols} from './context-symbols';
 import {Symbol} from './symbol';
+import { ProviderSymbol } from './provider-symbol';
 
 
 /**
@@ -29,6 +30,7 @@ export class PipeSymbol extends Symbol {
     program: Program,
     symbol: StaticSymbol,
     private resolver: PipeResolver,
+    private metadataResolver: CompileMetadataResolver,
     private projectSymbols: ContextSymbols
   ) {
     super(program, symbol);
@@ -57,5 +59,21 @@ export class PipeSymbol extends Symbol {
    */
   getMetadata(): Pipe {
     return this.resolver.resolve(resolveForwardRef(this.symbol));
+  }
+
+  getDependencies() {
+    const summary = this.metadataResolver.getInjectableSummary(this.symbol);
+    if (!summary) {
+      return [];
+    } else {
+      return (summary.type.diDeps || []).map(d => {
+        const meta = new ProviderMeta(d.token.identifier.reference, d);
+        return new ProviderSymbol(
+          this._program,
+          this.metadataResolver.getProviderMetadata(meta),
+          this.metadataResolver
+        );
+      });
+    }
   }
 }

@@ -64,7 +64,7 @@ export class ModuleSymbol extends Symbol {
 
   getProviders() {
     return this.module.providers.map(p => {
-      return new ProviderSymbol(this._program, p, this.metadataResolver);
+      return new ProviderSymbol(this._program, p.token.identifier.reference, this.metadataResolver);
     });
   }
 
@@ -90,6 +90,7 @@ export class ModuleSymbol extends Symbol {
         this._program,
         i.reference,
         this.pipeResolver,
+        this.metadataResolver,
         this.projectSymbols
       );
     });

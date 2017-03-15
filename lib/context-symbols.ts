@@ -138,7 +138,7 @@ export class ContextSymbols {
   getPipes(): PipeSymbol[] {
     return this.extractProgramSymbols()
       .filter(v => this.metadataResolver.isPipe(v))
-      .map(p => new PipeSymbol(this.program, p, this.pipeResolver, this));
+      .map(p => new PipeSymbol(this.program, p, this.pipeResolver, this.metadataResolver, this));
   }
 
 

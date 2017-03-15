@@ -25,11 +25,13 @@ import {
 } from '@angular/compiler';
 
 import {ContextSymbols} from './context-symbols';
-import {Symbol} from './symbol';
+import { Symbol } from './symbol';
 import {ResourceResolver} from './resource-resolver';
 
 import {CssAst} from './css-parser/css-ast';
 import {parseCss} from './css-parser/parse-css';
+import { ProviderSymbol } from './provider-symbol';
+import { ProviderMeta } from '@angular/compiler';
 
 /**
  * The context into which the template of given
@@ -284,6 +286,43 @@ export class DirectiveSymbol extends Symbol {
     return result;
   }
 
+  getDependencies() {
+    const summary = this.metadataResolver.getInjectableSummary(this.symbol);
+    if (!summary) {
+      return [];
+    } else {
+      return (summary.type.diDeps || []).map(d => {
+        const meta = new ProviderMeta(d.token.identifier.reference, d);
+        return new ProviderSymbol(
+          this._program,
+          this.metadataResolver.getProviderMetadata(meta),
+          this.metadataResolver
+        );
+      });
+    }
+  }
+
+  // getProviders() {
+  //   return (this.getNonResolvedMetadata().providers || []).map(d => {
+  //     const meta = new ProviderMeta(d.token.identifier.reference, d);
+  //     return new ProviderSymbol(
+  //       this._program,
+  //       this.metadataResolver.getProviderMetadata(meta),
+  //       this.metadataResolver
+  //     );
+  //   });
+  // }
+
+  // getViewProviders() {
+  //   return (this.getNonResolvedMetadata().viewProviders || []).map(d => {
+  //     const meta = new ProviderMeta(d.token.identifier.reference, d);
+  //     return new ProviderSymbol(
+  //       this._program,
+  //       this.metadataResolver.getProviderMetadata(meta),
+  //       this.metadataResolver
+  //     );
+  //   });
+  // }
 
   /**
    * Returns if the target directive is a component.

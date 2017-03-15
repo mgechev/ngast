@@ -1,14 +1,16 @@
-import {NgModule, Component, Directive, Pipe} from '@angular/core';
-import {BrowserModule} from '@angular/platform-browser';
-import {CommonModule} from '@angular/common';
-import {RouterModule} from '@angular/router';
-import {RoutingComponent} from './regular';
+import { NgModule, Component, Directive, Pipe, Renderer } from '@angular/core';
+import { BrowserModule } from '@angular/platform-browser';
+import { CommonModule } from '@angular/common';
+import { RouterModule } from '@angular/router';
+import { RoutingComponent } from './regular';
 
 @Directive({ selector: '[dir]' })
 export class SampleDirective {}
 
 @Pipe({ name: 'samplePipe', pure: false })
-export class SamplePipe {}
+export class SamplePipe {
+  constructor(private renderer: Renderer) {}
+}
 
 @Component({
   selector: 'main-component',

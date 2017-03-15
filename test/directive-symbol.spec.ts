@@ -116,4 +116,39 @@ describe('DirectiveSymbol', () => {
       expect(metadata.styleUrls.length).toBe(2);
     });
   });
+
+  describe('directive deps', () => {
+    let program: ts.Program;
+
+    beforeEach(() => {
+      program = createProgramFromTsConfig(__dirname + '/../../test/fixture/directive-deps/tsconfig.json');
+    });
+
+    it('should find directive dependencies', () => {
+      const contextSymbols = new ContextSymbols(program, resourceResolver);
+      const directive = contextSymbols.getDirectives().pop();
+      expect(directive.getDependencies()[0].symbol.name).toBe('Renderer');
+    });
+
+    it('should work with directive with no deps', () => {
+      const currentProgram = createProgramFromTsConfig(__dirname + '/../../test/fixture/basic/tsconfig.json');
+      const contextSymbols = new ContextSymbols(currentProgram, resourceResolver);
+      const directive = contextSymbols.getDirectives().pop();
+      expect(directive.getDependencies().length).toBe(0);
+    });
+
+    // it('should work with directive with no providers', () => {
+    //   const currentProgram = createProgramFromTsConfig(__dirname + '/../../test/fixture/basic/tsconfig.json');
+    //   const contextSymbols = new ContextSymbols(currentProgram, resourceResolver);
+    //   const directive = contextSymbols.getDirectives().pop();
+    //   expect(directive.getProviders().length).toBe(0);
+    // });
+
+    // it('should find directive providers and view providers', () => {
+    //   const contextSymbols = new ContextSymbols(program, resourceResolver);
+    //   const directive = contextSymbols.getDirectives().pop();
+    //   expect(directive.getProviders()[0].symbol.name).toBe('SampleProvider');
+    //   expect(directive.getViewProviders()[0].symbol.name).toBe('SampleViewProvider');
+    // });
+  });
 });

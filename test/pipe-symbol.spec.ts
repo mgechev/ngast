@@ -23,4 +23,10 @@ describe('DirectiveSymbol', () => {
     const pipe = contextSymbols.getPipes().pop();
     expect(pipe.getNode().name.text).toBe('SamplePipe');
   });
+
+  it('should provide access to the directive\'s metadata', () => {
+    const contextSymbols = new ContextSymbols(program, resourceResolver);
+    const pipe = contextSymbols.getPipes().pop();
+    expect(pipe.getDependencies()[0].symbol.name).toBe('Renderer');
+  });
 });
