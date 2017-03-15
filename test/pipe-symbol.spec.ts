@@ -4,14 +4,14 @@ import {ContextSymbols} from '../';
 import {createProgramFromTsConfig} from './utils/create-program';
 import {resourceResolver} from './utils/resource-resolver';
 
-describe('DirectiveSymbol', () => {
+describe('PipeSymbol', () => {
   let program: ts.Program;
 
   beforeEach(() => {
     program = createProgramFromTsConfig(__dirname + '/../../test/fixture/routing/tsconfig.json');
   });
 
-  it('should provide access to the directive\'s metadata', () => {
+  it('should provide access to the pipe\'s metadata', () => {
     const contextSymbols = new ContextSymbols(program, resourceResolver);
     const pipe = contextSymbols.getPipes().pop().getMetadata();
     expect(pipe.name).toBe('samplePipe');
@@ -24,7 +24,7 @@ describe('DirectiveSymbol', () => {
     expect(pipe.getNode().name.text).toBe('SamplePipe');
   });
 
-  it('should provide access to the directive\'s metadata', () => {
+  it('should provide access to the pipe\'s metadata', () => {
     const contextSymbols = new ContextSymbols(program, resourceResolver);
     const pipe = contextSymbols.getPipes().pop();
     expect(pipe.getDependencies()[0].symbol.name).toBe('Renderer');

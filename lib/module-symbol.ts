@@ -64,7 +64,7 @@ export class ModuleSymbol extends Symbol {
 
   getProviders() {
     return this.module.providers.map(p => {
-      return new ProviderSymbol(this._program, p.token.identifier.reference, this.metadataResolver);
+      return new ProviderSymbol(this._program, p, this.metadataResolver);
     });
   }
 

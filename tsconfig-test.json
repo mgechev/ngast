@@ -15,6 +15,7 @@
     "test/context-symbols.spec.ts",
     "test/directive-symbol.spec.ts",
     "test/pipe-symbol.spec.ts",
+    "test/provider-symbol.spec.ts",
     "test/project-symbols.spec.ts"
   ],
   "angularCompilerOptions": {
