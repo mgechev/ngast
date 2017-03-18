@@ -2,7 +2,7 @@ import * as ts from 'typescript';
 
 import {ResourceResolver} from './resource-resolver';
 
-import {ViewEncapsulation} from '@angular/core';
+import {ViewEncapsulation, ɵConsole} from '@angular/core';
 import {
   CompileMetadataResolver,
   NgModuleResolver,
@@ -274,6 +274,7 @@ export class ContextSymbols {
 
     this.metadataResolver = new CompileMetadataResolver(
             new CompilerConfig(), ngModuleResolver, this.directiveResolver, this.pipeResolver, summaryResolver,
-            new DomElementSchemaRegistry(), this.directiveNormalizer, new StaticSymbolCache(), this.reflector);
+            new DomElementSchemaRegistry(), this.directiveNormalizer, new ɵConsole(),
+            new StaticSymbolCache(), this.reflector);
   }
 }

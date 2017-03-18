@@ -181,6 +181,7 @@ export class DirectiveSymbol extends Symbol {
       templateMetadata.template = this.resourceResolver.getSync(templateMetadata.templateUrl);
     }
     const currentMetadata = this.directiveNormalizer.normalizeTemplateSync(Object.assign(templateMetadata, {
+      ngModuleType: this.getModule().type.reference,
       moduleUrl: componentUrl,
       componentType
     }));
