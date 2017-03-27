@@ -33,7 +33,7 @@
     "importPath": "ngast/dist-docs/lib/context-symbols.js",
     "importStyle": "{ContextSymbols}",
     "description": "Creates a proxy which provides us access to the symbols\ndefined in given context (could be lazy loaded module or the root module).",
-    "lineNumber": 13,
+    "lineNumber": 14,
     "unknown": [
       {
         "tagName": "@class",
@@ -53,7 +53,7 @@
     "longname": "dist-docs/lib/context-symbols.js~ContextSymbols#constructor",
     "access": null,
     "description": "Creates an instance of ContextSymbols.",
-    "lineNumber": 22,
+    "lineNumber": 23,
     "unknown": [
       {
         "tagName": "@memberOf",
@@ -92,7 +92,7 @@
     "longname": "dist-docs/lib/context-symbols.js~ContextSymbols#program",
     "access": null,
     "description": null,
-    "lineNumber": 23,
+    "lineNumber": 24,
     "undocument": true,
     "unknown": [
       {
@@ -115,7 +115,7 @@
     "longname": "dist-docs/lib/context-symbols.js~ContextSymbols#resourceResolver",
     "access": null,
     "description": null,
-    "lineNumber": 24,
+    "lineNumber": 25,
     "undocument": true,
     "unknown": [
       {
@@ -138,7 +138,7 @@
     "longname": "dist-docs/lib/context-symbols.js~ContextSymbols#options",
     "access": null,
     "description": null,
-    "lineNumber": 25,
+    "lineNumber": 26,
     "undocument": true,
     "unknown": [
       {
@@ -163,11 +163,11 @@
     "longname": "dist-docs/lib/context-symbols.js~ContextSymbols#getModules",
     "access": null,
     "description": "Returns the metadata associated to this module.",
-    "lineNumber": 35,
+    "lineNumber": 36,
     "unknown": [
       {
         "tagName": "@returns",
-        "tagValue": "{CompileNgModuleMetadata[]}"
+        "tagValue": "{ModuleSymbol[]}"
       },
       {
         "tagName": "@memberOf",
@@ -178,7 +178,7 @@
     "return": {
       "nullable": null,
       "types": [
-        "CompileNgModuleMetadata[]"
+        "ModuleSymbol[]"
       ],
       "spread": false,
       "description": ""
@@ -195,7 +195,7 @@
     "longname": "dist-docs/lib/context-symbols.js~ContextSymbols#getDirectives",
     "access": null,
     "description": "Returns all the directives available in the context.",
-    "lineNumber": 52,
+    "lineNumber": 55,
     "unknown": [
       {
         "tagName": "@returns",
@@ -227,7 +227,7 @@
     "longname": "dist-docs/lib/context-symbols.js~ContextSymbols#getPipes",
     "access": null,
     "description": "Returns all the pipes available in this module.",
-    "lineNumber": 64,
+    "lineNumber": 67,
     "unknown": [
       {
         "tagName": "@returns",
@@ -259,7 +259,7 @@
     "longname": "dist-docs/lib/context-symbols.js~ContextSymbols#getContextSummary",
     "access": null,
     "description": "Returns the summary of this context.",
-    "lineNumber": 76,
+    "lineNumber": 79,
     "unknown": [
       {
         "tagName": "@returns",
@@ -292,7 +292,7 @@
     "longname": "dist-docs/lib/context-symbols.js~ContextSymbols#updateProgram",
     "access": null,
     "description": "Updates the program which has impact over the loaded symbols.\nIn case the `udpate` method is called with program different from\nthe current one, all the internal caches will be cleared.",
-    "lineNumber": 92,
+    "lineNumber": 95,
     "unknown": [
       {
         "tagName": "@memberOf",
@@ -321,7 +321,7 @@
     "longname": "dist-docs/lib/context-symbols.js~ContextSymbols#program",
     "access": null,
     "description": null,
-    "lineNumber": 94,
+    "lineNumber": 97,
     "undocument": true,
     "unknown": [
       {
@@ -338,6 +338,52 @@
   {
     "__docId__": 13,
     "kind": "method",
+    "name": "getDirectiveFromNode",
+    "memberof": "dist-docs/lib/context-symbols.js~ContextSymbols",
+    "generator": false,
+    "async": false,
+    "static": false,
+    "longname": "dist-docs/lib/context-symbols.js~ContextSymbols#getDirectiveFromNode",
+    "access": null,
+    "description": "Returns directive based on `ClassDeclaration` node and a filename.",
+    "lineNumber": 109,
+    "unknown": [
+      {
+        "tagName": "@memberOf",
+        "tagValue": "DirectiveSymbol"
+      }
+    ],
+    "params": [
+      {
+        "nullable": null,
+        "types": [
+          "ts.ClassDeclaration"
+        ],
+        "spread": false,
+        "optional": false,
+        "name": "declaration",
+        "description": ""
+      },
+      {
+        "nullable": null,
+        "types": [
+          "string"
+        ],
+        "spread": false,
+        "optional": false,
+        "name": "fileName",
+        "description": ""
+      }
+    ],
+    "return": {
+      "types": [
+        "*"
+      ]
+    }
+  },
+  {
+    "__docId__": 14,
+    "kind": "method",
     "name": "getAnalyzedModules",
     "memberof": "dist-docs/lib/context-symbols.js~ContextSymbols",
     "generator": false,
@@ -346,7 +392,7 @@
     "longname": "dist-docs/lib/context-symbols.js~ContextSymbols#getAnalyzedModules",
     "access": null,
     "description": null,
-    "lineNumber": 99,
+    "lineNumber": 114,
     "unknown": [
       {
         "tagName": "@internal",
@@ -361,7 +407,7 @@
     }
   },
   {
-    "__docId__": 14,
+    "__docId__": 15,
     "kind": "method",
     "name": "extractProgramSymbols",
     "memberof": "dist-docs/lib/context-symbols.js~ContextSymbols",
@@ -371,7 +417,7 @@
     "longname": "dist-docs/lib/context-symbols.js~ContextSymbols#extractProgramSymbols",
     "access": null,
     "description": null,
-    "lineNumber": 109,
+    "lineNumber": 124,
     "undocument": true,
     "unknown": [
       {
@@ -387,7 +433,7 @@
     }
   },
   {
-    "__docId__": 15,
+    "__docId__": 16,
     "kind": "method",
     "name": "validate",
     "memberof": "dist-docs/lib/context-symbols.js~ContextSymbols",
@@ -397,7 +443,7 @@
     "longname": "dist-docs/lib/context-symbols.js~ContextSymbols#validate",
     "access": null,
     "description": null,
-    "lineNumber": 114,
+    "lineNumber": 129,
     "undocument": true,
     "unknown": [
       {
@@ -408,7 +454,7 @@
     "params": []
   },
   {
-    "__docId__": 16,
+    "__docId__": 17,
     "kind": "member",
     "name": "lastProgram",
     "memberof": "dist-docs/lib/context-symbols.js~ContextSymbols",
@@ -416,7 +462,7 @@
     "longname": "dist-docs/lib/context-symbols.js~ContextSymbols#lastProgram",
     "access": null,
     "description": null,
-    "lineNumber": 118,
+    "lineNumber": 133,
     "undocument": true,
     "unknown": [
       {
@@ -431,7 +477,7 @@
     }
   },
   {
-    "__docId__": 17,
+    "__docId__": 18,
     "kind": "method",
     "name": "clearCaches",
     "memberof": "dist-docs/lib/context-symbols.js~ContextSymbols",
@@ -441,7 +487,7 @@
     "longname": "dist-docs/lib/context-symbols.js~ContextSymbols#clearCaches",
     "access": null,
     "description": null,
-    "lineNumber": 122,
+    "lineNumber": 137,
     "undocument": true,
     "unknown": [
       {
@@ -452,7 +498,7 @@
     "params": []
   },
   {
-    "__docId__": 18,
+    "__docId__": 19,
     "kind": "method",
     "name": "init",
     "memberof": "dist-docs/lib/context-symbols.js~ContextSymbols",
@@ -462,7 +508,7 @@
     "longname": "dist-docs/lib/context-symbols.js~ContextSymbols#init",
     "access": null,
     "description": null,
-    "lineNumber": 126,
+    "lineNumber": 141,
     "undocument": true,
     "unknown": [
       {
@@ -473,12 +519,12 @@
     "params": [],
     "return": {
       "types": [
-        "boolean"
+        "string"
       ]
     }
   },
   {
-    "__docId__": 19,
+    "__docId__": 20,
     "kind": "member",
     "name": "staticResolverHost",
     "memberof": "dist-docs/lib/context-symbols.js~ContextSymbols",
@@ -486,30 +532,7 @@
     "longname": "dist-docs/lib/context-symbols.js~ContextSymbols#staticResolverHost",
     "access": null,
     "description": null,
-    "lineNumber": 139,
-    "undocument": true,
-    "unknown": [
-      {
-        "tagName": "@_undocument",
-        "tagValue": ""
-      }
-    ],
-    "type": {
-      "types": [
-        "*"
-      ]
-    }
-  },
-  {
-    "__docId__": 20,
-    "kind": "member",
-    "name": "staticSymbolResolver",
-    "memberof": "dist-docs/lib/context-symbols.js~ContextSymbols",
-    "static": false,
-    "longname": "dist-docs/lib/context-symbols.js~ContextSymbols#staticSymbolResolver",
-    "access": null,
-    "description": null,
-    "lineNumber": 140,
+    "lineNumber": 157,
     "undocument": true,
     "unknown": [
       {
@@ -526,13 +549,13 @@
   {
     "__docId__": 21,
     "kind": "member",
-    "name": "reflector",
+    "name": "staticSymbolResolver",
     "memberof": "dist-docs/lib/context-symbols.js~ContextSymbols",
     "static": false,
-    "longname": "dist-docs/lib/context-symbols.js~ContextSymbols#reflector",
+    "longname": "dist-docs/lib/context-symbols.js~ContextSymbols#staticSymbolResolver",
     "access": null,
     "description": null,
-    "lineNumber": 145,
+    "lineNumber": 158,
     "undocument": true,
     "unknown": [
       {
@@ -549,13 +572,13 @@
   {
     "__docId__": 22,
     "kind": "member",
-    "name": "directiveResolver",
+    "name": "reflector",
     "memberof": "dist-docs/lib/context-symbols.js~ContextSymbols",
     "static": false,
-    "longname": "dist-docs/lib/context-symbols.js~ContextSymbols#directiveResolver",
+    "longname": "dist-docs/lib/context-symbols.js~ContextSymbols#reflector",
     "access": null,
     "description": null,
-    "lineNumber": 149,
+    "lineNumber": 163,
     "undocument": true,
     "unknown": [
       {
@@ -572,13 +595,13 @@
   {
     "__docId__": 23,
     "kind": "member",
-    "name": "pipeResolver",
+    "name": "directiveResolver",
     "memberof": "dist-docs/lib/context-symbols.js~ContextSymbols",
     "static": false,
-    "longname": "dist-docs/lib/context-symbols.js~ContextSymbols#pipeResolver",
+    "longname": "dist-docs/lib/context-symbols.js~ContextSymbols#directiveResolver",
     "access": null,
     "description": null,
-    "lineNumber": 150,
+    "lineNumber": 167,
     "undocument": true,
     "unknown": [
       {
@@ -595,13 +618,13 @@
   {
     "__docId__": 24,
     "kind": "member",
-    "name": "urlResolver",
+    "name": "pipeResolver",
     "memberof": "dist-docs/lib/context-symbols.js~ContextSymbols",
     "static": false,
-    "longname": "dist-docs/lib/context-symbols.js~ContextSymbols#urlResolver",
+    "longname": "dist-docs/lib/context-symbols.js~ContextSymbols#pipeResolver",
     "access": null,
     "description": null,
-    "lineNumber": 151,
+    "lineNumber": 168,
     "undocument": true,
     "unknown": [
       {
@@ -618,13 +641,13 @@
   {
     "__docId__": 25,
     "kind": "member",
-    "name": "directiveNormalizer",
+    "name": "urlResolver",
     "memberof": "dist-docs/lib/context-symbols.js~ContextSymbols",
     "static": false,
-    "longname": "dist-docs/lib/context-symbols.js~ContextSymbols#directiveNormalizer",
+    "longname": "dist-docs/lib/context-symbols.js~ContextSymbols#urlResolver",
     "access": null,
     "description": null,
-    "lineNumber": 152,
+    "lineNumber": 169,
     "undocument": true,
     "unknown": [
       {
@@ -641,13 +664,13 @@
   {
     "__docId__": 26,
     "kind": "member",
-    "name": "metadataResolver",
+    "name": "directiveNormalizer",
     "memberof": "dist-docs/lib/context-symbols.js~ContextSymbols",
     "static": false,
-    "longname": "dist-docs/lib/context-symbols.js~ContextSymbols#metadataResolver",
+    "longname": "dist-docs/lib/context-symbols.js~ContextSymbols#directiveNormalizer",
     "access": null,
     "description": null,
-    "lineNumber": 153,
+    "lineNumber": 170,
     "undocument": true,
     "unknown": [
       {
@@ -663,6 +686,29 @@
   },
   {
     "__docId__": 27,
+    "kind": "member",
+    "name": "metadataResolver",
+    "memberof": "dist-docs/lib/context-symbols.js~ContextSymbols",
+    "static": false,
+    "longname": "dist-docs/lib/context-symbols.js~ContextSymbols#metadataResolver",
+    "access": null,
+    "description": null,
+    "lineNumber": 171,
+    "undocument": true,
+    "unknown": [
+      {
+        "tagName": "@_undocument",
+        "tagValue": ""
+      }
+    ],
+    "type": {
+      "types": [
+        "*"
+      ]
+    }
+  },
+  {
+    "__docId__": 28,
     "kind": "file",
     "name": "dist-docs/lib/directive-symbol.js",
     "content": "",
@@ -673,7 +719,7 @@
     "lineNumber": 1
   },
   {
-    "__docId__": 28,
+    "__docId__": 29,
     "kind": "class",
     "name": "DirectiveSymbol",
     "memberof": "dist-docs/lib/directive-symbol.js",
@@ -684,7 +730,7 @@
     "importPath": "ngast/dist-docs/lib/directive-symbol.js",
     "importStyle": "{DirectiveSymbol}",
     "description": "This class represents the individual directives and wrapps\ntheir `StaticSymbol`s produced by the `@angular/compiler`.",
-    "lineNumber": 13,
+    "lineNumber": 15,
     "unknown": [
       {
         "tagName": "@class",
@@ -697,7 +743,7 @@
     ]
   },
   {
-    "__docId__": 29,
+    "__docId__": 30,
     "kind": "constructor",
     "name": "constructor",
     "memberof": "dist-docs/lib/directive-symbol.js~DirectiveSymbol",
@@ -707,7 +753,7 @@
     "longname": "dist-docs/lib/directive-symbol.js~DirectiveSymbol#constructor",
     "access": null,
     "description": "Creates an instance of DirectiveSymbol.",
-    "lineNumber": 28,
+    "lineNumber": 30,
     "unknown": [
       {
         "tagName": "@memberOf",
@@ -798,58 +844,12 @@
     ]
   },
   {
-    "__docId__": 30,
+    "__docId__": 31,
     "kind": "member",
     "name": "metadataResolver",
     "memberof": "dist-docs/lib/directive-symbol.js~DirectiveSymbol",
     "static": false,
     "longname": "dist-docs/lib/directive-symbol.js~DirectiveSymbol#metadataResolver",
-    "access": null,
-    "description": null,
-    "lineNumber": 30,
-    "undocument": true,
-    "unknown": [
-      {
-        "tagName": "@_undocument",
-        "tagValue": ""
-      }
-    ],
-    "type": {
-      "types": [
-        "*"
-      ]
-    }
-  },
-  {
-    "__docId__": 31,
-    "kind": "member",
-    "name": "directiveNormalizer",
-    "memberof": "dist-docs/lib/directive-symbol.js~DirectiveSymbol",
-    "static": false,
-    "longname": "dist-docs/lib/directive-symbol.js~DirectiveSymbol#directiveNormalizer",
-    "access": null,
-    "description": null,
-    "lineNumber": 31,
-    "undocument": true,
-    "unknown": [
-      {
-        "tagName": "@_undocument",
-        "tagValue": ""
-      }
-    ],
-    "type": {
-      "types": [
-        "*"
-      ]
-    }
-  },
-  {
-    "__docId__": 32,
-    "kind": "member",
-    "name": "resolver",
-    "memberof": "dist-docs/lib/directive-symbol.js~DirectiveSymbol",
-    "static": false,
-    "longname": "dist-docs/lib/directive-symbol.js~DirectiveSymbol#resolver",
     "access": null,
     "description": null,
     "lineNumber": 32,
@@ -867,12 +867,12 @@
     }
   },
   {
-    "__docId__": 33,
+    "__docId__": 32,
     "kind": "member",
-    "name": "reflector",
+    "name": "directiveNormalizer",
     "memberof": "dist-docs/lib/directive-symbol.js~DirectiveSymbol",
     "static": false,
-    "longname": "dist-docs/lib/directive-symbol.js~DirectiveSymbol#reflector",
+    "longname": "dist-docs/lib/directive-symbol.js~DirectiveSymbol#directiveNormalizer",
     "access": null,
     "description": null,
     "lineNumber": 33,
@@ -890,12 +890,12 @@
     }
   },
   {
-    "__docId__": 34,
+    "__docId__": 33,
     "kind": "member",
-    "name": "resourceResolver",
+    "name": "resolver",
     "memberof": "dist-docs/lib/directive-symbol.js~DirectiveSymbol",
     "static": false,
-    "longname": "dist-docs/lib/directive-symbol.js~DirectiveSymbol#resourceResolver",
+    "longname": "dist-docs/lib/directive-symbol.js~DirectiveSymbol#resolver",
     "access": null,
     "description": null,
     "lineNumber": 34,
@@ -913,12 +913,12 @@
     }
   },
   {
-    "__docId__": 35,
+    "__docId__": 34,
     "kind": "member",
-    "name": "projectSymbols",
+    "name": "reflector",
     "memberof": "dist-docs/lib/directive-symbol.js~DirectiveSymbol",
     "static": false,
-    "longname": "dist-docs/lib/directive-symbol.js~DirectiveSymbol#projectSymbols",
+    "longname": "dist-docs/lib/directive-symbol.js~DirectiveSymbol#reflector",
     "access": null,
     "description": null,
     "lineNumber": 35,
@@ -936,12 +936,12 @@
     }
   },
   {
-    "__docId__": 36,
+    "__docId__": 35,
     "kind": "member",
-    "name": "urlResolver",
+    "name": "resourceResolver",
     "memberof": "dist-docs/lib/directive-symbol.js~DirectiveSymbol",
     "static": false,
-    "longname": "dist-docs/lib/directive-symbol.js~DirectiveSymbol#urlResolver",
+    "longname": "dist-docs/lib/directive-symbol.js~DirectiveSymbol#resourceResolver",
     "access": null,
     "description": null,
     "lineNumber": 36,
@@ -959,7 +959,53 @@
     }
   },
   {
+    "__docId__": 36,
+    "kind": "member",
+    "name": "projectSymbols",
+    "memberof": "dist-docs/lib/directive-symbol.js~DirectiveSymbol",
+    "static": false,
+    "longname": "dist-docs/lib/directive-symbol.js~DirectiveSymbol#projectSymbols",
+    "access": null,
+    "description": null,
+    "lineNumber": 37,
+    "undocument": true,
+    "unknown": [
+      {
+        "tagName": "@_undocument",
+        "tagValue": ""
+      }
+    ],
+    "type": {
+      "types": [
+        "*"
+      ]
+    }
+  },
+  {
     "__docId__": 37,
+    "kind": "member",
+    "name": "urlResolver",
+    "memberof": "dist-docs/lib/directive-symbol.js~DirectiveSymbol",
+    "static": false,
+    "longname": "dist-docs/lib/directive-symbol.js~DirectiveSymbol#urlResolver",
+    "access": null,
+    "description": null,
+    "lineNumber": 38,
+    "undocument": true,
+    "unknown": [
+      {
+        "tagName": "@_undocument",
+        "tagValue": ""
+      }
+    ],
+    "type": {
+      "types": [
+        "*"
+      ]
+    }
+  },
+  {
+    "__docId__": 38,
     "kind": "method",
     "name": "getNonResolvedMetadata",
     "memberof": "dist-docs/lib/directive-symbol.js~DirectiveSymbol",
@@ -969,7 +1015,7 @@
     "longname": "dist-docs/lib/directive-symbol.js~DirectiveSymbol#getNonResolvedMetadata",
     "access": null,
     "description": "Returns the non-resolved metadata for given directive.\nIf it is a component, this means that the external templates\nand styles won't be read from the drive. Also, the paths to\nexternal metadata won't be resolved.",
-    "lineNumber": 48,
+    "lineNumber": 50,
     "unknown": [
       {
         "tagName": "@returns",
@@ -991,7 +1037,7 @@
     }
   },
   {
-    "__docId__": 38,
+    "__docId__": 39,
     "kind": "method",
     "name": "getResolvedMetadata",
     "memberof": "dist-docs/lib/directive-symbol.js~DirectiveSymbol",
@@ -1001,7 +1047,7 @@
     "longname": "dist-docs/lib/directive-symbol.js~DirectiveSymbol#getResolvedMetadata",
     "access": null,
     "description": "Returns the normalized and resolved metadata for given directive or component.\nFor components, all the external templates and styles will be read and\nset as values of the returned `CompileTemplateMetadata` properties.",
-    "lineNumber": 61,
+    "lineNumber": 63,
     "unknown": [
       {
         "tagName": "@returns",
@@ -1023,7 +1069,7 @@
     }
   },
   {
-    "__docId__": 39,
+    "__docId__": 40,
     "kind": "method",
     "name": "getModule",
     "memberof": "dist-docs/lib/directive-symbol.js~DirectiveSymbol",
@@ -1033,7 +1079,7 @@
     "longname": "dist-docs/lib/directive-symbol.js~DirectiveSymbol#getModule",
     "access": null,
     "description": "Returns the module where the given directive has been declared.",
-    "lineNumber": 89,
+    "lineNumber": 92,
     "unknown": [
       {
         "tagName": "@returns",
@@ -1056,7 +1102,7 @@
     }
   },
   {
-    "__docId__": 40,
+    "__docId__": 41,
     "kind": "method",
     "name": "getStyleAsts",
     "memberof": "dist-docs/lib/directive-symbol.js~DirectiveSymbol",
@@ -1066,7 +1112,7 @@
     "longname": "dist-docs/lib/directive-symbol.js~DirectiveSymbol#getStyleAsts",
     "access": null,
     "description": "Returns the ASTs of all styles of the target directive.",
-    "lineNumber": 100,
+    "lineNumber": 103,
     "unknown": [
       {
         "tagName": "@returns",
@@ -1088,7 +1134,7 @@
     }
   },
   {
-    "__docId__": 41,
+    "__docId__": 42,
     "kind": "method",
     "name": "getDirectiveContext",
     "memberof": "dist-docs/lib/directive-symbol.js~DirectiveSymbol",
@@ -1098,7 +1144,7 @@
     "longname": "dist-docs/lib/directive-symbol.js~DirectiveSymbol#getDirectiveContext",
     "access": null,
     "description": "Returns the context into which the template of given\ncomponent is going to be compiled.",
-    "lineNumber": 112,
+    "lineNumber": 115,
     "unknown": [
       {
         "tagName": "@returns",
@@ -1120,7 +1166,7 @@
     }
   },
   {
-    "__docId__": 42,
+    "__docId__": 43,
     "kind": "method",
     "name": "getTemplateAst",
     "memberof": "dist-docs/lib/directive-symbol.js~DirectiveSymbol",
@@ -1130,7 +1176,7 @@
     "longname": "dist-docs/lib/directive-symbol.js~DirectiveSymbol#getTemplateAst",
     "access": null,
     "description": "Returns the compiled template of the target component.",
-    "lineNumber": 133,
+    "lineNumber": 136,
     "unknown": [
       {
         "tagName": "@returns",
@@ -1152,7 +1198,33 @@
     }
   },
   {
-    "__docId__": 43,
+    "__docId__": 44,
+    "kind": "method",
+    "name": "getDependencies",
+    "memberof": "dist-docs/lib/directive-symbol.js~DirectiveSymbol",
+    "generator": false,
+    "async": false,
+    "static": false,
+    "longname": "dist-docs/lib/directive-symbol.js~DirectiveSymbol#getDependencies",
+    "access": null,
+    "description": null,
+    "lineNumber": 167,
+    "undocument": true,
+    "unknown": [
+      {
+        "tagName": "@_undocument",
+        "tagValue": ""
+      }
+    ],
+    "params": [],
+    "return": {
+      "types": [
+        "*"
+      ]
+    }
+  },
+  {
+    "__docId__": 45,
     "kind": "method",
     "name": "isComponent",
     "memberof": "dist-docs/lib/directive-symbol.js~DirectiveSymbol",
@@ -1162,7 +1234,7 @@
     "longname": "dist-docs/lib/directive-symbol.js~DirectiveSymbol#isComponent",
     "access": null,
     "description": "Returns if the target directive is a component.",
-    "lineNumber": 170,
+    "lineNumber": 206,
     "unknown": [
       {
         "tagName": "@returns",
@@ -1184,7 +1256,610 @@
     }
   },
   {
-    "__docId__": 44,
+    "__docId__": 46,
+    "kind": "file",
+    "name": "dist-docs/lib/module-symbol.js",
+    "content": "",
+    "static": true,
+    "longname": "dist-docs/lib/module-symbol.js",
+    "access": null,
+    "description": null,
+    "lineNumber": 1
+  },
+  {
+    "__docId__": 47,
+    "kind": "class",
+    "name": "ModuleSymbol",
+    "memberof": "dist-docs/lib/module-symbol.js",
+    "static": true,
+    "longname": "dist-docs/lib/module-symbol.js~ModuleSymbol",
+    "access": null,
+    "export": true,
+    "importPath": "ngast/dist-docs/lib/module-symbol.js",
+    "importStyle": "{ModuleSymbol}",
+    "description": null,
+    "lineNumber": 5,
+    "undocument": true,
+    "unknown": [
+      {
+        "tagName": "@_undocument",
+        "tagValue": ""
+      }
+    ],
+    "interface": false,
+    "extends": [
+      "dist-docs/lib/symbol.js~Symbol"
+    ]
+  },
+  {
+    "__docId__": 48,
+    "kind": "constructor",
+    "name": "constructor",
+    "memberof": "dist-docs/lib/module-symbol.js~ModuleSymbol",
+    "generator": false,
+    "async": false,
+    "static": false,
+    "longname": "dist-docs/lib/module-symbol.js~ModuleSymbol#constructor",
+    "access": null,
+    "description": null,
+    "lineNumber": 6,
+    "undocument": true,
+    "unknown": [
+      {
+        "tagName": "@_undocument",
+        "tagValue": ""
+      }
+    ],
+    "params": [
+      {
+        "name": "program",
+        "types": [
+          "*"
+        ]
+      },
+      {
+        "name": "symbol",
+        "types": [
+          "*"
+        ]
+      },
+      {
+        "name": "metadataResolver",
+        "types": [
+          "*"
+        ]
+      },
+      {
+        "name": "directiveNormalizer",
+        "types": [
+          "*"
+        ]
+      },
+      {
+        "name": "resolver",
+        "types": [
+          "*"
+        ]
+      },
+      {
+        "name": "pipeResolver",
+        "types": [
+          "*"
+        ]
+      },
+      {
+        "name": "reflector",
+        "types": [
+          "*"
+        ]
+      },
+      {
+        "name": "resourceResolver",
+        "types": [
+          "*"
+        ]
+      },
+      {
+        "name": "projectSymbols",
+        "types": [
+          "*"
+        ]
+      }
+    ]
+  },
+  {
+    "__docId__": 49,
+    "kind": "member",
+    "name": "metadataResolver",
+    "memberof": "dist-docs/lib/module-symbol.js~ModuleSymbol",
+    "static": false,
+    "longname": "dist-docs/lib/module-symbol.js~ModuleSymbol#metadataResolver",
+    "access": null,
+    "description": null,
+    "lineNumber": 8,
+    "undocument": true,
+    "unknown": [
+      {
+        "tagName": "@_undocument",
+        "tagValue": ""
+      }
+    ],
+    "type": {
+      "types": [
+        "*"
+      ]
+    }
+  },
+  {
+    "__docId__": 50,
+    "kind": "member",
+    "name": "directiveNormalizer",
+    "memberof": "dist-docs/lib/module-symbol.js~ModuleSymbol",
+    "static": false,
+    "longname": "dist-docs/lib/module-symbol.js~ModuleSymbol#directiveNormalizer",
+    "access": null,
+    "description": null,
+    "lineNumber": 9,
+    "undocument": true,
+    "unknown": [
+      {
+        "tagName": "@_undocument",
+        "tagValue": ""
+      }
+    ],
+    "type": {
+      "types": [
+        "*"
+      ]
+    }
+  },
+  {
+    "__docId__": 51,
+    "kind": "member",
+    "name": "resolver",
+    "memberof": "dist-docs/lib/module-symbol.js~ModuleSymbol",
+    "static": false,
+    "longname": "dist-docs/lib/module-symbol.js~ModuleSymbol#resolver",
+    "access": null,
+    "description": null,
+    "lineNumber": 10,
+    "undocument": true,
+    "unknown": [
+      {
+        "tagName": "@_undocument",
+        "tagValue": ""
+      }
+    ],
+    "type": {
+      "types": [
+        "*"
+      ]
+    }
+  },
+  {
+    "__docId__": 52,
+    "kind": "member",
+    "name": "pipeResolver",
+    "memberof": "dist-docs/lib/module-symbol.js~ModuleSymbol",
+    "static": false,
+    "longname": "dist-docs/lib/module-symbol.js~ModuleSymbol#pipeResolver",
+    "access": null,
+    "description": null,
+    "lineNumber": 11,
+    "undocument": true,
+    "unknown": [
+      {
+        "tagName": "@_undocument",
+        "tagValue": ""
+      }
+    ],
+    "type": {
+      "types": [
+        "*"
+      ]
+    }
+  },
+  {
+    "__docId__": 53,
+    "kind": "member",
+    "name": "reflector",
+    "memberof": "dist-docs/lib/module-symbol.js~ModuleSymbol",
+    "static": false,
+    "longname": "dist-docs/lib/module-symbol.js~ModuleSymbol#reflector",
+    "access": null,
+    "description": null,
+    "lineNumber": 12,
+    "undocument": true,
+    "unknown": [
+      {
+        "tagName": "@_undocument",
+        "tagValue": ""
+      }
+    ],
+    "type": {
+      "types": [
+        "*"
+      ]
+    }
+  },
+  {
+    "__docId__": 54,
+    "kind": "member",
+    "name": "resourceResolver",
+    "memberof": "dist-docs/lib/module-symbol.js~ModuleSymbol",
+    "static": false,
+    "longname": "dist-docs/lib/module-symbol.js~ModuleSymbol#resourceResolver",
+    "access": null,
+    "description": null,
+    "lineNumber": 13,
+    "undocument": true,
+    "unknown": [
+      {
+        "tagName": "@_undocument",
+        "tagValue": ""
+      }
+    ],
+    "type": {
+      "types": [
+        "*"
+      ]
+    }
+  },
+  {
+    "__docId__": 55,
+    "kind": "member",
+    "name": "projectSymbols",
+    "memberof": "dist-docs/lib/module-symbol.js~ModuleSymbol",
+    "static": false,
+    "longname": "dist-docs/lib/module-symbol.js~ModuleSymbol#projectSymbols",
+    "access": null,
+    "description": null,
+    "lineNumber": 14,
+    "undocument": true,
+    "unknown": [
+      {
+        "tagName": "@_undocument",
+        "tagValue": ""
+      }
+    ],
+    "type": {
+      "types": [
+        "*"
+      ]
+    }
+  },
+  {
+    "__docId__": 56,
+    "kind": "member",
+    "name": "module",
+    "memberof": "dist-docs/lib/module-symbol.js~ModuleSymbol",
+    "static": false,
+    "longname": "dist-docs/lib/module-symbol.js~ModuleSymbol#module",
+    "access": null,
+    "description": null,
+    "lineNumber": 15,
+    "undocument": true,
+    "unknown": [
+      {
+        "tagName": "@_undocument",
+        "tagValue": ""
+      }
+    ],
+    "type": {
+      "types": [
+        "*"
+      ]
+    }
+  },
+  {
+    "__docId__": 57,
+    "kind": "method",
+    "name": "getBootstrapComponents",
+    "memberof": "dist-docs/lib/module-symbol.js~ModuleSymbol",
+    "generator": false,
+    "async": false,
+    "static": false,
+    "longname": "dist-docs/lib/module-symbol.js~ModuleSymbol#getBootstrapComponents",
+    "access": null,
+    "description": null,
+    "lineNumber": 17,
+    "undocument": true,
+    "unknown": [
+      {
+        "tagName": "@_undocument",
+        "tagValue": ""
+      }
+    ],
+    "params": [],
+    "return": {
+      "types": [
+        "*"
+      ]
+    }
+  },
+  {
+    "__docId__": 58,
+    "kind": "method",
+    "name": "getDeclaredDirectives",
+    "memberof": "dist-docs/lib/module-symbol.js~ModuleSymbol",
+    "generator": false,
+    "async": false,
+    "static": false,
+    "longname": "dist-docs/lib/module-symbol.js~ModuleSymbol#getDeclaredDirectives",
+    "access": null,
+    "description": null,
+    "lineNumber": 20,
+    "undocument": true,
+    "unknown": [
+      {
+        "tagName": "@_undocument",
+        "tagValue": ""
+      }
+    ],
+    "params": [],
+    "return": {
+      "types": [
+        "*"
+      ]
+    }
+  },
+  {
+    "__docId__": 59,
+    "kind": "method",
+    "name": "getExportedDirectives",
+    "memberof": "dist-docs/lib/module-symbol.js~ModuleSymbol",
+    "generator": false,
+    "async": false,
+    "static": false,
+    "longname": "dist-docs/lib/module-symbol.js~ModuleSymbol#getExportedDirectives",
+    "access": null,
+    "description": null,
+    "lineNumber": 23,
+    "undocument": true,
+    "unknown": [
+      {
+        "tagName": "@_undocument",
+        "tagValue": ""
+      }
+    ],
+    "params": [],
+    "return": {
+      "types": [
+        "*"
+      ]
+    }
+  },
+  {
+    "__docId__": 60,
+    "kind": "method",
+    "name": "getExportedPipes",
+    "memberof": "dist-docs/lib/module-symbol.js~ModuleSymbol",
+    "generator": false,
+    "async": false,
+    "static": false,
+    "longname": "dist-docs/lib/module-symbol.js~ModuleSymbol#getExportedPipes",
+    "access": null,
+    "description": null,
+    "lineNumber": 26,
+    "undocument": true,
+    "unknown": [
+      {
+        "tagName": "@_undocument",
+        "tagValue": ""
+      }
+    ],
+    "params": [],
+    "return": {
+      "types": [
+        "*"
+      ]
+    }
+  },
+  {
+    "__docId__": 61,
+    "kind": "method",
+    "name": "getDeclaredPipes",
+    "memberof": "dist-docs/lib/module-symbol.js~ModuleSymbol",
+    "generator": false,
+    "async": false,
+    "static": false,
+    "longname": "dist-docs/lib/module-symbol.js~ModuleSymbol#getDeclaredPipes",
+    "access": null,
+    "description": null,
+    "lineNumber": 29,
+    "undocument": true,
+    "unknown": [
+      {
+        "tagName": "@_undocument",
+        "tagValue": ""
+      }
+    ],
+    "params": [],
+    "return": {
+      "types": [
+        "*"
+      ]
+    }
+  },
+  {
+    "__docId__": 62,
+    "kind": "method",
+    "name": "getImportedModules",
+    "memberof": "dist-docs/lib/module-symbol.js~ModuleSymbol",
+    "generator": false,
+    "async": false,
+    "static": false,
+    "longname": "dist-docs/lib/module-symbol.js~ModuleSymbol#getImportedModules",
+    "access": null,
+    "description": null,
+    "lineNumber": 32,
+    "undocument": true,
+    "unknown": [
+      {
+        "tagName": "@_undocument",
+        "tagValue": ""
+      }
+    ],
+    "params": [],
+    "return": {
+      "types": [
+        "*"
+      ]
+    }
+  },
+  {
+    "__docId__": 63,
+    "kind": "method",
+    "name": "getExportedModules",
+    "memberof": "dist-docs/lib/module-symbol.js~ModuleSymbol",
+    "generator": false,
+    "async": false,
+    "static": false,
+    "longname": "dist-docs/lib/module-symbol.js~ModuleSymbol#getExportedModules",
+    "access": null,
+    "description": null,
+    "lineNumber": 35,
+    "undocument": true,
+    "unknown": [
+      {
+        "tagName": "@_undocument",
+        "tagValue": ""
+      }
+    ],
+    "params": [],
+    "return": {
+      "types": [
+        "*"
+      ]
+    }
+  },
+  {
+    "__docId__": 64,
+    "kind": "method",
+    "name": "getProviders",
+    "memberof": "dist-docs/lib/module-symbol.js~ModuleSymbol",
+    "generator": false,
+    "async": false,
+    "static": false,
+    "longname": "dist-docs/lib/module-symbol.js~ModuleSymbol#getProviders",
+    "access": null,
+    "description": null,
+    "lineNumber": 38,
+    "undocument": true,
+    "unknown": [
+      {
+        "tagName": "@_undocument",
+        "tagValue": ""
+      }
+    ],
+    "params": [],
+    "return": {
+      "types": [
+        "*"
+      ]
+    }
+  },
+  {
+    "__docId__": 65,
+    "kind": "method",
+    "name": "getWrappedModules",
+    "memberof": "dist-docs/lib/module-symbol.js~ModuleSymbol",
+    "generator": false,
+    "async": false,
+    "static": false,
+    "longname": "dist-docs/lib/module-symbol.js~ModuleSymbol#getWrappedModules",
+    "access": null,
+    "description": null,
+    "lineNumber": 43,
+    "undocument": true,
+    "unknown": [
+      {
+        "tagName": "@_undocument",
+        "tagValue": ""
+      }
+    ],
+    "params": [
+      {
+        "name": "modules",
+        "types": [
+          "*"
+        ]
+      }
+    ],
+    "return": {
+      "types": [
+        "*"
+      ]
+    }
+  },
+  {
+    "__docId__": 66,
+    "kind": "method",
+    "name": "getWrappedPipes",
+    "memberof": "dist-docs/lib/module-symbol.js~ModuleSymbol",
+    "generator": false,
+    "async": false,
+    "static": false,
+    "longname": "dist-docs/lib/module-symbol.js~ModuleSymbol#getWrappedPipes",
+    "access": null,
+    "description": null,
+    "lineNumber": 48,
+    "undocument": true,
+    "unknown": [
+      {
+        "tagName": "@_undocument",
+        "tagValue": ""
+      }
+    ],
+    "params": [
+      {
+        "name": "pipes",
+        "types": [
+          "*"
+        ]
+      }
+    ],
+    "return": {
+      "types": [
+        "*"
+      ]
+    }
+  },
+  {
+    "__docId__": 67,
+    "kind": "method",
+    "name": "getWrapperDirectives",
+    "memberof": "dist-docs/lib/module-symbol.js~ModuleSymbol",
+    "generator": false,
+    "async": false,
+    "static": false,
+    "longname": "dist-docs/lib/module-symbol.js~ModuleSymbol#getWrapperDirectives",
+    "access": null,
+    "description": null,
+    "lineNumber": 53,
+    "undocument": true,
+    "unknown": [
+      {
+        "tagName": "@_undocument",
+        "tagValue": ""
+      }
+    ],
+    "params": [
+      {
+        "name": "dirs",
+        "types": [
+          "*"
+        ]
+      }
+    ],
+    "return": {
+      "types": [
+        "*"
+      ]
+    }
+  },
+  {
+    "__docId__": 68,
     "kind": "file",
     "name": "dist-docs/lib/pipe-symbol.js",
     "content": "",
@@ -1195,7 +1870,7 @@
     "lineNumber": 1
   },
   {
-    "__docId__": 45,
+    "__docId__": 69,
     "kind": "class",
     "name": "PipeSymbol",
     "memberof": "dist-docs/lib/pipe-symbol.js",
@@ -1206,7 +1881,7 @@
     "importPath": "ngast/dist-docs/lib/pipe-symbol.js",
     "importStyle": "{PipeSymbol}",
     "description": "A wrapper around the pipe symbol.",
-    "lineNumber": 10,
+    "lineNumber": 12,
     "unknown": [
       {
         "tagName": "@class",
@@ -1219,7 +1894,7 @@
     ]
   },
   {
-    "__docId__": 46,
+    "__docId__": 70,
     "kind": "constructor",
     "name": "constructor",
     "memberof": "dist-docs/lib/pipe-symbol.js~PipeSymbol",
@@ -1229,7 +1904,7 @@
     "longname": "dist-docs/lib/pipe-symbol.js~PipeSymbol#constructor",
     "access": null,
     "description": "Creates an instance of PipeSymbol.",
-    "lineNumber": 21,
+    "lineNumber": 23,
     "unknown": [
       {
         "tagName": "@memberOf",
@@ -1280,7 +1955,7 @@
     ]
   },
   {
-    "__docId__": 47,
+    "__docId__": 71,
     "kind": "member",
     "name": "resolver",
     "memberof": "dist-docs/lib/pipe-symbol.js~PipeSymbol",
@@ -1288,7 +1963,7 @@
     "longname": "dist-docs/lib/pipe-symbol.js~PipeSymbol#resolver",
     "access": null,
     "description": null,
-    "lineNumber": 23,
+    "lineNumber": 25,
     "undocument": true,
     "unknown": [
       {
@@ -1303,7 +1978,30 @@
     }
   },
   {
-    "__docId__": 48,
+    "__docId__": 72,
+    "kind": "member",
+    "name": "metadataResolver",
+    "memberof": "dist-docs/lib/pipe-symbol.js~PipeSymbol",
+    "static": false,
+    "longname": "dist-docs/lib/pipe-symbol.js~PipeSymbol#metadataResolver",
+    "access": null,
+    "description": null,
+    "lineNumber": 26,
+    "undocument": true,
+    "unknown": [
+      {
+        "tagName": "@_undocument",
+        "tagValue": ""
+      }
+    ],
+    "type": {
+      "types": [
+        "*"
+      ]
+    }
+  },
+  {
+    "__docId__": 73,
     "kind": "member",
     "name": "projectSymbols",
     "memberof": "dist-docs/lib/pipe-symbol.js~PipeSymbol",
@@ -1311,7 +2009,7 @@
     "longname": "dist-docs/lib/pipe-symbol.js~PipeSymbol#projectSymbols",
     "access": null,
     "description": null,
-    "lineNumber": 24,
+    "lineNumber": 27,
     "undocument": true,
     "unknown": [
       {
@@ -1326,7 +2024,7 @@
     }
   },
   {
-    "__docId__": 49,
+    "__docId__": 74,
     "kind": "method",
     "name": "getModule",
     "memberof": "dist-docs/lib/pipe-symbol.js~PipeSymbol",
@@ -1336,7 +2034,7 @@
     "longname": "dist-docs/lib/pipe-symbol.js~PipeSymbol#getModule",
     "access": null,
     "description": "Returns the module where the wrapped pipe was defined.",
-    "lineNumber": 33,
+    "lineNumber": 36,
     "unknown": [
       {
         "tagName": "@returns",
@@ -1359,7 +2057,7 @@
     }
   },
   {
-    "__docId__": 50,
+    "__docId__": 75,
     "kind": "method",
     "name": "getMetadata",
     "memberof": "dist-docs/lib/pipe-symbol.js~PipeSymbol",
@@ -1369,7 +2067,7 @@
     "longname": "dist-docs/lib/pipe-symbol.js~PipeSymbol#getMetadata",
     "access": null,
     "description": "Returns the pipe metadata.",
-    "lineNumber": 44,
+    "lineNumber": 47,
     "unknown": [
       {
         "tagName": "@returns",
@@ -1391,7 +2089,33 @@
     }
   },
   {
-    "__docId__": 51,
+    "__docId__": 76,
+    "kind": "method",
+    "name": "getDependencies",
+    "memberof": "dist-docs/lib/pipe-symbol.js~PipeSymbol",
+    "generator": false,
+    "async": false,
+    "static": false,
+    "longname": "dist-docs/lib/pipe-symbol.js~PipeSymbol#getDependencies",
+    "access": null,
+    "description": null,
+    "lineNumber": 50,
+    "undocument": true,
+    "unknown": [
+      {
+        "tagName": "@_undocument",
+        "tagValue": ""
+      }
+    ],
+    "params": [],
+    "return": {
+      "types": [
+        "*"
+      ]
+    }
+  },
+  {
+    "__docId__": 77,
     "kind": "file",
     "name": "dist-docs/lib/project-symbols.js",
     "content": "",
@@ -1402,7 +2126,7 @@
     "lineNumber": 1
   },
   {
-    "__docId__": 52,
+    "__docId__": 78,
     "kind": "class",
     "name": "BasicLazyModuleResolver",
     "memberof": "dist-docs/lib/project-symbols.js",
@@ -1426,7 +2150,7 @@
     ]
   },
   {
-    "__docId__": 53,
+    "__docId__": 79,
     "kind": "constructor",
     "name": "constructor",
     "memberof": "dist-docs/lib/project-symbols.js~BasicLazyModuleResolver",
@@ -1447,7 +2171,7 @@
     "params": []
   },
   {
-    "__docId__": 54,
+    "__docId__": 80,
     "kind": "member",
     "name": "resolver",
     "memberof": "dist-docs/lib/project-symbols.js~BasicLazyModuleResolver",
@@ -1470,7 +2194,7 @@
     }
   },
   {
-    "__docId__": 55,
+    "__docId__": 81,
     "kind": "method",
     "name": "resolve",
     "memberof": "dist-docs/lib/project-symbols.js~BasicLazyModuleResolver",
@@ -1520,7 +2244,7 @@
     }
   },
   {
-    "__docId__": 56,
+    "__docId__": 82,
     "kind": "class",
     "name": "ProjectSymbols",
     "memberof": "dist-docs/lib/project-symbols.js",
@@ -1541,7 +2265,7 @@
     "interface": false
   },
   {
-    "__docId__": 57,
+    "__docId__": 83,
     "kind": "constructor",
     "name": "constructor",
     "memberof": "dist-docs/lib/project-symbols.js~ProjectSymbols",
@@ -1594,7 +2318,7 @@
     ]
   },
   {
-    "__docId__": 58,
+    "__docId__": 84,
     "kind": "member",
     "name": "programFactory",
     "memberof": "dist-docs/lib/project-symbols.js~ProjectSymbols",
@@ -1617,7 +2341,7 @@
     }
   },
   {
-    "__docId__": 59,
+    "__docId__": 85,
     "kind": "member",
     "name": "resolver",
     "memberof": "dist-docs/lib/project-symbols.js~ProjectSymbols",
@@ -1640,7 +2364,7 @@
     }
   },
   {
-    "__docId__": 60,
+    "__docId__": 86,
     "kind": "member",
     "name": "lazyModuleResolver",
     "memberof": "dist-docs/lib/project-symbols.js~ProjectSymbols",
@@ -1663,7 +2387,7 @@
     }
   },
   {
-    "__docId__": 61,
+    "__docId__": 87,
     "kind": "method",
     "name": "getRootContext",
     "memberof": "dist-docs/lib/project-symbols.js~ProjectSymbols",
@@ -1695,7 +2419,7 @@
     }
   },
   {
-    "__docId__": 62,
+    "__docId__": 88,
     "kind": "member",
     "name": "rootContext",
     "memberof": "dist-docs/lib/project-symbols.js~ProjectSymbols",
@@ -1718,7 +2442,7 @@
     }
   },
   {
-    "__docId__": 63,
+    "__docId__": 89,
     "kind": "method",
     "name": "getLazyLoadedContexts",
     "memberof": "dist-docs/lib/project-symbols.js~ProjectSymbols",
@@ -1750,7 +2474,181 @@
     }
   },
   {
-    "__docId__": 64,
+    "__docId__": 90,
+    "kind": "file",
+    "name": "dist-docs/lib/provider-symbol.js",
+    "content": "",
+    "static": true,
+    "longname": "dist-docs/lib/provider-symbol.js",
+    "access": null,
+    "description": null,
+    "lineNumber": 1
+  },
+  {
+    "__docId__": 91,
+    "kind": "class",
+    "name": "ProviderSymbol",
+    "memberof": "dist-docs/lib/provider-symbol.js",
+    "static": true,
+    "longname": "dist-docs/lib/provider-symbol.js~ProviderSymbol",
+    "access": null,
+    "export": true,
+    "importPath": "ngast/dist-docs/lib/provider-symbol.js",
+    "importStyle": "{ProviderSymbol}",
+    "description": null,
+    "lineNumber": 3,
+    "undocument": true,
+    "unknown": [
+      {
+        "tagName": "@_undocument",
+        "tagValue": ""
+      }
+    ],
+    "interface": false,
+    "extends": [
+      "dist-docs/lib/symbol.js~Symbol"
+    ]
+  },
+  {
+    "__docId__": 92,
+    "kind": "constructor",
+    "name": "constructor",
+    "memberof": "dist-docs/lib/provider-symbol.js~ProviderSymbol",
+    "generator": false,
+    "async": false,
+    "static": false,
+    "longname": "dist-docs/lib/provider-symbol.js~ProviderSymbol#constructor",
+    "access": null,
+    "description": null,
+    "lineNumber": 4,
+    "undocument": true,
+    "unknown": [
+      {
+        "tagName": "@_undocument",
+        "tagValue": ""
+      }
+    ],
+    "params": [
+      {
+        "name": "program",
+        "types": [
+          "*"
+        ]
+      },
+      {
+        "name": "provider",
+        "types": [
+          "*"
+        ]
+      },
+      {
+        "name": "metadataResovler",
+        "types": [
+          "*"
+        ]
+      }
+    ]
+  },
+  {
+    "__docId__": 93,
+    "kind": "member",
+    "name": "provider",
+    "memberof": "dist-docs/lib/provider-symbol.js~ProviderSymbol",
+    "static": false,
+    "longname": "dist-docs/lib/provider-symbol.js~ProviderSymbol#provider",
+    "access": null,
+    "description": null,
+    "lineNumber": 6,
+    "undocument": true,
+    "unknown": [
+      {
+        "tagName": "@_undocument",
+        "tagValue": ""
+      }
+    ],
+    "type": {
+      "types": [
+        "*"
+      ]
+    }
+  },
+  {
+    "__docId__": 94,
+    "kind": "member",
+    "name": "metadataResovler",
+    "memberof": "dist-docs/lib/provider-symbol.js~ProviderSymbol",
+    "static": false,
+    "longname": "dist-docs/lib/provider-symbol.js~ProviderSymbol#metadataResovler",
+    "access": null,
+    "description": null,
+    "lineNumber": 7,
+    "undocument": true,
+    "unknown": [
+      {
+        "tagName": "@_undocument",
+        "tagValue": ""
+      }
+    ],
+    "type": {
+      "types": [
+        "*"
+      ]
+    }
+  },
+  {
+    "__docId__": 95,
+    "kind": "method",
+    "name": "getMetadata",
+    "memberof": "dist-docs/lib/provider-symbol.js~ProviderSymbol",
+    "generator": false,
+    "async": false,
+    "static": false,
+    "longname": "dist-docs/lib/provider-symbol.js~ProviderSymbol#getMetadata",
+    "access": null,
+    "description": null,
+    "lineNumber": 9,
+    "undocument": true,
+    "unknown": [
+      {
+        "tagName": "@_undocument",
+        "tagValue": ""
+      }
+    ],
+    "params": [],
+    "return": {
+      "types": [
+        "*"
+      ]
+    }
+  },
+  {
+    "__docId__": 96,
+    "kind": "method",
+    "name": "getDependencies",
+    "memberof": "dist-docs/lib/provider-symbol.js~ProviderSymbol",
+    "generator": false,
+    "async": false,
+    "static": false,
+    "longname": "dist-docs/lib/provider-symbol.js~ProviderSymbol#getDependencies",
+    "access": null,
+    "description": null,
+    "lineNumber": 12,
+    "undocument": true,
+    "unknown": [
+      {
+        "tagName": "@_undocument",
+        "tagValue": ""
+      }
+    ],
+    "params": [],
+    "return": {
+      "types": [
+        "*"
+      ]
+    }
+  },
+  {
+    "__docId__": 97,
     "kind": "file",
     "name": "dist-docs/lib/resource-resolver.js",
     "content": "",
@@ -1761,7 +2659,7 @@
     "lineNumber": 1
   },
   {
-    "__docId__": 65,
+    "__docId__": 98,
     "kind": "file",
     "name": "dist-docs/lib/symbol.js",
     "content": "",
@@ -1772,7 +2670,7 @@
     "lineNumber": 1
   },
   {
-    "__docId__": 66,
+    "__docId__": 99,
     "kind": "class",
     "name": "Symbol",
     "memberof": "dist-docs/lib/symbol.js",
@@ -1793,7 +2691,7 @@
     "interface": false
   },
   {
-    "__docId__": 67,
+    "__docId__": 100,
     "kind": "constructor",
     "name": "constructor",
     "memberof": "dist-docs/lib/symbol.js~Symbol",
@@ -1834,7 +2732,7 @@
     ]
   },
   {
-    "__docId__": 68,
+    "__docId__": 101,
     "kind": "member",
     "name": "_program",
     "memberof": "dist-docs/lib/symbol.js~Symbol",
@@ -1857,7 +2755,7 @@
     }
   },
   {
-    "__docId__": 69,
+    "__docId__": 102,
     "kind": "member",
     "name": "_symbol",
     "memberof": "dist-docs/lib/symbol.js~Symbol",
@@ -1880,7 +2778,7 @@
     }
   },
   {
-    "__docId__": 70,
+    "__docId__": 103,
     "kind": "method",
     "name": "getNode",
     "memberof": "dist-docs/lib/symbol.js~Symbol",
@@ -1913,7 +2811,7 @@
     }
   },
   {
-    "__docId__": 71,
+    "__docId__": 104,
     "kind": "get",
     "name": "symbol",
     "memberof": "dist-docs/lib/symbol.js~Symbol",
@@ -1941,7 +2839,7 @@
     }
   },
   {
-    "__docId__": 73,
+    "__docId__": 106,
     "kind": "external",
     "name": "Infinity",
     "externalLink": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Infinity",
@@ -1953,7 +2851,7 @@
     "builtinExternal": true
   },
   {
-    "__docId__": 74,
+    "__docId__": 107,
     "kind": "external",
     "name": "NaN",
     "externalLink": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/NaN",
@@ -1965,7 +2863,7 @@
     "builtinExternal": true
   },
   {
-    "__docId__": 75,
+    "__docId__": 108,
     "kind": "external",
     "name": "undefined",
     "externalLink": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/undefined",
@@ -1977,7 +2875,7 @@
     "builtinExternal": true
   },
   {
-    "__docId__": 76,
+    "__docId__": 109,
     "kind": "external",
     "name": "null",
     "externalLink": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/null",
@@ -1989,7 +2887,7 @@
     "builtinExternal": true
   },
   {
-    "__docId__": 77,
+    "__docId__": 110,
     "kind": "external",
     "name": "Object",
     "externalLink": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object",
@@ -2001,7 +2899,7 @@
     "builtinExternal": true
   },
   {
-    "__docId__": 78,
+    "__docId__": 111,
     "kind": "external",
     "name": "object",
     "externalLink": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object",
@@ -2013,7 +2911,7 @@
     "builtinExternal": true
   },
   {
-    "__docId__": 79,
+    "__docId__": 112,
     "kind": "external",
     "name": "Function",
     "externalLink": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Function",
@@ -2025,7 +2923,7 @@
     "builtinExternal": true
   },
   {
-    "__docId__": 80,
+    "__docId__": 113,
     "kind": "external",
     "name": "function",
     "externalLink": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Function",
@@ -2037,7 +2935,7 @@
     "builtinExternal": true
   },
   {
-    "__docId__": 81,
+    "__docId__": 114,
     "kind": "external",
     "name": "Boolean",
     "externalLink": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Boolean",
@@ -2049,7 +2947,7 @@
     "builtinExternal": true
   },
   {
-    "__docId__": 82,
+    "__docId__": 115,
     "kind": "external",
     "name": "boolean",
     "externalLink": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Boolean",
@@ -2061,7 +2959,7 @@
     "builtinExternal": true
   },
   {
-    "__docId__": 83,
+    "__docId__": 116,
     "kind": "external",
     "name": "Symbol",
     "externalLink": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Symbol",
@@ -2073,7 +2971,7 @@
     "builtinExternal": true
   },
   {
-    "__docId__": 84,
+    "__docId__": 117,
     "kind": "external",
     "name": "Error",
     "externalLink": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Error",
@@ -2085,7 +2983,7 @@
     "builtinExternal": true
   },
   {
-    "__docId__": 85,
+    "__docId__": 118,
     "kind": "external",
     "name": "EvalError",
     "externalLink": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/EvalError",
@@ -2097,7 +2995,7 @@
     "builtinExternal": true
   },
   {
-    "__docId__": 86,
+    "__docId__": 119,
     "kind": "external",
     "name": "InternalError",
     "externalLink": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/InternalError",
@@ -2109,7 +3007,7 @@
     "builtinExternal": true
   },
   {
-    "__docId__": 87,
+    "__docId__": 120,
     "kind": "external",
     "name": "RangeError",
     "externalLink": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/RangeError",
@@ -2121,7 +3019,7 @@
     "builtinExternal": true
   },
   {
-    "__docId__": 88,
+    "__docId__": 121,
     "kind": "external",
     "name": "ReferenceError",
     "externalLink": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/ReferenceError",
@@ -2133,7 +3031,7 @@
     "builtinExternal": true
   },
   {
-    "__docId__": 89,
+    "__docId__": 122,
     "kind": "external",
     "name": "SyntaxError",
     "externalLink": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/SyntaxError",
@@ -2145,7 +3043,7 @@
     "builtinExternal": true
   },
   {
-    "__docId__": 90,
+    "__docId__": 123,
     "kind": "external",
     "name": "TypeError",
     "externalLink": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/TypeError",
@@ -2157,7 +3055,7 @@
     "builtinExternal": true
   },
   {
-    "__docId__": 91,
+    "__docId__": 124,
     "kind": "external",
     "name": "URIError",
     "externalLink": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/URIError",
@@ -2169,7 +3067,7 @@
     "builtinExternal": true
   },
   {
-    "__docId__": 92,
+    "__docId__": 125,
     "kind": "external",
     "name": "Number",
     "externalLink": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Number",
@@ -2181,7 +3079,7 @@
     "builtinExternal": true
   },
   {
-    "__docId__": 93,
+    "__docId__": 126,
     "kind": "external",
     "name": "number",
     "externalLink": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Number",
@@ -2193,7 +3091,7 @@
     "builtinExternal": true
   },
   {
-    "__docId__": 94,
+    "__docId__": 127,
     "kind": "external",
     "name": "Date",
     "externalLink": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Date",
@@ -2205,7 +3103,7 @@
     "builtinExternal": true
   },
   {
-    "__docId__": 95,
+    "__docId__": 128,
     "kind": "external",
     "name": "String",
     "externalLink": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String",
@@ -2217,7 +3115,7 @@
     "builtinExternal": true
   },
   {
-    "__docId__": 96,
+    "__docId__": 129,
     "kind": "external",
     "name": "string",
     "externalLink": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String",
@@ -2229,7 +3127,7 @@
     "builtinExternal": true
   },
   {
-    "__docId__": 97,
+    "__docId__": 130,
     "kind": "external",
     "name": "RegExp",
     "externalLink": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/RegExp",
@@ -2241,7 +3139,7 @@
     "builtinExternal": true
   },
   {
-    "__docId__": 98,
+    "__docId__": 131,
     "kind": "external",
     "name": "Array",
     "externalLink": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array",
@@ -2253,7 +3151,7 @@
     "builtinExternal": true
   },
   {
-    "__docId__": 99,
+    "__docId__": 132,
     "kind": "external",
     "name": "Int8Array",
     "externalLink": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Int8Array",
@@ -2265,7 +3163,7 @@
     "builtinExternal": true
   },
   {
-    "__docId__": 100,
+    "__docId__": 133,
     "kind": "external",
     "name": "Uint8Array",
     "externalLink": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Uint8Array",
@@ -2277,7 +3175,7 @@
     "builtinExternal": true
   },
   {
-    "__docId__": 101,
+    "__docId__": 134,
     "kind": "external",
     "name": "Uint8ClampedArray",
     "externalLink": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Uint8ClampedArray",
@@ -2289,7 +3187,7 @@
     "builtinExternal": true
   },
   {
-    "__docId__": 102,
+    "__docId__": 135,
     "kind": "external",
     "name": "Int16Array",
     "externalLink": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Int16Array",
@@ -2301,7 +3199,7 @@
     "builtinExternal": true
   },
   {
-    "__docId__": 103,
+    "__docId__": 136,
     "kind": "external",
     "name": "Uint16Array",
     "externalLink": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Uint16Array",
@@ -2313,7 +3211,7 @@
     "builtinExternal": true
   },
   {
-    "__docId__": 104,
+    "__docId__": 137,
     "kind": "external",
     "name": "Int32Array",
     "externalLink": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Int32Array",
@@ -2325,7 +3223,7 @@
     "builtinExternal": true
   },
   {
-    "__docId__": 105,
+    "__docId__": 138,
     "kind": "external",
     "name": "Uint32Array",
     "externalLink": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Uint32Array",
@@ -2337,7 +3235,7 @@
     "builtinExternal": true
   },
   {
-    "__docId__": 106,
+    "__docId__": 139,
     "kind": "external",
     "name": "Float32Array",
     "externalLink": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Float32Array",
@@ -2349,7 +3247,7 @@
     "builtinExternal": true
   },
   {
-    "__docId__": 107,
+    "__docId__": 140,
     "kind": "external",
     "name": "Float64Array",
     "externalLink": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Float64Array",
@@ -2361,7 +3259,7 @@
     "builtinExternal": true
   },
   {
-    "__docId__": 108,
+    "__docId__": 141,
     "kind": "external",
     "name": "Map",
     "externalLink": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Map",
@@ -2373,7 +3271,7 @@
     "builtinExternal": true
   },
   {
-    "__docId__": 109,
+    "__docId__": 142,
     "kind": "external",
     "name": "Set",
     "externalLink": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Set",
@@ -2385,7 +3283,7 @@
     "builtinExternal": true
   },
   {
-    "__docId__": 110,
+    "__docId__": 143,
     "kind": "external",
     "name": "WeakMap",
     "externalLink": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/WeakMap",
@@ -2397,7 +3295,7 @@
     "builtinExternal": true
   },
   {
-    "__docId__": 111,
+    "__docId__": 144,
     "kind": "external",
     "name": "WeakSet",
     "externalLink": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/WeakSet",
@@ -2409,7 +3307,7 @@
     "builtinExternal": true
   },
   {
-    "__docId__": 112,
+    "__docId__": 145,
     "kind": "external",
     "name": "ArrayBuffer",
     "externalLink": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/ArrayBuffer",
@@ -2421,7 +3319,7 @@
     "builtinExternal": true
   },
   {
-    "__docId__": 113,
+    "__docId__": 146,
     "kind": "external",
     "name": "DataView",
     "externalLink": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/DataView",
@@ -2433,7 +3331,7 @@
     "builtinExternal": true
   },
   {
-    "__docId__": 114,
+    "__docId__": 147,
     "kind": "external",
     "name": "JSON",
     "externalLink": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/JSON",
@@ -2445,7 +3343,7 @@
     "builtinExternal": true
   },
   {
-    "__docId__": 115,
+    "__docId__": 148,
     "kind": "external",
     "name": "Promise",
     "externalLink": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise",
@@ -2457,7 +3355,7 @@
     "builtinExternal": true
   },
   {
-    "__docId__": 116,
+    "__docId__": 149,
     "kind": "external",
     "name": "Generator",
     "externalLink": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Generator",
@@ -2469,7 +3367,7 @@
     "builtinExternal": true
   },
   {
-    "__docId__": 117,
+    "__docId__": 150,
     "kind": "external",
     "name": "GeneratorFunction",
     "externalLink": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/GeneratorFunction",
@@ -2481,7 +3379,7 @@
     "builtinExternal": true
   },
   {
-    "__docId__": 118,
+    "__docId__": 151,
     "kind": "external",
     "name": "Reflect",
     "externalLink": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Reflect",
@@ -2493,7 +3391,7 @@
     "builtinExternal": true
   },
   {
-    "__docId__": 119,
+    "__docId__": 152,
     "kind": "external",
     "name": "Proxy",
     "externalLink": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Proxy",
@@ -2506,7 +3404,7 @@
     "builtinExternal": true
   },
   {
-    "__docId__": 121,
+    "__docId__": 154,
     "kind": "external",
     "name": "CanvasRenderingContext2D",
     "externalLink": "https://developer.mozilla.org/en-US/docs/Web/API/CanvasRenderingContext2D",
@@ -2518,7 +3416,7 @@
     "builtinExternal": true
   },
   {
-    "__docId__": 122,
+    "__docId__": 155,
     "kind": "external",
     "name": "DocumentFragment",
     "externalLink": "https://developer.mozilla.org/en-US/docs/Web/API/DocumentFragment",
@@ -2530,7 +3428,7 @@
     "builtinExternal": true
   },
   {
-    "__docId__": 123,
+    "__docId__": 156,
     "kind": "external",
     "name": "Element",
     "externalLink": "https://developer.mozilla.org/en-US/docs/Web/API/Element",
@@ -2542,7 +3440,7 @@
     "builtinExternal": true
   },
   {
-    "__docId__": 124,
+    "__docId__": 157,
     "kind": "external",
     "name": "Event",
     "externalLink": "https://developer.mozilla.org/en-US/docs/Web/API/Event",
@@ -2554,7 +3452,7 @@
     "builtinExternal": true
   },
   {
-    "__docId__": 125,
+    "__docId__": 158,
     "kind": "external",
     "name": "Node",
     "externalLink": "https://developer.mozilla.org/en-US/docs/Web/API/Node",
@@ -2566,7 +3464,7 @@
     "builtinExternal": true
   },
   {
-    "__docId__": 126,
+    "__docId__": 159,
     "kind": "external",
     "name": "NodeList",
     "externalLink": "https://developer.mozilla.org/en-US/docs/Web/API/NodeList",
@@ -2578,7 +3476,7 @@
     "builtinExternal": true
   },
   {
-    "__docId__": 127,
+    "__docId__": 160,
     "kind": "external",
     "name": "XMLHttpRequest",
     "externalLink": "https://developer.mozilla.org/en/docs/Web/API/XMLHttpRequest",
@@ -2590,7 +3488,7 @@
     "builtinExternal": true
   },
   {
-    "__docId__": 128,
+    "__docId__": 161,
     "kind": "external",
     "name": "AudioContext",
     "externalLink": "https://developer.mozilla.org/en/docs/Web/API/AudioContext",

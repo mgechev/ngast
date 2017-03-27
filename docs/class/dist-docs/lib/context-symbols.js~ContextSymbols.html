@@ -43,13 +43,13 @@
 </nav>
 
 <div class="content" data-ice="content"><div class="header-notice">
-  <div data-ice="importPath" class="import-path"><pre class="prettyprint"><code data-ice="importPathCode">import {ContextSymbols} from &apos;<span><a href="file/dist-docs/lib/context-symbols.js.html#lineNumber13">ngast/dist-docs/lib/context-symbols.js</a></span>&apos;</code></pre></div>
+  <div data-ice="importPath" class="import-path"><pre class="prettyprint"><code data-ice="importPathCode">import {ContextSymbols} from &apos;<span><a href="file/dist-docs/lib/context-symbols.js.html#lineNumber14">ngast/dist-docs/lib/context-symbols.js</a></span>&apos;</code></pre></div>
   <span data-ice="access">public</span>
   <span data-ice="kind">class</span>
   
   
   
-  <span data-ice="source">| <span><a href="file/dist-docs/lib/context-symbols.js.html#lineNumber13">source</a></span></span>
+  <span data-ice="source">| <span><a href="file/dist-docs/lib/context-symbols.js.html#lineNumber14">source</a></span></span>
 </div>
 
 <div class="self-detail detail">
@@ -193,6 +193,34 @@ defined in given context (could be lazy loaded module or the root module).</p>
         <p>
           
           
+          <span data-ice="name"><span><a href="class/dist-docs/lib/context-symbols.js~ContextSymbols.html#instance-method-getDirectiveFromNode">getDirectiveFromNode</a></span></span><span data-ice="signature">(declaration: <span>ts.ClassDeclaration</span>, fileName: <span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String">string</a></span>): <span>*</span></span>
+        </p>
+      </div>
+      <div>
+        
+        
+        <div data-ice="description"><p>Returns directive based on <code>ClassDeclaration</code> node and a filename.</p>
+</div>
+      </div>
+    </td>
+    <td>
+      
+      
+    </td>
+  </tr>
+<tr data-ice="target">
+    <td>
+      <span class="access" data-ice="access">public</span>
+      
+      
+      
+      <span class="override" data-ice="override"></span>
+    </td>
+    <td>
+      <div>
+        <p>
+          
+          
           <span data-ice="name"><span><a href="class/dist-docs/lib/context-symbols.js~ContextSymbols.html#instance-method-getDirectives">getDirectives</a></span></span><span data-ice="signature">(): <span><span><a href="class/dist-docs/lib/directive-symbol.js~DirectiveSymbol.html">DirectiveSymbol</a></span><span>[]</span></span></span>
         </p>
       </div>
@@ -221,7 +249,7 @@ defined in given context (could be lazy loaded module or the root module).</p>
         <p>
           
           
-          <span data-ice="name"><span><a href="class/dist-docs/lib/context-symbols.js~ContextSymbols.html#instance-method-getModules">getModules</a></span></span><span data-ice="signature">(): <span><span>CompileNgModuleMetadata</span><span>[]</span></span></span>
+          <span data-ice="name"><span><a href="class/dist-docs/lib/context-symbols.js~ContextSymbols.html#instance-method-getModules">getModules</a></span></span><span data-ice="signature">(): <span><span>ModuleSymbol</span><span>[]</span></span></span>
         </p>
       </div>
       <div>
@@ -314,7 +342,7 @@ defined in given context (could be lazy loaded module or the root module).</p>
     <span class="right-info">
       
       
-      <span data-ice="source"><span><a href="file/dist-docs/lib/context-symbols.js.html#lineNumber22">source</a></span></span>
+      <span data-ice="source"><span><a href="file/dist-docs/lib/context-symbols.js.html#lineNumber23">source</a></span></span>
     </span>
   </h3>
 
@@ -384,7 +412,7 @@ defined in given context (could be lazy loaded module or the root module).</p>
     <span class="right-info">
       
       
-      <span data-ice="source"><span><a href="file/dist-docs/lib/context-symbols.js.html#lineNumber99">source</a></span></span>
+      <span data-ice="source"><span><a href="file/dist-docs/lib/context-symbols.js.html#lineNumber114">source</a></span></span>
     </span>
   </h3>
 
@@ -439,7 +467,7 @@ defined in given context (could be lazy loaded module or the root module).</p>
     <span class="right-info">
       
       
-      <span data-ice="source"><span><a href="file/dist-docs/lib/context-symbols.js.html#lineNumber76">source</a></span></span>
+      <span data-ice="source"><span><a href="file/dist-docs/lib/context-symbols.js.html#lineNumber79">source</a></span></span>
     </span>
   </h3>
 
@@ -484,6 +512,84 @@ defined in given context (could be lazy loaded module or the root module).</p>
   
 </div>
 <div class="detail" data-ice="detail">
+  <h3 data-ice="anchor" id="instance-method-getDirectiveFromNode">
+    <span class="access" data-ice="access">public</span>
+    
+    
+    
+    
+    
+    <span data-ice="name">getDirectiveFromNode</span><span data-ice="signature">(declaration: <span>ts.ClassDeclaration</span>, fileName: <span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String">string</a></span>): <span>*</span></span>
+    <span class="right-info">
+      
+      
+      <span data-ice="source"><span><a href="file/dist-docs/lib/context-symbols.js.html#lineNumber109">source</a></span></span>
+    </span>
+  </h3>
+
+  
+  
+  
+  <div data-ice="description"><p>Returns directive based on <code>ClassDeclaration</code> node and a filename.</p>
+</div>
+
+  
+
+  <div data-ice="properties"><div data-ice="properties">
+  <h4 data-ice="title">Params:</h4>
+  <table class="params">
+    <thead>
+    <tr><td>Name</td><td>Type</td><td>Attribute</td><td>Description</td></tr>
+    </thead>
+    <tbody>
+    
+    <tr data-ice="property" data-depth="0">
+      <td data-ice="name" data-depth="0">declaration</td>
+      <td data-ice="type"><span>ts.ClassDeclaration</span></td>
+      <td data-ice="appendix"></td>
+      <td data-ice="description"></td>
+    </tr>
+<tr data-ice="property" data-depth="0">
+      <td data-ice="name" data-depth="0">fileName</td>
+      <td data-ice="type"><span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String">string</a></span></td>
+      <td data-ice="appendix"></td>
+      <td data-ice="description"></td>
+    </tr>
+</tbody>
+  </table>
+</div>
+</div>
+
+  <div class="return-params" data-ice="returnParams">
+    <h4>Return:</h4>
+    <table>
+      <tbody>
+        <tr>
+          <td class="return-type" data-ice="returnType"><span>*</span></td>
+          
+        </tr>
+      </tbody>
+    </table>
+    <div data-ice="returnProperties">
+</div>
+  </div>
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+  
+</div>
+<div class="detail" data-ice="detail">
   <h3 data-ice="anchor" id="instance-method-getDirectives">
     <span class="access" data-ice="access">public</span>
     
@@ -495,7 +601,7 @@ defined in given context (could be lazy loaded module or the root module).</p>
     <span class="right-info">
       
       
-      <span data-ice="source"><span><a href="file/dist-docs/lib/context-symbols.js.html#lineNumber52">source</a></span></span>
+      <span data-ice="source"><span><a href="file/dist-docs/lib/context-symbols.js.html#lineNumber55">source</a></span></span>
     </span>
   </h3>
 
@@ -547,11 +653,11 @@ defined in given context (could be lazy loaded module or the root module).</p>
     
     
     
-    <span data-ice="name">getModules</span><span data-ice="signature">(): <span><span>CompileNgModuleMetadata</span><span>[]</span></span></span>
+    <span data-ice="name">getModules</span><span data-ice="signature">(): <span><span>ModuleSymbol</span><span>[]</span></span></span>
     <span class="right-info">
       
       
-      <span data-ice="source"><span><a href="file/dist-docs/lib/context-symbols.js.html#lineNumber35">source</a></span></span>
+      <span data-ice="source"><span><a href="file/dist-docs/lib/context-symbols.js.html#lineNumber36">source</a></span></span>
     </span>
   </h3>
 
@@ -571,7 +677,7 @@ defined in given context (could be lazy loaded module or the root module).</p>
     <table>
       <tbody>
         <tr>
-          <td class="return-type" data-ice="returnType"><span><span>CompileNgModuleMetadata</span><span>[]</span></span></td>
+          <td class="return-type" data-ice="returnType"><span><span>ModuleSymbol</span><span>[]</span></span></td>
           
         </tr>
       </tbody>
@@ -607,7 +713,7 @@ defined in given context (could be lazy loaded module or the root module).</p>
     <span class="right-info">
       
       
-      <span data-ice="source"><span><a href="file/dist-docs/lib/context-symbols.js.html#lineNumber64">source</a></span></span>
+      <span data-ice="source"><span><a href="file/dist-docs/lib/context-symbols.js.html#lineNumber67">source</a></span></span>
     </span>
   </h3>
 
@@ -663,7 +769,7 @@ defined in given context (could be lazy loaded module or the root module).</p>
     <span class="right-info">
       
       
-      <span data-ice="source"><span><a href="file/dist-docs/lib/context-symbols.js.html#lineNumber92">source</a></span></span>
+      <span data-ice="source"><span><a href="file/dist-docs/lib/context-symbols.js.html#lineNumber95">source</a></span></span>
     </span>
   </h3>
 

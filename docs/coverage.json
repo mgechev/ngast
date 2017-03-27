@@ -1,7 +1,7 @@
 {
   "coverage": "100%",
-  "expectCount": 31,
-  "actualCount": 31,
+  "expectCount": 32,
+  "actualCount": 32,
   "files": {
     "dist-docs/lib/project-symbols.js": {
       "expectCount": 6,
@@ -9,8 +9,8 @@
       "undocumentLines": []
     },
     "dist-docs/lib/context-symbols.js": {
-      "expectCount": 8,
-      "actualCount": 8,
+      "expectCount": 9,
+      "actualCount": 9,
       "undocumentLines": []
     },
     "dist-docs/lib/directive-symbol.js": {

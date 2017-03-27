@@ -396,6 +396,12 @@ window.esdocSearchIndex = [
     "method"
   ],
   [
+    "dist-docs/lib/context-symbols.js~contextsymbols#getdirectivefromnode",
+    "class/dist-docs/lib/context-symbols.js~ContextSymbols.html#instance-method-getDirectiveFromNode",
+    "dist-docs/lib/context-symbols.js~ContextSymbols#getDirectiveFromNode",
+    "method"
+  ],
+  [
     "dist-docs/lib/context-symbols.js~contextsymbols#getdirectives",
     "class/dist-docs/lib/context-symbols.js~ContextSymbols.html#instance-method-getDirectives",
     "dist-docs/lib/context-symbols.js~ContextSymbols#getDirectives",
@@ -474,6 +480,12 @@ window.esdocSearchIndex = [
     "method"
   ],
   [
+    "dist-docs/lib/module-symbol.js",
+    "file/dist-docs/lib/module-symbol.js.html",
+    "dist-docs/lib/module-symbol.js",
+    "file"
+  ],
+  [
     "dist-docs/lib/pipe-symbol.js",
     "file/dist-docs/lib/pipe-symbol.js.html",
     "dist-docs/lib/pipe-symbol.js",
@@ -526,6 +538,12 @@ window.esdocSearchIndex = [
     "class/dist-docs/lib/project-symbols.js~ProjectSymbols.html#instance-method-getRootContext",
     "dist-docs/lib/project-symbols.js~ProjectSymbols#getRootContext",
     "method"
+  ],
+  [
+    "dist-docs/lib/provider-symbol.js",
+    "file/dist-docs/lib/provider-symbol.js.html",
+    "dist-docs/lib/provider-symbol.js",
+    "file"
   ],
   [
     "dist-docs/lib/resource-resolver.js",

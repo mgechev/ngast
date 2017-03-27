@@ -1,6 +1,6 @@
 {
   "name": "ngast",
-  "version": "0.0.0",
+  "version": "0.0.16",
   "description": "Parsing tools for Angular. The project is an abstraction over the Angular compiler which provides friendly interface.",
   "main": "ngast.bundle.js",
   "module": "index.js",
@@ -10,15 +10,16 @@
     "url": "git+https://github.com/mgechev/ngast.git"
   },
   "peerDependencies": {
-    "@angular/compiler": "^2.4.6",
-    "@angular/core": "^2.4.6"
+    "@angular/compiler": "^4.0.0",
+    "@angular/core": "^4.0.0"
   },
   "devDependencies": {
-    "@angular/compiler": "^2.4.6",
-    "@angular/compiler-cli": "^2.4.6",
-    "@angular/core": "^2.4.6",
-    "@angular/platform-browser": "^2.4.6",
-    "@angular/router": "^3.4.6",
+    "@angular/compiler": "^4.0.0",
+    "@angular/common": "^4.0.0",
+    "@angular/compiler-cli": "^4.0.0",
+    "@angular/core": "^4.0.0",
+    "@angular/platform-browser": "^4.0.0",
+    "@angular/router": "^4.0.0",
     "@angular/tsc-wrapped": "^0.5.2",
     "@types/jasmine": "^2.5.41",
     "@types/node": "^7.0.2",
@@ -31,7 +32,7 @@
     "tsickle": "^0.21.1",
     "tslint": "^4.3.1",
     "typescript": "^2.1.5",
-    "zone.js": "^0.7.6"
+    "zone.js": "^0.8.4"
   },
   "scripts": {
     "build": "rimraf dist && tsc && rollup -c rollup.config.js -i dist/index.js > dist/ngast.bundle.js && cp package.json dist && ts-node -P tsconfig-ts-node.json tools/cleanup.ts && cp README.md dist",
@@ -46,8 +47,5 @@
     "Compiler"
   ],
   "author": "Minko Gechev <mgechev@gmail.com>",
-  "license": "MIT",
-  "dependencies": {
-    "@angular/common": "^2.4.6"
-  }
+  "license": "MIT"
 }

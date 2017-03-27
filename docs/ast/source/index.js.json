@@ -1,28 +1,28 @@
 {
   "type": "File",
   "start": 0,
-  "end": 290,
+  "end": 398,
   "loc": {
     "start": {
       "line": 1,
       "column": 0
     },
     "end": {
-      "line": 6,
+      "line": 8,
       "column": 33
     }
   },
   "program": {
     "type": "Program",
     "start": 0,
-    "end": 290,
+    "end": 398,
     "loc": {
       "start": {
         "line": 1,
         "column": 0
       },
       "end": {
-        "line": 6,
+        "line": 8,
         "column": 33
       }
     },
@@ -205,7 +205,7 @@
       {
         "type": "ExportNamedDeclaration",
         "start": 112,
-        "end": 169,
+        "end": 163,
         "loc": {
           "start": {
             "line": 3,
@@ -213,7 +213,7 @@
           },
           "end": {
             "line": 3,
-            "column": 57
+            "column": 51
           }
         },
         "declaration": null,
@@ -221,7 +221,7 @@
           {
             "type": "ExportSpecifier",
             "start": 121,
-            "end": 136,
+            "end": 133,
             "loc": {
               "start": {
                 "line": 3,
@@ -229,13 +229,13 @@
               },
               "end": {
                 "line": 3,
-                "column": 24
+                "column": 21
               }
             },
             "local": {
               "type": "Identifier",
               "start": 121,
-              "end": 136,
+              "end": 133,
               "loc": {
                 "start": {
                   "line": 3,
@@ -243,6 +243,180 @@
                 },
                 "end": {
                   "line": 3,
+                  "column": 21
+                },
+                "identifierName": "ModuleSymbol"
+              },
+              "name": "ModuleSymbol"
+            },
+            "exported": {
+              "type": "Identifier",
+              "start": 121,
+              "end": 133,
+              "loc": {
+                "start": {
+                  "line": 3,
+                  "column": 9
+                },
+                "end": {
+                  "line": 3,
+                  "column": 21
+                },
+                "identifierName": "ModuleSymbol"
+              },
+              "name": "ModuleSymbol"
+            }
+          }
+        ],
+        "source": {
+          "type": "StringLiteral",
+          "start": 141,
+          "end": 162,
+          "loc": {
+            "start": {
+              "line": 3,
+              "column": 29
+            },
+            "end": {
+              "line": 3,
+              "column": 50
+            }
+          },
+          "extra": {
+            "rawValue": "./lib/module-symbol",
+            "raw": "'./lib/module-symbol'"
+          },
+          "value": "./lib/module-symbol"
+        }
+      },
+      {
+        "type": "ExportNamedDeclaration",
+        "start": 164,
+        "end": 219,
+        "loc": {
+          "start": {
+            "line": 4,
+            "column": 0
+          },
+          "end": {
+            "line": 4,
+            "column": 55
+          }
+        },
+        "declaration": null,
+        "specifiers": [
+          {
+            "type": "ExportSpecifier",
+            "start": 173,
+            "end": 187,
+            "loc": {
+              "start": {
+                "line": 4,
+                "column": 9
+              },
+              "end": {
+                "line": 4,
+                "column": 23
+              }
+            },
+            "local": {
+              "type": "Identifier",
+              "start": 173,
+              "end": 187,
+              "loc": {
+                "start": {
+                  "line": 4,
+                  "column": 9
+                },
+                "end": {
+                  "line": 4,
+                  "column": 23
+                },
+                "identifierName": "ProviderSymbol"
+              },
+              "name": "ProviderSymbol"
+            },
+            "exported": {
+              "type": "Identifier",
+              "start": 173,
+              "end": 187,
+              "loc": {
+                "start": {
+                  "line": 4,
+                  "column": 9
+                },
+                "end": {
+                  "line": 4,
+                  "column": 23
+                },
+                "identifierName": "ProviderSymbol"
+              },
+              "name": "ProviderSymbol"
+            }
+          }
+        ],
+        "source": {
+          "type": "StringLiteral",
+          "start": 195,
+          "end": 218,
+          "loc": {
+            "start": {
+              "line": 4,
+              "column": 31
+            },
+            "end": {
+              "line": 4,
+              "column": 54
+            }
+          },
+          "extra": {
+            "rawValue": "./lib/provider-symbol",
+            "raw": "'./lib/provider-symbol'"
+          },
+          "value": "./lib/provider-symbol"
+        }
+      },
+      {
+        "type": "ExportNamedDeclaration",
+        "start": 220,
+        "end": 277,
+        "loc": {
+          "start": {
+            "line": 5,
+            "column": 0
+          },
+          "end": {
+            "line": 5,
+            "column": 57
+          }
+        },
+        "declaration": null,
+        "specifiers": [
+          {
+            "type": "ExportSpecifier",
+            "start": 229,
+            "end": 244,
+            "loc": {
+              "start": {
+                "line": 5,
+                "column": 9
+              },
+              "end": {
+                "line": 5,
+                "column": 24
+              }
+            },
+            "local": {
+              "type": "Identifier",
+              "start": 229,
+              "end": 244,
+              "loc": {
+                "start": {
+                  "line": 5,
+                  "column": 9
+                },
+                "end": {
+                  "line": 5,
                   "column": 24
                 },
                 "identifierName": "DirectiveSymbol"
@@ -251,15 +425,15 @@
             },
             "exported": {
               "type": "Identifier",
-              "start": 121,
-              "end": 136,
+              "start": 229,
+              "end": 244,
               "loc": {
                 "start": {
-                  "line": 3,
+                  "line": 5,
                   "column": 9
                 },
                 "end": {
-                  "line": 3,
+                  "line": 5,
                   "column": 24
                 },
                 "identifierName": "DirectiveSymbol"
@@ -270,15 +444,15 @@
         ],
         "source": {
           "type": "StringLiteral",
-          "start": 144,
-          "end": 168,
+          "start": 252,
+          "end": 276,
           "loc": {
             "start": {
-              "line": 3,
+              "line": 5,
               "column": 32
             },
             "end": {
-              "line": 3,
+              "line": 5,
               "column": 56
             }
           },
@@ -291,15 +465,15 @@
       },
       {
         "type": "ExportNamedDeclaration",
-        "start": 170,
-        "end": 217,
+        "start": 278,
+        "end": 325,
         "loc": {
           "start": {
-            "line": 4,
+            "line": 6,
             "column": 0
           },
           "end": {
-            "line": 4,
+            "line": 6,
             "column": 47
           }
         },
@@ -307,29 +481,29 @@
         "specifiers": [
           {
             "type": "ExportSpecifier",
-            "start": 179,
-            "end": 189,
+            "start": 287,
+            "end": 297,
             "loc": {
               "start": {
-                "line": 4,
+                "line": 6,
                 "column": 9
               },
               "end": {
-                "line": 4,
+                "line": 6,
                 "column": 19
               }
             },
             "local": {
               "type": "Identifier",
-              "start": 179,
-              "end": 189,
+              "start": 287,
+              "end": 297,
               "loc": {
                 "start": {
-                  "line": 4,
+                  "line": 6,
                   "column": 9
                 },
                 "end": {
-                  "line": 4,
+                  "line": 6,
                   "column": 19
                 },
                 "identifierName": "PipeSymbol"
@@ -338,15 +512,15 @@
             },
             "exported": {
               "type": "Identifier",
-              "start": 179,
-              "end": 189,
+              "start": 287,
+              "end": 297,
               "loc": {
                 "start": {
-                  "line": 4,
+                  "line": 6,
                   "column": 9
                 },
                 "end": {
-                  "line": 4,
+                  "line": 6,
                   "column": 19
                 },
                 "identifierName": "PipeSymbol"
@@ -357,15 +531,15 @@
         ],
         "source": {
           "type": "StringLiteral",
-          "start": 197,
-          "end": 216,
+          "start": 305,
+          "end": 324,
           "loc": {
             "start": {
-              "line": 4,
+              "line": 6,
               "column": 27
             },
             "end": {
-              "line": 4,
+              "line": 6,
               "column": 46
             }
           },
@@ -378,15 +552,15 @@
       },
       {
         "type": "ExportNamedDeclaration",
-        "start": 218,
-        "end": 256,
+        "start": 326,
+        "end": 364,
         "loc": {
           "start": {
-            "line": 5,
+            "line": 7,
             "column": 0
           },
           "end": {
-            "line": 5,
+            "line": 7,
             "column": 38
           }
         },
@@ -394,29 +568,29 @@
         "specifiers": [
           {
             "type": "ExportSpecifier",
-            "start": 227,
-            "end": 233,
+            "start": 335,
+            "end": 341,
             "loc": {
               "start": {
-                "line": 5,
+                "line": 7,
                 "column": 9
               },
               "end": {
-                "line": 5,
+                "line": 7,
                 "column": 15
               }
             },
             "local": {
               "type": "Identifier",
-              "start": 227,
-              "end": 233,
+              "start": 335,
+              "end": 341,
               "loc": {
                 "start": {
-                  "line": 5,
+                  "line": 7,
                   "column": 9
                 },
                 "end": {
-                  "line": 5,
+                  "line": 7,
                   "column": 15
                 },
                 "identifierName": "Symbol"
@@ -425,15 +599,15 @@
             },
             "exported": {
               "type": "Identifier",
-              "start": 227,
-              "end": 233,
+              "start": 335,
+              "end": 341,
               "loc": {
                 "start": {
-                  "line": 5,
+                  "line": 7,
                   "column": 9
                 },
                 "end": {
-                  "line": 5,
+                  "line": 7,
                   "column": 15
                 },
                 "identifierName": "Symbol"
@@ -444,15 +618,15 @@
         ],
         "source": {
           "type": "StringLiteral",
-          "start": 241,
-          "end": 255,
+          "start": 349,
+          "end": 363,
           "loc": {
             "start": {
-              "line": 5,
+              "line": 7,
               "column": 23
             },
             "end": {
-              "line": 5,
+              "line": 7,
               "column": 37
             }
           },
@@ -466,15 +640,15 @@
           {
             "type": "CommentLine",
             "value": "# sourceMappingURL=index.js.map",
-            "start": 257,
-            "end": 290,
+            "start": 365,
+            "end": 398,
             "loc": {
               "start": {
-                "line": 6,
+                "line": 8,
                 "column": 0
               },
               "end": {
-                "line": 6,
+                "line": 8,
                 "column": 33
               }
             }
@@ -488,15 +662,15 @@
     {
       "type": "CommentLine",
       "value": "# sourceMappingURL=index.js.map",
-      "start": 257,
-      "end": 290,
+      "start": 365,
+      "end": 398,
       "loc": {
         "start": {
-          "line": 6,
+          "line": 8,
           "column": 0
         },
         "end": {
-          "line": 6,
+          "line": 8,
           "column": 33
         }
       }
@@ -934,9 +1108,9 @@
         "postfix": false,
         "binop": null
       },
-      "value": "DirectiveSymbol",
+      "value": "ModuleSymbol",
       "start": 121,
-      "end": 136,
+      "end": 133,
       "loc": {
         "start": {
           "line": 3,
@@ -944,6 +1118,372 @@
         },
         "end": {
           "line": 3,
+          "column": 21
+        }
+      }
+    },
+    {
+      "type": {
+        "label": "}",
+        "beforeExpr": false,
+        "startsExpr": false,
+        "rightAssociative": false,
+        "isLoop": false,
+        "isAssign": false,
+        "prefix": false,
+        "postfix": false,
+        "binop": null
+      },
+      "start": 134,
+      "end": 135,
+      "loc": {
+        "start": {
+          "line": 3,
+          "column": 22
+        },
+        "end": {
+          "line": 3,
+          "column": 23
+        }
+      }
+    },
+    {
+      "type": {
+        "label": "name",
+        "beforeExpr": false,
+        "startsExpr": true,
+        "rightAssociative": false,
+        "isLoop": false,
+        "isAssign": false,
+        "prefix": false,
+        "postfix": false,
+        "binop": null
+      },
+      "value": "from",
+      "start": 136,
+      "end": 140,
+      "loc": {
+        "start": {
+          "line": 3,
+          "column": 24
+        },
+        "end": {
+          "line": 3,
+          "column": 28
+        }
+      }
+    },
+    {
+      "type": {
+        "label": "string",
+        "beforeExpr": false,
+        "startsExpr": true,
+        "rightAssociative": false,
+        "isLoop": false,
+        "isAssign": false,
+        "prefix": false,
+        "postfix": false,
+        "binop": null,
+        "updateContext": null
+      },
+      "value": "./lib/module-symbol",
+      "start": 141,
+      "end": 162,
+      "loc": {
+        "start": {
+          "line": 3,
+          "column": 29
+        },
+        "end": {
+          "line": 3,
+          "column": 50
+        }
+      }
+    },
+    {
+      "type": {
+        "label": ";",
+        "beforeExpr": true,
+        "startsExpr": false,
+        "rightAssociative": false,
+        "isLoop": false,
+        "isAssign": false,
+        "prefix": false,
+        "postfix": false,
+        "binop": null,
+        "updateContext": null
+      },
+      "start": 162,
+      "end": 163,
+      "loc": {
+        "start": {
+          "line": 3,
+          "column": 50
+        },
+        "end": {
+          "line": 3,
+          "column": 51
+        }
+      }
+    },
+    {
+      "type": {
+        "label": "export",
+        "keyword": "export",
+        "beforeExpr": false,
+        "startsExpr": false,
+        "rightAssociative": false,
+        "isLoop": false,
+        "isAssign": false,
+        "prefix": false,
+        "postfix": false,
+        "binop": null,
+        "updateContext": null
+      },
+      "value": "export",
+      "start": 164,
+      "end": 170,
+      "loc": {
+        "start": {
+          "line": 4,
+          "column": 0
+        },
+        "end": {
+          "line": 4,
+          "column": 6
+        }
+      }
+    },
+    {
+      "type": {
+        "label": "{",
+        "beforeExpr": true,
+        "startsExpr": true,
+        "rightAssociative": false,
+        "isLoop": false,
+        "isAssign": false,
+        "prefix": false,
+        "postfix": false,
+        "binop": null
+      },
+      "start": 171,
+      "end": 172,
+      "loc": {
+        "start": {
+          "line": 4,
+          "column": 7
+        },
+        "end": {
+          "line": 4,
+          "column": 8
+        }
+      }
+    },
+    {
+      "type": {
+        "label": "name",
+        "beforeExpr": false,
+        "startsExpr": true,
+        "rightAssociative": false,
+        "isLoop": false,
+        "isAssign": false,
+        "prefix": false,
+        "postfix": false,
+        "binop": null
+      },
+      "value": "ProviderSymbol",
+      "start": 173,
+      "end": 187,
+      "loc": {
+        "start": {
+          "line": 4,
+          "column": 9
+        },
+        "end": {
+          "line": 4,
+          "column": 23
+        }
+      }
+    },
+    {
+      "type": {
+        "label": "}",
+        "beforeExpr": false,
+        "startsExpr": false,
+        "rightAssociative": false,
+        "isLoop": false,
+        "isAssign": false,
+        "prefix": false,
+        "postfix": false,
+        "binop": null
+      },
+      "start": 188,
+      "end": 189,
+      "loc": {
+        "start": {
+          "line": 4,
+          "column": 24
+        },
+        "end": {
+          "line": 4,
+          "column": 25
+        }
+      }
+    },
+    {
+      "type": {
+        "label": "name",
+        "beforeExpr": false,
+        "startsExpr": true,
+        "rightAssociative": false,
+        "isLoop": false,
+        "isAssign": false,
+        "prefix": false,
+        "postfix": false,
+        "binop": null
+      },
+      "value": "from",
+      "start": 190,
+      "end": 194,
+      "loc": {
+        "start": {
+          "line": 4,
+          "column": 26
+        },
+        "end": {
+          "line": 4,
+          "column": 30
+        }
+      }
+    },
+    {
+      "type": {
+        "label": "string",
+        "beforeExpr": false,
+        "startsExpr": true,
+        "rightAssociative": false,
+        "isLoop": false,
+        "isAssign": false,
+        "prefix": false,
+        "postfix": false,
+        "binop": null,
+        "updateContext": null
+      },
+      "value": "./lib/provider-symbol",
+      "start": 195,
+      "end": 218,
+      "loc": {
+        "start": {
+          "line": 4,
+          "column": 31
+        },
+        "end": {
+          "line": 4,
+          "column": 54
+        }
+      }
+    },
+    {
+      "type": {
+        "label": ";",
+        "beforeExpr": true,
+        "startsExpr": false,
+        "rightAssociative": false,
+        "isLoop": false,
+        "isAssign": false,
+        "prefix": false,
+        "postfix": false,
+        "binop": null,
+        "updateContext": null
+      },
+      "start": 218,
+      "end": 219,
+      "loc": {
+        "start": {
+          "line": 4,
+          "column": 54
+        },
+        "end": {
+          "line": 4,
+          "column": 55
+        }
+      }
+    },
+    {
+      "type": {
+        "label": "export",
+        "keyword": "export",
+        "beforeExpr": false,
+        "startsExpr": false,
+        "rightAssociative": false,
+        "isLoop": false,
+        "isAssign": false,
+        "prefix": false,
+        "postfix": false,
+        "binop": null,
+        "updateContext": null
+      },
+      "value": "export",
+      "start": 220,
+      "end": 226,
+      "loc": {
+        "start": {
+          "line": 5,
+          "column": 0
+        },
+        "end": {
+          "line": 5,
+          "column": 6
+        }
+      }
+    },
+    {
+      "type": {
+        "label": "{",
+        "beforeExpr": true,
+        "startsExpr": true,
+        "rightAssociative": false,
+        "isLoop": false,
+        "isAssign": false,
+        "prefix": false,
+        "postfix": false,
+        "binop": null
+      },
+      "start": 227,
+      "end": 228,
+      "loc": {
+        "start": {
+          "line": 5,
+          "column": 7
+        },
+        "end": {
+          "line": 5,
+          "column": 8
+        }
+      }
+    },
+    {
+      "type": {
+        "label": "name",
+        "beforeExpr": false,
+        "startsExpr": true,
+        "rightAssociative": false,
+        "isLoop": false,
+        "isAssign": false,
+        "prefix": false,
+        "postfix": false,
+        "binop": null
+      },
+      "value": "DirectiveSymbol",
+      "start": 229,
+      "end": 244,
+      "loc": {
+        "start": {
+          "line": 5,
+          "column": 9
+        },
+        "end": {
+          "line": 5,
           "column": 24
         }
       }
@@ -960,15 +1500,15 @@
         "postfix": false,
         "binop": null
       },
-      "start": 137,
-      "end": 138,
+      "start": 245,
+      "end": 246,
       "loc": {
         "start": {
-          "line": 3,
+          "line": 5,
           "column": 25
         },
         "end": {
-          "line": 3,
+          "line": 5,
           "column": 26
         }
       }
@@ -986,15 +1526,15 @@
         "binop": null
       },
       "value": "from",
-      "start": 139,
-      "end": 143,
+      "start": 247,
+      "end": 251,
       "loc": {
         "start": {
-          "line": 3,
+          "line": 5,
           "column": 27
         },
         "end": {
-          "line": 3,
+          "line": 5,
           "column": 31
         }
       }
@@ -1013,15 +1553,15 @@
         "updateContext": null
       },
       "value": "./lib/directive-symbol",
-      "start": 144,
-      "end": 168,
+      "start": 252,
+      "end": 276,
       "loc": {
         "start": {
-          "line": 3,
+          "line": 5,
           "column": 32
         },
         "end": {
-          "line": 3,
+          "line": 5,
           "column": 56
         }
       }
@@ -1039,15 +1579,15 @@
         "binop": null,
         "updateContext": null
       },
-      "start": 168,
-      "end": 169,
+      "start": 276,
+      "end": 277,
       "loc": {
         "start": {
-          "line": 3,
+          "line": 5,
           "column": 56
         },
         "end": {
-          "line": 3,
+          "line": 5,
           "column": 57
         }
       }
@@ -1067,15 +1607,15 @@
         "updateContext": null
       },
       "value": "export",
-      "start": 170,
-      "end": 176,
+      "start": 278,
+      "end": 284,
       "loc": {
         "start": {
-          "line": 4,
+          "line": 6,
           "column": 0
         },
         "end": {
-          "line": 4,
+          "line": 6,
           "column": 6
         }
       }
@@ -1092,15 +1632,15 @@
         "postfix": false,
         "binop": null
       },
-      "start": 177,
-      "end": 178,
+      "start": 285,
+      "end": 286,
       "loc": {
         "start": {
-          "line": 4,
+          "line": 6,
           "column": 7
         },
         "end": {
-          "line": 4,
+          "line": 6,
           "column": 8
         }
       }
@@ -1118,15 +1658,15 @@
         "binop": null
       },
       "value": "PipeSymbol",
-      "start": 179,
-      "end": 189,
+      "start": 287,
+      "end": 297,
       "loc": {
         "start": {
-          "line": 4,
+          "line": 6,
           "column": 9
         },
         "end": {
-          "line": 4,
+          "line": 6,
           "column": 19
         }
       }
@@ -1143,15 +1683,15 @@
         "postfix": false,
         "binop": null
       },
-      "start": 190,
-      "end": 191,
+      "start": 298,
+      "end": 299,
       "loc": {
         "start": {
-          "line": 4,
+          "line": 6,
           "column": 20
         },
         "end": {
-          "line": 4,
+          "line": 6,
           "column": 21
         }
       }
@@ -1169,15 +1709,15 @@
         "binop": null
       },
       "value": "from",
-      "start": 192,
-      "end": 196,
+      "start": 300,
+      "end": 304,
       "loc": {
         "start": {
-          "line": 4,
+          "line": 6,
           "column": 22
         },
         "end": {
-          "line": 4,
+          "line": 6,
           "column": 26
         }
       }
@@ -1196,15 +1736,15 @@
         "updateContext": null
       },
       "value": "./lib/pipe-symbol",
-      "start": 197,
-      "end": 216,
+      "start": 305,
+      "end": 324,
       "loc": {
         "start": {
-          "line": 4,
+          "line": 6,
           "column": 27
         },
         "end": {
-          "line": 4,
+          "line": 6,
           "column": 46
         }
       }
@@ -1222,15 +1762,15 @@
         "binop": null,
         "updateContext": null
       },
-      "start": 216,
-      "end": 217,
+      "start": 324,
+      "end": 325,
       "loc": {
         "start": {
-          "line": 4,
+          "line": 6,
           "column": 46
         },
         "end": {
-          "line": 4,
+          "line": 6,
           "column": 47
         }
       }
@@ -1250,15 +1790,15 @@
         "updateContext": null
       },
       "value": "export",
-      "start": 218,
-      "end": 224,
+      "start": 326,
+      "end": 332,
       "loc": {
         "start": {
-          "line": 5,
+          "line": 7,
           "column": 0
         },
         "end": {
-          "line": 5,
+          "line": 7,
           "column": 6
         }
       }
@@ -1275,15 +1815,15 @@
         "postfix": false,
         "binop": null
       },
-      "start": 225,
-      "end": 226,
+      "start": 333,
+      "end": 334,
       "loc": {
         "start": {
-          "line": 5,
+          "line": 7,
           "column": 7
         },
         "end": {
-          "line": 5,
+          "line": 7,
           "column": 8
         }
       }
@@ -1301,15 +1841,15 @@
         "binop": null
       },
       "value": "Symbol",
-      "start": 227,
-      "end": 233,
+      "start": 335,
+      "end": 341,
       "loc": {
         "start": {
-          "line": 5,
+          "line": 7,
           "column": 9
         },
         "end": {
-          "line": 5,
+          "line": 7,
           "column": 15
         }
       }
@@ -1326,15 +1866,15 @@
         "postfix": false,
         "binop": null
       },
-      "start": 234,
-      "end": 235,
+      "start": 342,
+      "end": 343,
       "loc": {
         "start": {
-          "line": 5,
+          "line": 7,
           "column": 16
         },
         "end": {
-          "line": 5,
+          "line": 7,
           "column": 17
         }
       }
@@ -1352,15 +1892,15 @@
         "binop": null
       },
       "value": "from",
-      "start": 236,
-      "end": 240,
+      "start": 344,
+      "end": 348,
       "loc": {
         "start": {
-          "line": 5,
+          "line": 7,
           "column": 18
         },
         "end": {
-          "line": 5,
+          "line": 7,
           "column": 22
         }
       }
@@ -1379,15 +1919,15 @@
         "updateContext": null
       },
       "value": "./lib/symbol",
-      "start": 241,
-      "end": 255,
+      "start": 349,
+      "end": 363,
       "loc": {
         "start": {
-          "line": 5,
+          "line": 7,
           "column": 23
         },
         "end": {
-          "line": 5,
+          "line": 7,
           "column": 37
         }
       }
@@ -1405,15 +1945,15 @@
         "binop": null,
         "updateContext": null
       },
-      "start": 255,
-      "end": 256,
+      "start": 363,
+      "end": 364,
       "loc": {
         "start": {
-          "line": 5,
+          "line": 7,
           "column": 37
         },
         "end": {
-          "line": 5,
+          "line": 7,
           "column": 38
         }
       }
@@ -1421,15 +1961,15 @@
     {
       "type": "CommentLine",
       "value": "# sourceMappingURL=index.js.map",
-      "start": 257,
-      "end": 290,
+      "start": 365,
+      "end": 398,
       "loc": {
         "start": {
-          "line": 6,
+          "line": 8,
           "column": 0
         },
         "end": {
-          "line": 6,
+          "line": 8,
           "column": 33
         }
       }
@@ -1447,15 +1987,15 @@
         "binop": null,
         "updateContext": null
       },
-      "start": 290,
-      "end": 290,
+      "start": 398,
+      "end": 398,
       "loc": {
         "start": {
-          "line": 6,
+          "line": 8,
           "column": 33
         },
         "end": {
-          "line": 6,
+          "line": 8,
           "column": 33
         }
       }
