@@ -39,7 +39,7 @@ export class ModuleSymbol extends Symbol {
   }
 
   getDeclaredDirectives() {
-    return this.getWrapperDirectives(this.module.exportedDirectives);
+    return this.getWrapperDirectives(this.module.declaredDirectives);
   }
 
   getExportedDirectives() {
