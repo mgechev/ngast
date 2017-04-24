@@ -25,7 +25,7 @@ describe('ContextSymbols', () => {
     it('should return directive based on node and file name', () => {
       const contextSymbols = new ContextSymbols(program, resourceResolver);
       const sourceFile = program.getSourceFiles().filter(f => f.fileName.indexOf('fixture') >= 0).pop();
-      const node = (sourceFile.getSourceFile().statements[3] as any);
+      const node = (sourceFile.getSourceFile().statements[4] as any);
       const dir = contextSymbols.getDirectiveFromNode(node, sourceFile.fileName);
       expect(dir.isComponent()).toBeTruthy();
       expect(dir.getNonResolvedMetadata().selector).toBe('main-component');
@@ -75,6 +75,14 @@ describe('ContextSymbols', () => {
         expect(modulesMap[n]).toBe(1);
       });
       contextSymbols.updateProgram(createProgramFromTsConfig(__dirname + '/../../test/fixture/basic/tsconfig.json'));
+    });
+
+    it('should be able to discover all providers', () => {
+      const contextSymbols = new ContextSymbols(program, resourceResolver);
+      contextSymbols.updateProgram(createProgramFromTsConfig(__dirname + '/../../test/fixture/basic/tsconfig.json'));
+      const p = contextSymbols.getProviders().map(p => p.symbol.name);
+      expect(p.pop()).toBe('BasicViewProvider');
+      expect(p.pop()).toBe('BasicProvider');
     });
   });
 

@@ -35,6 +35,7 @@ import {
 import {PipeSymbol} from './pipe-symbol';
 import {DirectiveSymbol} from './directive-symbol';
 import { ModuleSymbol } from './module-symbol';
+import { ProviderSymbol } from './provider-symbol';
 
 /**
  * Creates a proxy which provides us access to the symbols
@@ -141,6 +142,26 @@ export class ContextSymbols {
       .map(p => new PipeSymbol(this.program, p, this.pipeResolver, this.metadataResolver, this));
   }
 
+  /**
+   * Returns all the providers available in this module.
+   *
+   * @returns {ProviderSymbol[]}
+   *
+   * @memberOf ContextSymbols
+   */
+  getProviders(): ProviderSymbol[] {
+    const resultSet = new Map<StaticSymbol, ProviderSymbol>();
+    this.getModules().forEach(m => {
+      m.getProviders().forEach(p => resultSet.set(p.symbol, p));
+    });
+    this.getDirectives().forEach(d => {
+      d.getProviders().forEach(p => resultSet.set(p.symbol, p));
+      d.getViewProviders().forEach(p => resultSet.set(p.symbol, p));
+    });
+    const finalResult: ProviderSymbol[] = [];
+    resultSet.forEach(v => finalResult.push(v));
+    return finalResult;
+  }
 
   /**
    * Returns the summary of this context.
@@ -160,7 +181,7 @@ export class ContextSymbols {
 
   /**
    * Updates the program which has impact over the loaded symbols.
-   * In case the `udpate` method is called with program different from
+   * In case the `update` method is called with program different from
    * the current one, all the internal caches will be cleared.
    *
    * @param {ts.Program} program

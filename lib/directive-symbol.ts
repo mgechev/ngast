@@ -108,7 +108,7 @@ export interface TemplateAstResult {
 /**
  * This class represents the individual directives and wrapps
  * their `StaticSymbol`s produced by the `@angular/compiler`.
- * 
+ *
  * @export
  * @class DirectiveSymbol
  * @extends {Symbol}
@@ -119,7 +119,7 @@ export class DirectiveSymbol extends Symbol {
 
   /**
    * Creates an instance of DirectiveSymbol.
-   * 
+   *
    * @param {Program} program
    * @param {StaticSymbol} symbol
    * @param {CompileMetadataResolver} metadataResolver
@@ -303,27 +303,25 @@ export class DirectiveSymbol extends Symbol {
     }
   }
 
-  // getProviders() {
-  //   return (this.getNonResolvedMetadata().providers || []).map(d => {
-  //     const meta = new ProviderMeta(d.token.identifier.reference, d);
-  //     return new ProviderSymbol(
-  //       this._program,
-  //       this.metadataResolver.getProviderMetadata(meta),
-  //       this.metadataResolver
-  //     );
-  //   });
-  // }
+  getProviders() {
+    return (this.getNonResolvedMetadata().providers || []).map(d => {
+      return new ProviderSymbol(
+        this._program,
+        d,
+        this.metadataResolver
+      );
+    });
+  }
 
-  // getViewProviders() {
-  //   return (this.getNonResolvedMetadata().viewProviders || []).map(d => {
-  //     const meta = new ProviderMeta(d.token.identifier.reference, d);
-  //     return new ProviderSymbol(
-  //       this._program,
-  //       this.metadataResolver.getProviderMetadata(meta),
-  //       this.metadataResolver
-  //     );
-  //   });
-  // }
+  getViewProviders() {
+    return (this.getNonResolvedMetadata().viewProviders || []).map(d => {
+      return new ProviderSymbol(
+        this._program,
+        d,
+        this.metadataResolver
+      );
+    });
+  }
 
   /**
    * Returns if the target directive is a component.

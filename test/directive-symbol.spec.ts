@@ -51,6 +51,12 @@ describe('DirectiveSymbol', () => {
       expect(ast.errors.length).toBe(0);
       expect((ast.templateAst[0] as any).directives[0].directive.selector).toBe('[ngIf]');
     });
+
+    it('should find view providers', () => {
+      const contextSymbols = new ContextSymbols(program, resourceResolver);
+      const directive = contextSymbols.getDirectives().pop();
+      expect(directive.getViewProviders().map(v => v.symbol.name).pop()).toBe('BasicViewProvider');
+    });
   });
 
   describe('external metadata and directives', () => {

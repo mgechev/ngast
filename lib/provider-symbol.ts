@@ -6,21 +6,27 @@ export class ProviderSymbol extends Symbol {
   constructor(
     program: Program,
     private provider: CompileProviderMetadata,
-    private metadataResovler: CompileMetadataResolver
+    private metadataResolver: CompileMetadataResolver
   ) {
     super(program, provider.token.identifier.reference);
   }
 
+  /**
+   * Returns the provider metadata.
+   */
   getMetadata() {
     return this.provider;
   }
 
+  /**
+   * Returns the list of dependencies for given provider.
+   */
   getDependencies() {
     return (this.provider.deps || []).map(d => {
       const meta = new ProviderMeta(d.token.identifier.reference, d);
       return new ProviderSymbol(
         this._program,
-        this.metadataResovler.getProviderMetadata(meta), this.metadataResovler
+        this.metadataResolver.getProviderMetadata(meta), this.metadataResolver
       );
     });
   }
