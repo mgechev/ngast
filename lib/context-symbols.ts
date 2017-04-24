@@ -47,6 +47,7 @@ import { ProviderSymbol } from './provider-symbol';
 export class ContextSymbols {
   private metadataResolver: CompileMetadataResolver;
   private reflector: StaticReflector;
+  private summaryResolver: AotSummaryResolver;
   private staticSymbolResolver: StaticSymbolResolver;
   private staticResolverHost: CompilerHost;
   private pipeResolver: PipeResolver;
@@ -281,8 +282,15 @@ export class ContextSymbols {
               console.log(e, filePath);
             });
 
+    this.summaryResolver = new AotSummaryResolver({
+            loadSummary(filePath: string) { return null !; },
+            isSourceFile(sourceFilePath: string) { return true !; },
+            getOutputFileName(sourceFilePath: string) { return null !; }
+          },
+          staticSymbolCache);
+
     this.reflector = new StaticReflector(
-          this.staticSymbolResolver, [], [], (e, filePath) => {
+          this.summaryResolver, this.staticSymbolResolver, [], [], (e, filePath) => {
               console.log(e, filePath);
             });
 
@@ -296,6 +304,6 @@ export class ContextSymbols {
     this.metadataResolver = new CompileMetadataResolver(
             new CompilerConfig(), ngModuleResolver, this.directiveResolver, this.pipeResolver, summaryResolver,
             new DomElementSchemaRegistry(), this.directiveNormalizer, new ɵConsole(),
-            new StaticSymbolCache(), this.reflector);
+            staticSymbolCache, this.reflector);
   }
 }

@@ -1,6 +1,6 @@
 {
   "name": "ngast",
-  "version": "0.0.18",
+  "version": "0.0.19",
   "description": "Parsing tools for Angular. The project is an abstraction over the Angular compiler which provides friendly interface.",
   "main": "ngast.bundle.js",
   "module": "index.js",
@@ -10,16 +10,16 @@
     "url": "git+https://github.com/mgechev/ngast.git"
   },
   "peerDependencies": {
-    "@angular/compiler": "^4.0.0",
-    "@angular/core": "^4.0.0"
+    "@angular/compiler": "4.0.3",
+    "@angular/core": "4.0.3"
   },
   "devDependencies": {
-    "@angular/compiler": "^4.0.0",
-    "@angular/common": "^4.0.0",
-    "@angular/compiler-cli": "^4.0.0",
-    "@angular/core": "^4.0.0",
-    "@angular/platform-browser": "^4.0.0",
-    "@angular/router": "^4.0.0",
+    "@angular/compiler": "4.0.3",
+    "@angular/common": "4.0.3",
+    "@angular/compiler-cli": "4.0.3",
+    "@angular/core": "4.0.3",
+    "@angular/platform-browser": "4.0.3",
+    "@angular/router": "4.0.3",
     "@angular/tsc-wrapped": "^0.5.2",
     "@types/jasmine": "^2.5.41",
     "@types/node": "^7.0.2",

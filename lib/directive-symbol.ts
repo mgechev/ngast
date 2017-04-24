@@ -271,8 +271,7 @@ export class DirectiveSymbol extends Symbol {
           expressionParser, new DomElementSchemaRegistry(), htmlParser, undefined, []);
         const htmlResult = htmlParser.parse(source, '');
         const { directives, pipes, schemas } = this.getDirectiveContext();
-        const parseResult = parser.tryParseHtml(
-            htmlResult, metadata, source, directives, pipes, schemas, '');
+        const parseResult = parser.tryParseHtml(htmlResult, metadata, directives, pipes, schemas);
         result = {
           templateAst: parseResult.templateAst,
           parseErrors: parseResult.errors,
