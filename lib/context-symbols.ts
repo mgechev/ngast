@@ -279,10 +279,7 @@ export class ContextSymbols {
 
     this.staticSymbolResolver = new StaticSymbolResolver(
             // The strict null check gets confused here
-            (this.staticResolverHost as any), staticSymbolCache, summaryResolver,
-            (e, filePath) => {
-              console.log(e, filePath);
-            });
+            (this.staticResolverHost as any), staticSymbolCache, summaryResolver, this.errorReporter);
 
     this.summaryResolver = new AotSummaryResolver({
             loadSummary(filePath: string) { return null !; },
