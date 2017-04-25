@@ -97,6 +97,17 @@ export interface ProgramFactory {
   create(files?: string[]): Program;
 }
 
+/**
+ * Allow custom error reporting.
+ *
+ * @export
+ * @interface ErrorReporter
+ */
+export interface ErrorReporter {
+  (error: any, path: string): void;
+}
+
+const defaultErrorReporter: ErrorReporter = (e: any, path: string) => console.error(e, path);
 
 /**
  * This class is a wrapper around an Angular project.
@@ -122,6 +133,7 @@ export class ProjectSymbols {
   constructor(
     private programFactory: ProgramFactory,
     private resolver: ResourceResolver,
+    private errorReporter = defaultErrorReporter,
     private lazyModuleResolver = new BasicLazyModuleResolver()) {}
 
 
@@ -138,7 +150,7 @@ export class ProjectSymbols {
       return this.rootContext;
     }
     const program = this.programFactory.create();
-    this.rootContext = new ContextSymbols(program, this.resolver);
+    this.rootContext = new ContextSymbols(program, this.resolver, this.errorReporter);
     return this.rootContext;
   }
 
@@ -167,7 +179,7 @@ export class ProjectSymbols {
         .filter(r => !!r.loadChildren)
         .map(r => this.lazyModuleResolver.resolve(summary.type.reference.filePath, r))
         .filter(r => !!r)
-        .map(p => new ContextSymbols(this.programFactory.create([p]), this.resolver));
+        .map(p => new ContextSymbols(this.programFactory.create([p]), this.resolver, this.errorReporter));
       return contexts.concat([].concat.apply([], contexts.map(c => c.getContextSummary()).map(discoverModules)));
     };
     return [this.rootContext].concat(discoverModules(summary));

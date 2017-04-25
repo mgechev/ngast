@@ -14,6 +14,7 @@
     "test/symbol.spec.ts",
     "test/context-symbols.spec.ts",
     "test/directive-symbol.spec.ts",
+    "test/module-symbol.spec.ts",
     "test/pipe-symbol.spec.ts",
     "test/provider-symbol.spec.ts",
     "test/project-symbols.spec.ts"

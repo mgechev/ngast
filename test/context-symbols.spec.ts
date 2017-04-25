@@ -4,6 +4,9 @@ import * as ts from 'typescript';
 import {ContextSymbols} from '../';
 import {createProgramFromTsConfig} from './utils/create-program';
 import {resourceResolver} from './utils/resource-resolver';
+import { ErrorReporter } from '../lib/project-symbols';
+
+const defaultErrorReporter: ErrorReporter = (e: any, path: string) => console.error(e, path);
 
 describe('ContextSymbols', () => {
   describe('basic project', () => {
@@ -14,7 +17,7 @@ describe('ContextSymbols', () => {
     });
 
     it('should return project summary', () => {
-      const contextSymbols = new ContextSymbols(program, resourceResolver);
+      const contextSymbols = new ContextSymbols(program, resourceResolver, defaultErrorReporter);
       const summary = contextSymbols.getContextSummary();
       expect(summary.type.reference.name).toBe('AppModule');
       expect(summary.entryComponents[0].componentType.name).toBe('MainComponent');
@@ -23,7 +26,7 @@ describe('ContextSymbols', () => {
     });
 
     it('should return directive based on node and file name', () => {
-      const contextSymbols = new ContextSymbols(program, resourceResolver);
+      const contextSymbols = new ContextSymbols(program, resourceResolver, defaultErrorReporter);
       const sourceFile = program.getSourceFiles().filter(f => f.fileName.indexOf('fixture') >= 0).pop();
       const node = (sourceFile.getSourceFile().statements[4] as any);
       const dir = contextSymbols.getDirectiveFromNode(node, sourceFile.fileName);
@@ -32,7 +35,7 @@ describe('ContextSymbols', () => {
     });
 
     it('should return reference to the analyzed modules', () => {
-      const contextSymbols = new ContextSymbols(program, resourceResolver);
+      const contextSymbols = new ContextSymbols(program, resourceResolver, defaultErrorReporter);
       const result = contextSymbols.getAnalyzedModules();
       expect(result.ngModules.some(m => m.type.reference.name === 'AppModule')).toBeTruthy();
       expect(result.ngModules.some(m => m.type.reference.name === 'BrowserModule')).toBeTruthy();
@@ -40,32 +43,32 @@ describe('ContextSymbols', () => {
     });
 
     it('should return reference to the registered directives', () => {
-      const contextSymbols = new ContextSymbols(program, resourceResolver);
+      const contextSymbols = new ContextSymbols(program, resourceResolver, defaultErrorReporter);
       const result = contextSymbols.getDirectives();
       expect(result.some(m => m.symbol.name === 'MainComponent')).toBeTruthy();
     });
 
     it('should return set of all modules', () => {
-      const contextSymbols = new ContextSymbols(program, resourceResolver);
+      const contextSymbols = new ContextSymbols(program, resourceResolver, defaultErrorReporter);
       const result = contextSymbols.getModules();
       expect(result.some(m => m.symbol.name === 'AppModule')).toBeTruthy();
     });
 
     it('should return set of pipes', () => {
-      const contextSymbols = new ContextSymbols(program, resourceResolver);
+      const contextSymbols = new ContextSymbols(program, resourceResolver, defaultErrorReporter);
       const result = contextSymbols.getPipes();
       expect(result.some(p => p.symbol.name === 'DecimalPipe')).toBeTruthy();
     });
 
     it('should update the program', () => {
-      const contextSymbols = new ContextSymbols(program, resourceResolver);
+      const contextSymbols = new ContextSymbols(program, resourceResolver, defaultErrorReporter);
       const spy = spyOn(ContextSymbols.prototype as any, 'validate');
       contextSymbols.updateProgram(createProgramFromTsConfig(__dirname + '/../../test/fixture/basic/tsconfig.json'));
       expect(spy).toHaveBeenCalled();
     });
 
     it('should not return duplicate modules', () => {
-      const contextSymbols = new ContextSymbols(program, resourceResolver);
+      const contextSymbols = new ContextSymbols(program, resourceResolver, defaultErrorReporter);
       const modules = contextSymbols.getModules();
       const modulesMap = {};
       modules.forEach(m => {
@@ -78,7 +81,7 @@ describe('ContextSymbols', () => {
     });
 
     it('should be able to discover all providers', () => {
-      const contextSymbols = new ContextSymbols(program, resourceResolver);
+      const contextSymbols = new ContextSymbols(program, resourceResolver, defaultErrorReporter);
       contextSymbols.updateProgram(createProgramFromTsConfig(__dirname + '/../../test/fixture/basic/tsconfig.json'));
       const p = contextSymbols.getProviders().map(p => p.symbol.name);
       expect(p.pop()).toBe('BasicViewProvider');
@@ -94,7 +97,7 @@ describe('ContextSymbols', () => {
     });
 
     it('should find lazy modules', () => {
-      const contextSymbols = new ContextSymbols(program, resourceResolver);
+      const contextSymbols = new ContextSymbols(program, resourceResolver, defaultErrorReporter);
       const summary = contextSymbols.getContextSummary();
       expect(summary.type.reference.name).toBe('AppModule');
       // writeFileSync('data.json', JSON.stringify(summary, null, 2));

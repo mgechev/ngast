@@ -36,6 +36,7 @@ import {PipeSymbol} from './pipe-symbol';
 import {DirectiveSymbol} from './directive-symbol';
 import { ModuleSymbol } from './module-symbol';
 import { ProviderSymbol } from './provider-symbol';
+import { ErrorReporter } from './project-symbols';
 
 /**
  * Creates a proxy which provides us access to the symbols
@@ -68,7 +69,8 @@ export class ContextSymbols {
    * @memberOf ContextSymbols
    */
   constructor(private program: ts.Program,
-     private resourceResolver: ResourceResolver) {
+     private resourceResolver: ResourceResolver,
+     private errorReporter: ErrorReporter) {
     this.options = this.program.getCompilerOptions();
     this.init();
   }
@@ -290,9 +292,7 @@ export class ContextSymbols {
           staticSymbolCache);
 
     this.reflector = new StaticReflector(
-          this.summaryResolver, this.staticSymbolResolver, [], [], (e, filePath) => {
-              console.log(e, filePath);
-            });
+          this.summaryResolver, this.staticSymbolResolver, [], [], this.errorReporter);
 
     const ngModuleResolver = new NgModuleResolver(this.reflector);
     this.directiveResolver = new DirectiveResolver(this.reflector);
