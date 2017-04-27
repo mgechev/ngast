@@ -5,6 +5,7 @@
     "sourceMap": true,
     "declaration": true,
     "moduleResolution": "node",
+    "strictNullChecks": true,
     "emitDecoratorMetadata": true,
     "experimentalDecorators": true,
     "stripInternal": true,
