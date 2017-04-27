@@ -3,9 +3,8 @@ import * as ts from 'typescript';
 import {ContextSymbols} from '../';
 import {createProgramFromTsConfig} from './utils/create-program';
 import {resourceResolver} from './utils/resource-resolver';
-import { ErrorReporter } from '../lib/project-symbols';
 
-const defaultErrorReporter: ErrorReporter = (e: any, path: string) => console.error(e, path);
+const defaultErrorReporter = (e: any, path: string) => console.error(e, path);
 
 describe('ProviderSymbol', () => {
   let program: ts.Program;

@@ -14,13 +14,16 @@
     "@angular/core": "4.0.3"
   },
   "devDependencies": {
-    "@angular/compiler": "4.0.3",
     "@angular/common": "4.0.3",
+    "@angular/compiler": "4.0.3",
     "@angular/compiler-cli": "4.0.3",
     "@angular/core": "4.0.3",
     "@angular/platform-browser": "4.0.3",
+    "@angular/platform-browser-dynamic": "4.0.3",
     "@angular/router": "4.0.3",
     "@angular/tsc-wrapped": "^0.5.2",
+    "@angular/forms": "^4.1.0",
+    "@angular/http": "^4.0.3",
     "@types/jasmine": "^2.5.41",
     "@types/node": "^7.0.2",
     "esdoc": "^0.5.2",

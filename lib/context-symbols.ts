@@ -36,7 +36,10 @@ import {PipeSymbol} from './pipe-symbol';
 import {DirectiveSymbol} from './directive-symbol';
 import { ModuleSymbol } from './module-symbol';
 import { ProviderSymbol } from './provider-symbol';
-import { ErrorReporter } from './project-symbols';
+
+export interface ErrorReporter {
+  (error: any, path: string): void;
+}
 
 /**
  * Creates a proxy which provides us access to the symbols
@@ -87,7 +90,7 @@ export class ContextSymbols {
     this.validate();
     const resultMap: Map<StaticSymbol, CompileNgModuleMetadata> = new Map();
     this.getAnalyzedModules()
-      .ngModuleByPipeOrDirective
+      .ngModules
       .forEach((m, s) => {
         resultMap.set(m.type.reference, m);
       });

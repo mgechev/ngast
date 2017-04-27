@@ -2,11 +2,11 @@
 # yarn lockfile v1
 
 
-"@angular/common@^4.0.3":
+"@angular/common@4.0.3":
   version "4.0.3"
   resolved "https://registry.yarnpkg.com/@angular/common/-/common-4.0.3.tgz#17472895eb425f2812b3a79162b5b494d2506a5b"
 
-"@angular/compiler-cli@^4.0.3":
+"@angular/compiler-cli@4.0.3":
   version "4.0.3"
   resolved "https://registry.yarnpkg.com/@angular/compiler-cli/-/compiler-cli-4.0.3.tgz#691f280bc4d6611a88d6555f43e57032a0d34300"
   dependencies:
@@ -14,19 +14,31 @@
     minimist "^1.2.0"
     reflect-metadata "^0.1.2"
 
-"@angular/compiler@^4.0.3":
+"@angular/compiler@4.0.3":
   version "4.0.3"
   resolved "https://registry.yarnpkg.com/@angular/compiler/-/compiler-4.0.3.tgz#8b3cad338ac539328e10a6a4bfaa057094f7bc89"
 
-"@angular/core@^4.0.3":
+"@angular/core@4.0.3":
   version "4.0.3"
   resolved "https://registry.yarnpkg.com/@angular/core/-/core-4.0.3.tgz#61be21db6aa5778e33159ffd38cbbebaf16120d9"
 
-"@angular/platform-browser@^4.0.3":
+"@angular/forms@^4.1.0":
+  version "4.1.0"
+  resolved "https://registry.yarnpkg.com/@angular/forms/-/forms-4.1.0.tgz#8eae2a45c4ba064b377f9280e59c012b5dac6b80"
+
+"@angular/http@^4.0.3":
+  version "4.0.3"
+  resolved "https://registry.yarnpkg.com/@angular/http/-/http-4.0.3.tgz#efbb701a215ec7704c021676484b85ed47392f4b"
+
+"@angular/platform-browser-dynamic@4.0.3":
+  version "4.0.3"
+  resolved "https://registry.yarnpkg.com/@angular/platform-browser-dynamic/-/platform-browser-dynamic-4.0.3.tgz#5fa3b98f725999b631d7d7174e6e43dcbf6aa9ac"
+
+"@angular/platform-browser@4.0.3":
   version "4.0.3"
   resolved "https://registry.yarnpkg.com/@angular/platform-browser/-/platform-browser-4.0.3.tgz#170b18d5af4ee02b248aa6a1f1e0584ac841681e"
 
-"@angular/router@^4.0.3":
+"@angular/router@4.0.3":
   version "4.0.3"
   resolved "https://registry.yarnpkg.com/@angular/router/-/router-4.0.3.tgz#24184e9b1266c4ad017b2be81573464b1e4c5dfa"
 
