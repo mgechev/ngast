@@ -46,9 +46,9 @@ export interface ErrorReporter {
  * defined in given context (could be lazy loaded module or the root module).
  *
  * @export
- * @class ContextSymbols
+ * @class ProjectSymbols
  */
-export class ContextSymbols {
+export class ProjectSymbols {
   private metadataResolver: CompileMetadataResolver;
   private reflector: StaticReflector;
   private summaryResolver: AotSummaryResolver;
@@ -64,12 +64,12 @@ export class ContextSymbols {
 
 
   /**
-   * Creates an instance of ContextSymbols.
+   * Creates an instance of ProjectSymbols.
    *
    * @param {ts.Program} program
    * @param {ResourceResolver} resourceResolver
    *
-   * @memberOf ContextSymbols
+   * @memberOf ProjectSymbols
    */
   constructor(private program: ts.Program,
      private resourceResolver: ResourceResolver,
@@ -84,7 +84,7 @@ export class ContextSymbols {
    *
    * @returns {ModuleSymbol[]}
    *
-   * @memberOf ContextSymbols
+   * @memberOf ProjectSymbols
    */
   getModules(): ModuleSymbol[] {
     this.validate();
@@ -117,7 +117,7 @@ export class ContextSymbols {
    *
    * @returns {DirectiveSymbol[]}
    *
-   * @memberOf ContextSymbols
+   * @memberOf ProjectSymbols
    */
   getDirectives(): DirectiveSymbol[] {
     return this.extractProgramSymbols()
@@ -140,7 +140,7 @@ export class ContextSymbols {
    *
    * @returns {PipeSymbol[]}
    *
-   * @memberOf ContextSymbols
+   * @memberOf ProjectSymbols
    */
   getPipes(): PipeSymbol[] {
     return this.extractProgramSymbols()
@@ -153,7 +153,7 @@ export class ContextSymbols {
    *
    * @returns {ProviderSymbol[]}
    *
-   * @memberOf ContextSymbols
+   * @memberOf ProjectSymbols
    */
   getProviders(): ProviderSymbol[] {
     const resultSet = new Map<StaticSymbol, ProviderSymbol>();
@@ -174,7 +174,7 @@ export class ContextSymbols {
    *
    * @returns {(CompileNgModuleSummary | undefined)}
    *
-   * @memberOf ContextSymbols
+   * @memberOf ProjectSymbols
    */
   getContextSummary(): CompileNgModuleSummary | undefined {
     const module = this.getModules().pop();
@@ -192,7 +192,7 @@ export class ContextSymbols {
    *
    * @param {ts.Program} program
    *
-   * @memberOf ContextSymbols
+   * @memberOf ProjectSymbols
    */
   updateProgram(program: ts.Program): void {
     if (program !== this.program) {

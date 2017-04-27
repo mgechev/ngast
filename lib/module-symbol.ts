@@ -10,7 +10,7 @@ import {
   PipeResolver
 } from '@angular/compiler';
 import { ResourceResolver } from './resource-resolver';
-import { ContextSymbols } from './context-symbols';
+import {ProjectSymbols} from './project-symbols';
 import { Symbol } from './symbol';
 import { DirectiveSymbol } from './directive-symbol';
 import { PipeSymbol } from './pipe-symbol';
@@ -29,7 +29,7 @@ export class ModuleSymbol extends Symbol {
     private pipeResolver: PipeResolver,
     private reflector: StaticReflector,
     private resourceResolver: ResourceResolver,
-    private projectSymbols: ContextSymbols) {
+    private projectSymbols: ProjectSymbols) {
       super(program, symbol);
       this.module = this.metadataResolver.getNgModuleMetadata(symbol);
     }

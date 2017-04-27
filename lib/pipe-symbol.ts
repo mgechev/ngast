@@ -2,7 +2,7 @@ import {Program} from 'typescript';
 import {resolveForwardRef, Pipe} from '@angular/core';
 import { StaticSymbol, PipeResolver, CompileNgModuleMetadata, CompileMetadataResolver, ProviderMeta } from '@angular/compiler';
 
-import {ContextSymbols} from './context-symbols';
+import {ProjectSymbols} from './project-symbols';
 import {Symbol} from './symbol';
 import { ProviderSymbol } from './provider-symbol';
 
@@ -18,7 +18,7 @@ export class PipeSymbol extends Symbol {
 
   /**
    * Creates an instance of PipeSymbol.
-   * 
+   *
    * @param {Program} program
    * @param {StaticSymbol} symbol
    * @param {PipeResolver} resolver
@@ -31,7 +31,7 @@ export class PipeSymbol extends Symbol {
     symbol: StaticSymbol,
     private resolver: PipeResolver,
     private metadataResolver: CompileMetadataResolver,
-    private projectSymbols: ContextSymbols
+    private projectSymbols: ProjectSymbols
   ) {
     super(program, symbol);
   }

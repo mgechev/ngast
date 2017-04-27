@@ -24,7 +24,7 @@ import {
   ParseError
 } from '@angular/compiler';
 
-import {ContextSymbols} from './context-symbols';
+import {ProjectSymbols} from './project-symbols';
 import { Symbol } from './symbol';
 import {ResourceResolver} from './resource-resolver';
 
@@ -139,7 +139,7 @@ export class DirectiveSymbol extends Symbol {
     private resolver: DirectiveResolver,
     private reflector: StaticReflector,
     private resourceResolver: ResourceResolver,
-    private projectSymbols: ContextSymbols) {
+    private projectSymbols: ProjectSymbols) {
       super(program, symbol);
     }
 

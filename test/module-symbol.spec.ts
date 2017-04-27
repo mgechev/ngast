@@ -1,6 +1,6 @@
 import * as ts from 'typescript';
 
-import {ContextSymbols} from '../';
+import {ProjectSymbols} from '../';
 import {createProgramFromTsConfig} from './utils/create-program';
 import {resourceResolver} from './utils/resource-resolver';
 
@@ -15,7 +15,7 @@ describe('ModuleSymbol', () => {
     });
 
     it('should get all modules', () => {
-      const contextSymbols = new ContextSymbols(program, resourceResolver, defaultErrorReporter);
+      const contextSymbols = new ProjectSymbols(program, resourceResolver, defaultErrorReporter);
       const modules = contextSymbols.getModules();
       expect(modules.map(s => s.symbol.name).pop()).toBe('AppModule');
     });

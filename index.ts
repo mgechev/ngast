@@ -1,4 +1,4 @@
-export {ContextSymbols, ErrorReporter} from './lib/context-symbols';
+export {ProjectSymbols, ErrorReporter} from './lib/project-symbols';
 export {ModuleSymbol} from './lib/module-symbol';
 export {ProviderSymbol} from './lib/provider-symbol';
 export {DirectiveSymbol} from './lib/directive-symbol';
