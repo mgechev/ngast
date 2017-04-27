@@ -1,15 +1,12 @@
 import { CompileProviderMetadata, CompileMetadataResolver, ProviderMeta } from '@angular/compiler';
-import { Symbol } from './symbol';
 import { Program } from 'typescript';
 
-export class ProviderSymbol extends Symbol {
+export class ProviderSymbol {
   constructor(
-    program: Program,
+    private program: Program,
     private provider: CompileProviderMetadata,
     private metadataResolver: CompileMetadataResolver
-  ) {
-    super(program, provider.token.identifier.reference);
-  }
+  ) {}
 
   /**
    * Returns the provider metadata.
@@ -25,7 +22,7 @@ export class ProviderSymbol extends Symbol {
     return (this.provider.deps || []).map(d => {
       const meta = new ProviderMeta(d.token.identifier.reference, d);
       return new ProviderSymbol(
-        this._program,
+        this.program,
         this.metadataResolver.getProviderMetadata(meta), this.metadataResolver
       );
     });

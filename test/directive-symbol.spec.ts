@@ -57,7 +57,7 @@ describe('DirectiveSymbol', () => {
     it('should find view providers', () => {
       const contextSymbols = new ProjectSymbols(program, resourceResolver, defaultErrorReporter);
       const directive = contextSymbols.getDirectives().pop();
-      expect(directive.getViewProviders().map(v => v.symbol.name).pop()).toBe('BasicViewProvider');
+      expect(directive.getViewProviders().map(v => v.getMetadata().token.identifier.reference.name).pop()).toBe('BasicViewProvider');
     });
   });
 
@@ -135,7 +135,7 @@ describe('DirectiveSymbol', () => {
     it('should find directive dependencies', () => {
       const contextSymbols = new ProjectSymbols(program, resourceResolver, defaultErrorReporter);
       const directive = contextSymbols.getDirectives().pop();
-      expect(directive.getDependencies()[0].symbol.name).toBe('Renderer');
+      expect(directive.getDependencies()[0].getMetadata().token.identifier.reference.name).toBe('Renderer');
     });
 
     it('should work with directive with no deps', () => {

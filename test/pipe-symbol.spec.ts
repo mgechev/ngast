@@ -29,6 +29,6 @@ describe('PipeSymbol', () => {
   it('should provide access to the pipe\'s metadata', () => {
     const contextSymbols = new ProjectSymbols(program, resourceResolver, defaultErrorReporter);
     const pipe = contextSymbols.getPipes().pop();
-    expect(pipe.getDependencies()[0].symbol.name).toBe('Renderer');
+    expect(pipe.getDependencies()[0].getMetadata().token.identifier.reference.name).toBe('Renderer');
   });
 });

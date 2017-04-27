@@ -36,6 +36,7 @@ import {PipeSymbol} from './pipe-symbol';
 import {DirectiveSymbol} from './directive-symbol';
 import { ModuleSymbol } from './module-symbol';
 import { ProviderSymbol } from './provider-symbol';
+import { CompileProviderMetadata } from '@angular/compiler';
 
 export interface ErrorReporter {
   (error: any, path: string): void;
@@ -156,13 +157,13 @@ export class ProjectSymbols {
    * @memberOf ProjectSymbols
    */
   getProviders(): ProviderSymbol[] {
-    const resultSet = new Map<StaticSymbol, ProviderSymbol>();
+    const resultSet = new Map<CompileProviderMetadata, ProviderSymbol>();
     this.getModules().forEach(m => {
-      m.getProviders().forEach(p => resultSet.set(p.symbol, p));
+      m.getProviders().forEach(p => resultSet.set(p.getMetadata(), p));
     });
     this.getDirectives().forEach(d => {
-      d.getProviders().forEach(p => resultSet.set(p.symbol, p));
-      d.getViewProviders().forEach(p => resultSet.set(p.symbol, p));
+      d.getProviders().forEach(p => resultSet.set(p.getMetadata(), p));
+      d.getViewProviders().forEach(p => resultSet.set(p.getMetadata(), p));
     });
     const finalResult: ProviderSymbol[] = [];
     resultSet.forEach(v => finalResult.push(v));

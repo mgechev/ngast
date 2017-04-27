@@ -73,7 +73,7 @@ describe('ContextSymbols', () => {
     it('should be able to discover all providers', () => {
       const contextSymbols = new ProjectSymbols(program, resourceResolver, defaultErrorReporter);
       contextSymbols.updateProgram(createProgramFromTsConfig(__dirname + '/../../test/fixture/basic/tsconfig.json'));
-      const p = contextSymbols.getProviders().map(p => p.symbol.name);
+      const p = contextSymbols.getProviders().map(p => p.getMetadata().token.identifier.reference.name);
       expect(p.pop()).toBe('BasicViewProvider');
       expect(p.pop()).toBe('BasicProvider');
     });
