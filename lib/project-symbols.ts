@@ -196,16 +196,21 @@ export class ProjectSymbols {
    */
   getDirectiveFromNode(declaration: ts.ClassDeclaration, fileName: string) {
     const sourceFile = this.program.getSourceFile(fileName);
-    return new DirectiveSymbol(
-      this.program,
-      this.reflector.getStaticSymbol(sourceFile.fileName, declaration.name.text),
-      this.metadataResolver,
-      this.directiveNormalizer,
-      this.directiveResolver,
-      this.reflector,
-      this.resourceResolver,
-      this
-    );
+    const identifier = declaration.name;
+    if (identifier) {
+      return new DirectiveSymbol(
+        this.program,
+        this.reflector.getStaticSymbol(sourceFile.fileName, identifier.text),
+        this.metadataResolver,
+        this.directiveNormalizer,
+        this.directiveResolver,
+        this.reflector,
+        this.resourceResolver,
+        this
+      );
+    } else {
+      return null;
+    }
   }
 
   /** @internal */

@@ -31,7 +31,12 @@ export class ModuleSymbol extends Symbol {
     private resourceResolver: ResourceResolver,
     private projectSymbols: ProjectSymbols) {
       super(program, symbol);
-      this.module = this.metadataResolver.getNgModuleMetadata(symbol);
+      const meta = this.metadataResolver.getNgModuleMetadata(symbol);
+      if (meta) {
+        this.module = meta;
+      } else {
+        throw new Error('No metadata for ' + symbol.name);
+      }
     }
 
   getBootstrapComponents() {
@@ -69,7 +74,7 @@ export class ModuleSymbol extends Symbol {
    *
    * @memberOf ModuleSymbol
    */
-  getModuleSummary(): CompileNgModuleSummary | undefined {
+  getModuleSummary(): CompileNgModuleSummary | null {
     return this.metadataResolver.getNgModuleSummary(this.symbol);
   }
 

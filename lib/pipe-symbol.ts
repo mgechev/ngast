@@ -57,7 +57,7 @@ export class PipeSymbol extends Symbol {
    *
    * @memberOf PipeSymbol
    */
-  getMetadata(): Pipe {
+  getMetadata(): Pipe | null {
     return this.resolver.resolve(resolveForwardRef(this.symbol));
   }
 
@@ -67,7 +67,13 @@ export class PipeSymbol extends Symbol {
       return [];
     } else {
       return (summary.type.diDeps || []).map(d => {
-        const meta = new ProviderMeta(d.token.identifier.reference, d);
+        let token = d.token;
+        if (d.token) {
+          if (d.token.identifier) {
+            token = d.token.identifier.reference;
+          }
+        }
+        const meta = new ProviderMeta(token, d);
         return new ProviderSymbol(
           this._program,
           this.metadataResolver.getProviderMetadata(meta),

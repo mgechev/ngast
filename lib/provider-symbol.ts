@@ -20,7 +20,13 @@ export class ProviderSymbol {
    */
   getDependencies() {
     return (this.provider.deps || []).map(d => {
-      const meta = new ProviderMeta(d.token.identifier.reference, d);
+      let token = d.token;
+      if (d.token) {
+        if (d.token.identifier) {
+          token = d.token.identifier.reference;
+        }
+      }
+      const meta = new ProviderMeta(token, d);
       return new ProviderSymbol(
         this.program,
         this.metadataResolver.getProviderMetadata(meta), this.metadataResolver

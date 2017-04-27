@@ -1,4 +1,3 @@
-/* tslint:disable */
 /**
  * @license
  * Copyright Google Inc. All Rights Reserved.
@@ -66,7 +65,7 @@ export abstract class CssRuleAst extends CssAst {
 export class CssBlockRuleAst extends CssRuleAst {
   constructor(
       public location: ParseSourceSpan, public type: BlockType, public block: CssBlockAst,
-      public name: CssToken = null) {
+      public name: CssToken|null = null) {
     super(location);
   }
   visit(visitor: CssAstVisitor, context?: any): any {
@@ -97,7 +96,7 @@ export class CssBlockDefinitionRuleAst extends CssBlockRuleAst {
       location: ParseSourceSpan, public strValue: string, type: BlockType,
       public query: CssAtRulePredicateAst, block: CssBlockAst) {
     super(location, type, block);
-    var firstCssToken: CssToken = query.tokens[0];
+    const firstCssToken: CssToken = query.tokens[0];
     this.name = new CssToken(
         firstCssToken.index, firstCssToken.column, firstCssToken.line, CssTokenType.Identifier,
         this.strValue);
@@ -239,9 +238,9 @@ export class CssUnknownTokenListAst extends CssRuleAst {
 }
 
 export function mergeTokens(tokens: CssToken[], separator: string = ''): CssToken {
-  var mainToken = tokens[0];
-  var str = mainToken.strValue;
-  for (var i = 1; i < tokens.length; i++) {
+  const mainToken = tokens[0];
+  let str = mainToken.strValue;
+  for (let i = 1; i < tokens.length; i++) {
     str += separator + tokens[i].strValue;
   }
 
