@@ -15,15 +15,6 @@ describe('ContextSymbols', () => {
       program = createProgramFromTsConfig(__dirname + '/../../test/fixture/basic/tsconfig.json');
     });
 
-    it('should return project summary', () => {
-      const contextSymbols = new ProjectSymbols(program, resourceResolver, defaultErrorReporter);
-      const summary = contextSymbols.getContextSummary();
-      expect(summary.type.reference.name).toBe('AppModule');
-      expect(summary.entryComponents[0].componentType.name).toBe('MainComponent');
-      expect(summary.exportedDirectives[0].reference.name).toBe('MainComponent');
-      expect(summary.modules[0].reference.name).toBe('CommonModule');
-    });
-
     it('should return directive based on node and file name', () => {
       const contextSymbols = new ProjectSymbols(program, resourceResolver, defaultErrorReporter);
       const sourceFile = program.getSourceFiles().filter(f => f.fileName.indexOf('fixture') >= 0).pop();
@@ -95,15 +86,5 @@ describe('ContextSymbols', () => {
       program = createProgramFromTsConfig(__dirname + '/../../test/fixture/routing/tsconfig.json');
     });
 
-    it('should find lazy modules', () => {
-      const contextSymbols = new ProjectSymbols(program, resourceResolver, defaultErrorReporter);
-      const summary = contextSymbols.getContextSummary();
-      expect(summary.type.reference.name).toBe('AppModule');
-      // writeFileSync('data.json', JSON.stringify(summary, null, 2));
-      const routeConfig = summary.providers
-        .filter(p => p.provider.token.identifier.reference.name === 'ANALYZE_FOR_ENTRY_COMPONENTS').pop();
-      expect(routeConfig.provider.useValue[0].path).toBe('lazy-a');
-      expect(routeConfig.provider.useValue[2].path).toBe('regular');
-    });
   });
 });

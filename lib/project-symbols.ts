@@ -170,22 +170,6 @@ export class ProjectSymbols {
   }
 
   /**
-   * Returns the summary of this context.
-   *
-   * @returns {(CompileNgModuleSummary | undefined)}
-   *
-   * @memberOf ProjectSymbols
-   */
-  getContextSummary(): CompileNgModuleSummary | undefined {
-    const module = this.getModules().pop();
-    if (module) {
-      return this.metadataResolver.getNgModuleSummary(module.symbol);
-    }
-    return undefined;
-  }
-
-
-  /**
    * Updates the program which has impact over the loaded symbols.
    * In case the `update` method is called with program different from
    * the current one, all the internal caches will be cleared.

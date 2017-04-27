@@ -1,6 +1,6 @@
 {
   "name": "ngast",
-  "version": "0.0.23",
+  "version": "0.0.24",
   "description": "Parsing tools for Angular. The project is an abstraction over the Angular compiler which provides friendly interface.",
   "main": "ngast.bundle.js",
   "module": "index.js",

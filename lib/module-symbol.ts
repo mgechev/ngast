@@ -62,6 +62,17 @@ export class ModuleSymbol extends Symbol {
     return this.getWrappedModules(this.module.exportedModules);
   }
 
+  /**
+   * Returns the summary of this context.
+   *
+   * @returns {(CompileNgModuleSummary | undefined)}
+   *
+   * @memberOf ModuleSymbol
+   */
+  getModuleSummary(): CompileNgModuleSummary | undefined {
+    return this.metadataResolver.getNgModuleSummary(this.symbol);
+  }
+
   getProviders() {
     return this.module.providers.map(p => {
       return new ProviderSymbol(this._program, p, this.metadataResolver);
