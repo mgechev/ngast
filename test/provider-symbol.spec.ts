@@ -27,4 +27,30 @@ describe('ProviderSymbol', () => {
     });
   });
 
+  describe('basic primitive token example', () => {
+    beforeEach(() => {
+      program = createProgramFromTsConfig(__dirname + '/../../test/fixture/basic-primitive-token/tsconfig.json');
+    });
+
+    it('should discover transitive dependencies', () => {
+      const module = new ProjectSymbols(program, resourceResolver, defaultErrorReporter).getModules().pop();
+      const providers = module.getProviders();
+      const dependencyProvider = providers.pop();
+      const dependentProvider = providers.pop();
+      expect(dependentProvider.getDependencies().pop()
+        .getMetadata().token.identifier.reference.name).toBe('DependencyProvider');
+    });
+
+    it('should discover directive transitive dependencies', () => {
+      const module = new ProjectSymbols(program, resourceResolver, defaultErrorReporter).getModules().pop();
+      const dirs = module.getDeclaredDirectives();
+      // console.log(dirs.pop().getDependencies().pop().getDependencies()[0].getMetadata().token);
+      // const dependencyProvider = providers.pop();
+      // const dependentProvider = providers.pop();
+      // expect(dependentProvider.getDependencies().pop()
+      //   .getMetadata().token.identifier.reference.name).toBe('DependencyProvider');
+    });
+
+  });
+
 });
