@@ -10,20 +10,20 @@
     "url": "git+https://github.com/mgechev/ngast.git"
   },
   "peerDependencies": {
-    "@angular/compiler": "4.1.0",
-    "@angular/core": "4.1.0"
+    "@angular/compiler": "4.2.3",
+    "@angular/core": "4.2.3"
   },
   "devDependencies": {
-    "@angular/common": "4.1.0",
-    "@angular/compiler": "4.1.0",
-    "@angular/compiler-cli": "4.1.0",
-    "@angular/core": "4.1.0",
-    "@angular/platform-browser": "4.1.0",
-    "@angular/platform-browser-dynamic": "4.1.0",
-    "@angular/router": "4.1.0",
+    "@angular/common": "4.2.3",
+    "@angular/compiler": "4.2.3",
+    "@angular/compiler-cli": "4.2.3",
+    "@angular/core": "4.2.3",
+    "@angular/platform-browser": "4.2.3",
+    "@angular/platform-browser-dynamic": "4.2.3",
+    "@angular/router": "4.2.3",
     "@angular/tsc-wrapped": "^0.5.2",
-    "@angular/forms": "^4.1.0",
-    "@angular/http": "^4.1.0",
+    "@angular/forms": "^4.2.3",
+    "@angular/http": "^4.2.3",
     "@types/jasmine": "^2.5.41",
     "@types/node": "^7.0.2",
     "esdoc": "^0.5.2",

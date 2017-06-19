@@ -4,7 +4,6 @@ import {
   StaticSymbol,
   DirectiveResolver,
   CompileMetadataResolver,
-  componentModuleUrl,
   StaticReflector,
   UrlResolver,
   HtmlParser,
@@ -180,7 +179,7 @@ export class DirectiveSymbol extends Symbol {
     if (!metadata) {
       return null;
     }
-    const componentUrl = componentModuleUrl(this.reflector, componentType, metadata);
+    const componentUrl = this.reflector.componentModuleUrl(componentType);
     const templateMetadata = metadata.metadata.template;
     // Required because otherwise the normalizer gets confused.
     if (!templateMetadata) {
@@ -194,11 +193,11 @@ export class DirectiveSymbol extends Symbol {
     if (!module) {
       return null;
     }
-    const currentMetadata = this.directiveNormalizer.normalizeTemplateSync(Object.assign(templateMetadata, {
+    const currentMetadata = this.directiveNormalizer.normalizeLoadedTemplate(Object.assign(templateMetadata, {
       ngModuleType: module.type.reference,
       moduleUrl: componentUrl,
       componentType
-    }));
+    }), templateMetadata.template || '', templateMetadata.templateUrl || '');
     if (templateMetadata.templateUrl) {
       currentMetadata.template = this.resourceResolver.getSync(templateMetadata.templateUrl);
       currentMetadata.templateUrl = templateMetadata.templateUrl;
@@ -303,7 +302,7 @@ export class DirectiveSymbol extends Symbol {
             const htmlParser = new I18NHtmlParser(rawHtmlParser);
             const expressionParser = new Parser(new Lexer());
             let parser: TemplateParser;
-            parser = new TemplateParser(new CompilerConfig,
+            parser = new TemplateParser(new CompilerConfig, this.reflector,
               expressionParser, new DomElementSchemaRegistry(), htmlParser, {
                 log() {
                   return null;
