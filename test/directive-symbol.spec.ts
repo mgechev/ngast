@@ -1,8 +1,8 @@
 import * as ts from 'typescript';
 
-import {ProjectSymbols} from '../';
-import {createProgramFromTsConfig} from './utils/create-program';
-import {resourceResolver} from './utils/resource-resolver';
+import { ProjectSymbols } from '../';
+import { createProgramFromTsConfig } from './utils/create-program';
+import { resourceResolver } from './utils/resource-resolver';
 
 const defaultErrorReporter = (e: any, path: string) => console.error(e, path);
 
@@ -14,7 +14,7 @@ describe('DirectiveSymbol', () => {
       program = createProgramFromTsConfig(__dirname + '/../../test/fixture/basic/tsconfig.json');
     });
 
-    it('should provide access to the directive\'s metadata', () => {
+    it(`should provide access to the directive's metadata`, () => {
       const contextSymbols = new ProjectSymbols(program, resourceResolver, defaultErrorReporter);
       const directive = contextSymbols.getDirectives().pop();
       expect(directive.getNonResolvedMetadata().selector).toBe('main-component');
@@ -39,7 +39,7 @@ describe('DirectiveSymbol', () => {
       expect(directive.isComponent()).toBeTruthy();
     });
 
-    it('should find the directive\'s context', () => {
+    it(`should find the directive's context`, () => {
       const contextSymbols = new ProjectSymbols(program, resourceResolver, defaultErrorReporter);
       const directive = contextSymbols.getDirectives().pop();
       expect(directive.getDirectiveContext().directives.length).not.toBe(0);
@@ -57,7 +57,12 @@ describe('DirectiveSymbol', () => {
     it('should find view providers', () => {
       const contextSymbols = new ProjectSymbols(program, resourceResolver, defaultErrorReporter);
       const directive = contextSymbols.getDirectives().pop();
-      expect(directive.getViewProviders().map(v => v.getMetadata().token.identifier.reference.name).pop()).toBe('BasicViewProvider');
+      expect(
+        directive
+          .getViewProviders()
+          .map(v => v.getMetadata().token.identifier.reference.name)
+          .pop()
+      ).toBe('BasicViewProvider');
     });
   });
 
@@ -71,7 +76,9 @@ describe('DirectiveSymbol', () => {
     it('should read external templates', () => {
       const contextSymbols = new ProjectSymbols(program, resourceResolver, defaultErrorReporter);
       const directive = contextSymbols.getDirectives().pop();
-      expect(directive.getResolvedMetadata().template).toBe('{{ a | samplePipe }}\n<div *ngIf="visible">Hello world</div>\n');
+      expect(directive.getResolvedMetadata().template).toBe(
+        '{{ a | samplePipe }}\n<div *ngIf="visible">Hello world</div>\n'
+      );
       expect(directive.getResolvedMetadata().templateUrl.endsWith('main.component.html')).toBeTruthy();
     });
 
@@ -80,9 +87,12 @@ describe('DirectiveSymbol', () => {
       expect(contextSymbols.getDirectives().some(d => d.getNonResolvedMetadata().selector === '[dir]')).toBeTruthy();
     });
 
-    it('should find directive\'s ts.Node', () => {
+    it(`should find directive's ts.Node`, () => {
       const contextSymbols = new ProjectSymbols(program, resourceResolver, defaultErrorReporter);
-      const dir = contextSymbols.getDirectives().filter(d => d.getNonResolvedMetadata().selector === '[dir]').pop();
+      const dir = contextSymbols
+        .getDirectives()
+        .filter(d => d.getNonResolvedMetadata().selector === '[dir]')
+        .pop();
       expect(dir.getNode().name.text).toBe('SampleDirective');
     });
 

@@ -1,11 +1,16 @@
-import {Program} from 'typescript';
-import {resolveForwardRef, Pipe} from '@angular/core';
-import { StaticSymbol, PipeResolver, CompileNgModuleMetadata, CompileMetadataResolver, ProviderMeta } from '@angular/compiler';
+import { Program } from 'typescript';
+import { resolveForwardRef, Pipe } from '@angular/core';
+import {
+  StaticSymbol,
+  PipeResolver,
+  CompileNgModuleMetadata,
+  CompileMetadataResolver,
+  ProviderMeta
+} from '@angular/compiler';
 
-import {ProjectSymbols} from './project-symbols';
-import {Symbol} from './symbol';
+import { ProjectSymbols } from './project-symbols';
+import { Symbol } from './symbol';
 import { ProviderSymbol } from './provider-symbol';
-
 
 /**
  * A wrapper around the pipe symbol.
@@ -15,7 +20,6 @@ import { ProviderSymbol } from './provider-symbol';
  * @extends {Symbol}
  */
 export class PipeSymbol extends Symbol {
-
   /**
    * Creates an instance of PipeSymbol.
    *
@@ -36,7 +40,6 @@ export class PipeSymbol extends Symbol {
     super(program, symbol);
   }
 
-
   /**
    * Returns the module where the wrapped pipe was defined.
    *
@@ -45,10 +48,8 @@ export class PipeSymbol extends Symbol {
    * @memberOf PipeSymbol
    */
   getModule(): CompileNgModuleMetadata | undefined {
-    return this.projectSymbols.getAnalyzedModules()
-      .ngModuleByPipeOrDirective.get(this.symbol);
+    return this.projectSymbols.getAnalyzedModules().ngModuleByPipeOrDirective.get(this.symbol);
   }
-
 
   /**
    * Returns the pipe metadata.
@@ -73,7 +74,7 @@ export class PipeSymbol extends Symbol {
             token = d.token.identifier.reference;
           }
         }
-        const meta = new ProviderMeta(token, d);
+        const meta = new ProviderMeta(token, {});
         return new ProviderSymbol(
           this._program,
           this.metadataResolver.getProviderMetadata(meta),

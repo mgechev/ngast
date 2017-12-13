@@ -1,6 +1,7 @@
-import {readFile, readFileSync} from 'fs';
+import { ResourceResolver } from './../../dist/lib/resource-resolver.d';
+import { readFile, readFileSync } from 'fs';
 
-export const resourceResolver = {
+export const resourceResolver: ResourceResolver = {
   get(url: string) {
     return new Promise((resolve, reject) => {
       readFile(url, 'utf-8', (err, content) => {

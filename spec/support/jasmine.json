@@ -1,6 +1,4 @@
 {
   "spec_dir": "dist-test",
-  "spec_files": [
-    "**/*.spec.js"
-  ]
+  "spec_files": ["**/directive-symbol.spec.js"]
 }

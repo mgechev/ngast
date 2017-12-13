@@ -26,11 +26,8 @@ export class ProviderSymbol {
           token = d.token.identifier.reference;
         }
       }
-      const meta = new ProviderMeta(token, d);
-      return new ProviderSymbol(
-        this.program,
-        this.metadataResolver.getProviderMetadata(meta), this.metadataResolver
-      );
+      const meta = new ProviderMeta(token, {});
+      return new ProviderSymbol(this.program, this.metadataResolver.getProviderMetadata(meta), this.metadataResolver);
     });
   }
 }
