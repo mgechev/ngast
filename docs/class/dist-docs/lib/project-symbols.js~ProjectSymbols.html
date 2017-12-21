@@ -35,7 +35,6 @@
   <li data-ice="doc"><div data-ice="dirPath" class="nav-dir-path">lib</div><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/dist-docs/lib/context-symbols.js~ContextSymbols.html">ContextSymbols</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/dist-docs/lib/directive-symbol.js~DirectiveSymbol.html">DirectiveSymbol</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/dist-docs/lib/pipe-symbol.js~PipeSymbol.html">PipeSymbol</a></span></span></li>
-<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/dist-docs/lib/project-symbols.js~BasicLazyModuleResolver.html">BasicLazyModuleResolver</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/dist-docs/lib/project-symbols.js~ProjectSymbols.html">ProjectSymbols</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/dist-docs/lib/symbol.js~Symbol.html">Symbol</a></span></span></li>
 </ul>
@@ -43,13 +42,13 @@
 </nav>
 
 <div class="content" data-ice="content"><div class="header-notice">
-  <div data-ice="importPath" class="import-path"><pre class="prettyprint"><code data-ice="importPathCode">import {ProjectSymbols} from &apos;<span><a href="file/dist-docs/lib/project-symbols.js.html#lineNumber39">ngast/dist-docs/lib/project-symbols.js</a></span>&apos;</code></pre></div>
+  <div data-ice="importPath" class="import-path"><pre class="prettyprint"><code data-ice="importPathCode">import {ProjectSymbols} from &apos;<span><a href="file/dist-docs/lib/project-symbols.js.html#lineNumber16">ngast/dist-docs/lib/project-symbols.js</a></span>&apos;</code></pre></div>
   <span data-ice="access">public</span>
   <span data-ice="kind">class</span>
   
   
   
-  <span data-ice="source">| <span><a href="file/dist-docs/lib/project-symbols.js.html#lineNumber39">source</a></span></span>
+  <span data-ice="source">| <span><a href="file/dist-docs/lib/project-symbols.js.html#lineNumber16">source</a></span></span>
 </div>
 
 <div class="self-detail detail">
@@ -69,9 +68,8 @@
 
   
   
-  <div class="description" data-ice="description"><p>This class is a wrapper around an Angular project.
-It provides access to the root module of the project as well
-as to it&apos;s lazy loaded modules which can be resolved.</p>
+  <div class="description" data-ice="description"><p>Creates a proxy which provides us access to the symbols
+defined in given context (could be lazy loaded module or the root module).</p>
 </div>
   
 
@@ -103,7 +101,7 @@ as to it&apos;s lazy loaded modules which can be resolved.</p>
         <p>
           
           
-          <span data-ice="name"><span><a href="class/dist-docs/lib/project-symbols.js~ProjectSymbols.html#instance-constructor-constructor">constructor</a></span></span><span data-ice="signature">(programFactory: <span>ProgramFactory</span>, resolver: <span>ResourceResolver</span>, lazyModuleResolver: <span>any</span>)</span>
+          <span data-ice="name"><span><a href="class/dist-docs/lib/project-symbols.js~ProjectSymbols.html#instance-constructor-constructor">constructor</a></span></span><span data-ice="signature">(program: <span>ts.Program</span>, resourceResolver: <span>ResourceResolver</span>)</span>
         </p>
       </div>
       <div>
@@ -139,17 +137,40 @@ as to it&apos;s lazy loaded modules which can be resolved.</p>
         <p>
           
           
-          <span data-ice="name"><span><a href="class/dist-docs/lib/project-symbols.js~ProjectSymbols.html#instance-method-getLazyLoadedContexts">getLazyLoadedContexts</a></span></span><span data-ice="signature">(): <span><span><a href="class/dist-docs/lib/context-symbols.js~ContextSymbols.html">ContextSymbols</a></span><span>[]</span></span></span>
+          <span data-ice="name"><span><a href="class/dist-docs/lib/project-symbols.js~ProjectSymbols.html#instance-method-getAnalyzedModules">getAnalyzedModules</a></span></span><span data-ice="signature">(): <span>*</span></span>
         </p>
       </div>
       <div>
         
         
-        <div data-ice="description"><p>Returns a list of all modules in the project:</p>
-<ul>
-<li>All lazy loaded modules</li>
-<li>The root module</li>
-</ul>
+        
+      </div>
+    </td>
+    <td>
+      
+      
+    </td>
+  </tr>
+<tr data-ice="target">
+    <td>
+      <span class="access" data-ice="access">public</span>
+      
+      
+      
+      <span class="override" data-ice="override"></span>
+    </td>
+    <td>
+      <div>
+        <p>
+          
+          
+          <span data-ice="name"><span><a href="class/dist-docs/lib/project-symbols.js~ProjectSymbols.html#instance-method-getDirectiveFromNode">getDirectiveFromNode</a></span></span><span data-ice="signature">(declaration: <span>ts.ClassDeclaration</span>, fileName: <span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String">string</a></span>): <span>*</span></span>
+        </p>
+      </div>
+      <div>
+        
+        
+        <div data-ice="description"><p>Returns directive based on <code>ClassDeclaration</code> node and a filename.</p>
 </div>
       </div>
     </td>
@@ -171,14 +192,125 @@ as to it&apos;s lazy loaded modules which can be resolved.</p>
         <p>
           
           
-          <span data-ice="name"><span><a href="class/dist-docs/lib/project-symbols.js~ProjectSymbols.html#instance-method-getRootContext">getRootContext</a></span></span><span data-ice="signature">(): <span><a href="class/dist-docs/lib/context-symbols.js~ContextSymbols.html">ContextSymbols</a></span></span>
+          <span data-ice="name"><span><a href="class/dist-docs/lib/project-symbols.js~ProjectSymbols.html#instance-method-getDirectives">getDirectives</a></span></span><span data-ice="signature">(): <span><span><a href="class/dist-docs/lib/directive-symbol.js~DirectiveSymbol.html">DirectiveSymbol</a></span><span>[]</span></span></span>
         </p>
       </div>
       <div>
         
         
-        <div data-ice="description"><p>Provides access to the <code>ContextSymbols</code> corresponding
-to the root module of the project that is not loaded lazily.</p>
+        <div data-ice="description"><p>Returns all the directives available in the context.</p>
+</div>
+      </div>
+    </td>
+    <td>
+      
+      
+    </td>
+  </tr>
+<tr data-ice="target">
+    <td>
+      <span class="access" data-ice="access">public</span>
+      
+      
+      
+      <span class="override" data-ice="override"></span>
+    </td>
+    <td>
+      <div>
+        <p>
+          
+          
+          <span data-ice="name"><span><a href="class/dist-docs/lib/project-symbols.js~ProjectSymbols.html#instance-method-getModules">getModules</a></span></span><span data-ice="signature">(): <span><span>ModuleSymbol</span><span>[]</span></span></span>
+        </p>
+      </div>
+      <div>
+        
+        
+        <div data-ice="description"><p>Returns the metadata associated to this module.</p>
+</div>
+      </div>
+    </td>
+    <td>
+      
+      
+    </td>
+  </tr>
+<tr data-ice="target">
+    <td>
+      <span class="access" data-ice="access">public</span>
+      
+      
+      
+      <span class="override" data-ice="override"></span>
+    </td>
+    <td>
+      <div>
+        <p>
+          
+          
+          <span data-ice="name"><span><a href="class/dist-docs/lib/project-symbols.js~ProjectSymbols.html#instance-method-getPipes">getPipes</a></span></span><span data-ice="signature">(): <span><span><a href="class/dist-docs/lib/pipe-symbol.js~PipeSymbol.html">PipeSymbol</a></span><span>[]</span></span></span>
+        </p>
+      </div>
+      <div>
+        
+        
+        <div data-ice="description"><p>Returns all the pipes available in this module.</p>
+</div>
+      </div>
+    </td>
+    <td>
+      
+      
+    </td>
+  </tr>
+<tr data-ice="target">
+    <td>
+      <span class="access" data-ice="access">public</span>
+      
+      
+      
+      <span class="override" data-ice="override"></span>
+    </td>
+    <td>
+      <div>
+        <p>
+          
+          
+          <span data-ice="name"><span><a href="class/dist-docs/lib/project-symbols.js~ProjectSymbols.html#instance-method-getProviders">getProviders</a></span></span><span data-ice="signature">(): <span><span>ProviderSymbol</span><span>[]</span></span></span>
+        </p>
+      </div>
+      <div>
+        
+        
+        <div data-ice="description"><p>Returns all the providers available in this module.</p>
+</div>
+      </div>
+    </td>
+    <td>
+      
+      
+    </td>
+  </tr>
+<tr data-ice="target">
+    <td>
+      <span class="access" data-ice="access">public</span>
+      
+      
+      
+      <span class="override" data-ice="override"></span>
+    </td>
+    <td>
+      <div>
+        <p>
+          
+          
+          <span data-ice="name"><span><a href="class/dist-docs/lib/project-symbols.js~ProjectSymbols.html#instance-method-updateProgram">updateProgram</a></span></span><span data-ice="signature">(program: <span>ts.Program</span>)</span>
+        </p>
+      </div>
+      <div>
+        
+        
+        <div data-ice="description"><p>Updates the program which has impact over the loaded symbols.</p>
 </div>
       </div>
     </td>
@@ -205,11 +337,11 @@ to the root module of the project that is not loaded lazily.</p>
     
     
     
-    <span data-ice="name">constructor</span><span data-ice="signature">(programFactory: <span>ProgramFactory</span>, resolver: <span>ResourceResolver</span>, lazyModuleResolver: <span>any</span>)</span>
+    <span data-ice="name">constructor</span><span data-ice="signature">(program: <span>ts.Program</span>, resourceResolver: <span>ResourceResolver</span>)</span>
     <span class="right-info">
       
       
-      <span data-ice="source"><span><a href="file/dist-docs/lib/project-symbols.js.html#lineNumber49">source</a></span></span>
+      <span data-ice="source"><span><a href="file/dist-docs/lib/project-symbols.js.html#lineNumber25">source</a></span></span>
     </span>
   </h3>
 
@@ -230,22 +362,15 @@ to the root module of the project that is not loaded lazily.</p>
     <tbody>
     
     <tr data-ice="property" data-depth="0">
-      <td data-ice="name" data-depth="0">programFactory</td>
-      <td data-ice="type"><span>ProgramFactory</span></td>
+      <td data-ice="name" data-depth="0">program</td>
+      <td data-ice="type"><span>ts.Program</span></td>
       <td data-ice="appendix"></td>
       <td data-ice="description"></td>
     </tr>
 <tr data-ice="property" data-depth="0">
-      <td data-ice="name" data-depth="0">resolver</td>
+      <td data-ice="name" data-depth="0">resourceResolver</td>
       <td data-ice="type"><span>ResourceResolver</span></td>
       <td data-ice="appendix"></td>
-      <td data-ice="description"></td>
-    </tr>
-<tr data-ice="property" data-depth="0">
-      <td data-ice="name" data-depth="0">lazyModuleResolver</td>
-      <td data-ice="type"><span>any</span></td>
-      <td data-ice="appendix"><ul><li>optional</li>
-<li>default: new BasicLazyModuleResolver()</li></ul></td>
       <td data-ice="description"></td>
     </tr>
 </tbody>
@@ -275,30 +400,25 @@ to the root module of the project that is not loaded lazily.</p>
 <div data-ice="methodDetails"><h2 data-ice="title">Public Methods</h2>
 
 <div class="detail" data-ice="detail">
-  <h3 data-ice="anchor" id="instance-method-getLazyLoadedContexts">
+  <h3 data-ice="anchor" id="instance-method-getAnalyzedModules">
     <span class="access" data-ice="access">public</span>
     
     
     
     
     
-    <span data-ice="name">getLazyLoadedContexts</span><span data-ice="signature">(): <span><span><a href="class/dist-docs/lib/context-symbols.js~ContextSymbols.html">ContextSymbols</a></span><span>[]</span></span></span>
+    <span data-ice="name">getAnalyzedModules</span><span data-ice="signature">(): <span>*</span></span>
     <span class="right-info">
       
       
-      <span data-ice="source"><span><a href="file/dist-docs/lib/project-symbols.js.html#lineNumber79">source</a></span></span>
+      <span data-ice="source"><span><a href="file/dist-docs/lib/project-symbols.js.html#lineNumber127">source</a></span></span>
     </span>
   </h3>
 
   
   
   
-  <div data-ice="description"><p>Returns a list of all modules in the project:</p>
-<ul>
-<li>All lazy loaded modules</li>
-<li>The root module</li>
-</ul>
-</div>
+  
 
   
 
@@ -310,7 +430,7 @@ to the root module of the project that is not loaded lazily.</p>
     <table>
       <tbody>
         <tr>
-          <td class="return-type" data-ice="returnType"><span><span><a href="class/dist-docs/lib/context-symbols.js~ContextSymbols.html">ContextSymbols</a></span><span>[]</span></span></td>
+          <td class="return-type" data-ice="returnType"><span>*</span></td>
           
         </tr>
       </tbody>
@@ -335,26 +455,103 @@ to the root module of the project that is not loaded lazily.</p>
   
 </div>
 <div class="detail" data-ice="detail">
-  <h3 data-ice="anchor" id="instance-method-getRootContext">
+  <h3 data-ice="anchor" id="instance-method-getDirectiveFromNode">
     <span class="access" data-ice="access">public</span>
     
     
     
     
     
-    <span data-ice="name">getRootContext</span><span data-ice="signature">(): <span><a href="class/dist-docs/lib/context-symbols.js~ContextSymbols.html">ContextSymbols</a></span></span>
+    <span data-ice="name">getDirectiveFromNode</span><span data-ice="signature">(declaration: <span>ts.ClassDeclaration</span>, fileName: <span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String">string</a></span>): <span>*</span></span>
     <span class="right-info">
       
       
-      <span data-ice="source"><span><a href="file/dist-docs/lib/project-symbols.js.html#lineNumber62">source</a></span></span>
+      <span data-ice="source"><span><a href="file/dist-docs/lib/project-symbols.js.html#lineNumber116">source</a></span></span>
     </span>
   </h3>
 
   
   
   
-  <div data-ice="description"><p>Provides access to the <code>ContextSymbols</code> corresponding
-to the root module of the project that is not loaded lazily.</p>
+  <div data-ice="description"><p>Returns directive based on <code>ClassDeclaration</code> node and a filename.</p>
+</div>
+
+  
+
+  <div data-ice="properties"><div data-ice="properties">
+  <h4 data-ice="title">Params:</h4>
+  <table class="params">
+    <thead>
+    <tr><td>Name</td><td>Type</td><td>Attribute</td><td>Description</td></tr>
+    </thead>
+    <tbody>
+    
+    <tr data-ice="property" data-depth="0">
+      <td data-ice="name" data-depth="0">declaration</td>
+      <td data-ice="type"><span>ts.ClassDeclaration</span></td>
+      <td data-ice="appendix"></td>
+      <td data-ice="description"></td>
+    </tr>
+<tr data-ice="property" data-depth="0">
+      <td data-ice="name" data-depth="0">fileName</td>
+      <td data-ice="type"><span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String">string</a></span></td>
+      <td data-ice="appendix"></td>
+      <td data-ice="description"></td>
+    </tr>
+</tbody>
+  </table>
+</div>
+</div>
+
+  <div class="return-params" data-ice="returnParams">
+    <h4>Return:</h4>
+    <table>
+      <tbody>
+        <tr>
+          <td class="return-type" data-ice="returnType"><span>*</span></td>
+          
+        </tr>
+      </tbody>
+    </table>
+    <div data-ice="returnProperties">
+</div>
+  </div>
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+  
+</div>
+<div class="detail" data-ice="detail">
+  <h3 data-ice="anchor" id="instance-method-getDirectives">
+    <span class="access" data-ice="access">public</span>
+    
+    
+    
+    
+    
+    <span data-ice="name">getDirectives</span><span data-ice="signature">(): <span><span><a href="class/dist-docs/lib/directive-symbol.js~DirectiveSymbol.html">DirectiveSymbol</a></span><span>[]</span></span></span>
+    <span class="right-info">
+      
+      
+      <span data-ice="source"><span><a href="file/dist-docs/lib/project-symbols.js.html#lineNumber56">source</a></span></span>
+    </span>
+  </h3>
+
+  
+  
+  
+  <div data-ice="description"><p>Returns all the directives available in the context.</p>
 </div>
 
   
@@ -367,7 +564,7 @@ to the root module of the project that is not loaded lazily.</p>
     <table>
       <tbody>
         <tr>
-          <td class="return-type" data-ice="returnType"><span><a href="class/dist-docs/lib/context-symbols.js~ContextSymbols.html">ContextSymbols</a></span></td>
+          <td class="return-type" data-ice="returnType"><span><span><a href="class/dist-docs/lib/directive-symbol.js~DirectiveSymbol.html">DirectiveSymbol</a></span><span>[]</span></span></td>
           
         </tr>
       </tbody>
@@ -375,6 +572,236 @@ to the root module of the project that is not loaded lazily.</p>
     <div data-ice="returnProperties">
 </div>
   </div>
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+  
+</div>
+<div class="detail" data-ice="detail">
+  <h3 data-ice="anchor" id="instance-method-getModules">
+    <span class="access" data-ice="access">public</span>
+    
+    
+    
+    
+    
+    <span data-ice="name">getModules</span><span data-ice="signature">(): <span><span>ModuleSymbol</span><span>[]</span></span></span>
+    <span class="right-info">
+      
+      
+      <span data-ice="source"><span><a href="file/dist-docs/lib/project-symbols.js.html#lineNumber39">source</a></span></span>
+    </span>
+  </h3>
+
+  
+  
+  
+  <div data-ice="description"><p>Returns the metadata associated to this module.</p>
+</div>
+
+  
+
+  <div data-ice="properties">
+</div>
+
+  <div class="return-params" data-ice="returnParams">
+    <h4>Return:</h4>
+    <table>
+      <tbody>
+        <tr>
+          <td class="return-type" data-ice="returnType"><span><span>ModuleSymbol</span><span>[]</span></span></td>
+          
+        </tr>
+      </tbody>
+    </table>
+    <div data-ice="returnProperties">
+</div>
+  </div>
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+  
+</div>
+<div class="detail" data-ice="detail">
+  <h3 data-ice="anchor" id="instance-method-getPipes">
+    <span class="access" data-ice="access">public</span>
+    
+    
+    
+    
+    
+    <span data-ice="name">getPipes</span><span data-ice="signature">(): <span><span><a href="class/dist-docs/lib/pipe-symbol.js~PipeSymbol.html">PipeSymbol</a></span><span>[]</span></span></span>
+    <span class="right-info">
+      
+      
+      <span data-ice="source"><span><a href="file/dist-docs/lib/project-symbols.js.html#lineNumber68">source</a></span></span>
+    </span>
+  </h3>
+
+  
+  
+  
+  <div data-ice="description"><p>Returns all the pipes available in this module.</p>
+</div>
+
+  
+
+  <div data-ice="properties">
+</div>
+
+  <div class="return-params" data-ice="returnParams">
+    <h4>Return:</h4>
+    <table>
+      <tbody>
+        <tr>
+          <td class="return-type" data-ice="returnType"><span><span><a href="class/dist-docs/lib/pipe-symbol.js~PipeSymbol.html">PipeSymbol</a></span><span>[]</span></span></td>
+          
+        </tr>
+      </tbody>
+    </table>
+    <div data-ice="returnProperties">
+</div>
+  </div>
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+  
+</div>
+<div class="detail" data-ice="detail">
+  <h3 data-ice="anchor" id="instance-method-getProviders">
+    <span class="access" data-ice="access">public</span>
+    
+    
+    
+    
+    
+    <span data-ice="name">getProviders</span><span data-ice="signature">(): <span><span>ProviderSymbol</span><span>[]</span></span></span>
+    <span class="right-info">
+      
+      
+      <span data-ice="source"><span><a href="file/dist-docs/lib/project-symbols.js.html#lineNumber80">source</a></span></span>
+    </span>
+  </h3>
+
+  
+  
+  
+  <div data-ice="description"><p>Returns all the providers available in this module.</p>
+</div>
+
+  
+
+  <div data-ice="properties">
+</div>
+
+  <div class="return-params" data-ice="returnParams">
+    <h4>Return:</h4>
+    <table>
+      <tbody>
+        <tr>
+          <td class="return-type" data-ice="returnType"><span><span>ProviderSymbol</span><span>[]</span></span></td>
+          
+        </tr>
+      </tbody>
+    </table>
+    <div data-ice="returnProperties">
+</div>
+  </div>
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+  
+</div>
+<div class="detail" data-ice="detail">
+  <h3 data-ice="anchor" id="instance-method-updateProgram">
+    <span class="access" data-ice="access">public</span>
+    
+    
+    
+    
+    
+    <span data-ice="name">updateProgram</span><span data-ice="signature">(program: <span>ts.Program</span>)</span>
+    <span class="right-info">
+      
+      
+      <span data-ice="source"><span><a href="file/dist-docs/lib/project-symbols.js.html#lineNumber102">source</a></span></span>
+    </span>
+  </h3>
+
+  
+  
+  
+  <div data-ice="description"><p>Updates the program which has impact over the loaded symbols.
+In case the <code>update</code> method is called with program different from
+the current one, all the internal caches will be cleared.</p>
+</div>
+
+  
+
+  <div data-ice="properties"><div data-ice="properties">
+  <h4 data-ice="title">Params:</h4>
+  <table class="params">
+    <thead>
+    <tr><td>Name</td><td>Type</td><td>Attribute</td><td>Description</td></tr>
+    </thead>
+    <tbody>
+    
+    <tr data-ice="property" data-depth="0">
+      <td data-ice="name" data-depth="0">program</td>
+      <td data-ice="type"><span>ts.Program</span></td>
+      <td data-ice="appendix"></td>
+      <td data-ice="description"></td>
+    </tr>
+</tbody>
+  </table>
+</div>
+</div>
+
+  
 
   
 

@@ -1,11 +1,5 @@
 window.esdocSearchIndex = [
   [
-    "ngast/dist-docs/lib/project-symbols.js~basiclazymoduleresolver",
-    "class/dist-docs/lib/project-symbols.js~BasicLazyModuleResolver.html",
-    "<span>BasicLazyModuleResolver</span> <span class=\"search-result-import-path\">ngast/dist-docs/lib/project-symbols.js</span>",
-    "class"
-  ],
-  [
     "ngast/dist-docs/lib/context-symbols.js~contextsymbols",
     "class/dist-docs/lib/context-symbols.js~ContextSymbols.html",
     "<span>ContextSymbols</span> <span class=\"search-result-import-path\">ngast/dist-docs/lib/context-symbols.js</span>",
@@ -516,27 +510,51 @@ window.esdocSearchIndex = [
     "file"
   ],
   [
-    "dist-docs/lib/project-symbols.js~basiclazymoduleresolver#resolve",
-    "class/dist-docs/lib/project-symbols.js~BasicLazyModuleResolver.html#instance-method-resolve",
-    "dist-docs/lib/project-symbols.js~BasicLazyModuleResolver#resolve",
-    "method"
-  ],
-  [
     "dist-docs/lib/project-symbols.js~projectsymbols#constructor",
     "class/dist-docs/lib/project-symbols.js~ProjectSymbols.html#instance-constructor-constructor",
     "dist-docs/lib/project-symbols.js~ProjectSymbols#constructor",
     "method"
   ],
   [
-    "dist-docs/lib/project-symbols.js~projectsymbols#getlazyloadedcontexts",
-    "class/dist-docs/lib/project-symbols.js~ProjectSymbols.html#instance-method-getLazyLoadedContexts",
-    "dist-docs/lib/project-symbols.js~ProjectSymbols#getLazyLoadedContexts",
+    "dist-docs/lib/project-symbols.js~projectsymbols#getanalyzedmodules",
+    "class/dist-docs/lib/project-symbols.js~ProjectSymbols.html#instance-method-getAnalyzedModules",
+    "dist-docs/lib/project-symbols.js~ProjectSymbols#getAnalyzedModules",
     "method"
   ],
   [
-    "dist-docs/lib/project-symbols.js~projectsymbols#getrootcontext",
-    "class/dist-docs/lib/project-symbols.js~ProjectSymbols.html#instance-method-getRootContext",
-    "dist-docs/lib/project-symbols.js~ProjectSymbols#getRootContext",
+    "dist-docs/lib/project-symbols.js~projectsymbols#getdirectivefromnode",
+    "class/dist-docs/lib/project-symbols.js~ProjectSymbols.html#instance-method-getDirectiveFromNode",
+    "dist-docs/lib/project-symbols.js~ProjectSymbols#getDirectiveFromNode",
+    "method"
+  ],
+  [
+    "dist-docs/lib/project-symbols.js~projectsymbols#getdirectives",
+    "class/dist-docs/lib/project-symbols.js~ProjectSymbols.html#instance-method-getDirectives",
+    "dist-docs/lib/project-symbols.js~ProjectSymbols#getDirectives",
+    "method"
+  ],
+  [
+    "dist-docs/lib/project-symbols.js~projectsymbols#getmodules",
+    "class/dist-docs/lib/project-symbols.js~ProjectSymbols.html#instance-method-getModules",
+    "dist-docs/lib/project-symbols.js~ProjectSymbols#getModules",
+    "method"
+  ],
+  [
+    "dist-docs/lib/project-symbols.js~projectsymbols#getpipes",
+    "class/dist-docs/lib/project-symbols.js~ProjectSymbols.html#instance-method-getPipes",
+    "dist-docs/lib/project-symbols.js~ProjectSymbols#getPipes",
+    "method"
+  ],
+  [
+    "dist-docs/lib/project-symbols.js~projectsymbols#getproviders",
+    "class/dist-docs/lib/project-symbols.js~ProjectSymbols.html#instance-method-getProviders",
+    "dist-docs/lib/project-symbols.js~ProjectSymbols#getProviders",
+    "method"
+  ],
+  [
+    "dist-docs/lib/project-symbols.js~projectsymbols#updateprogram",
+    "class/dist-docs/lib/project-symbols.js~ProjectSymbols.html#instance-method-updateProgram",
+    "dist-docs/lib/project-symbols.js~ProjectSymbols#updateProgram",
     "method"
   ],
   [

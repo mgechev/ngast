@@ -1,13 +1,8 @@
 {
   "coverage": "100%",
-  "expectCount": 32,
-  "actualCount": 32,
+  "expectCount": 35,
+  "actualCount": 35,
   "files": {
-    "dist-docs/lib/project-symbols.js": {
-      "expectCount": 6,
-      "actualCount": 6,
-      "undocumentLines": []
-    },
     "dist-docs/lib/context-symbols.js": {
       "expectCount": 9,
       "actualCount": 9,
@@ -21,6 +16,11 @@
     "dist-docs/lib/pipe-symbol.js": {
       "expectCount": 4,
       "actualCount": 4,
+      "undocumentLines": []
+    },
+    "dist-docs/lib/project-symbols.js": {
+      "expectCount": 9,
+      "actualCount": 9,
       "undocumentLines": []
     },
     "dist-docs/lib/symbol.js": {
