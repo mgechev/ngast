@@ -351,7 +351,7 @@ export class DirectiveSymbol extends Symbol {
             token = d.token.identifier.reference;
           }
         }
-        const meta = new ProviderMeta(token, {});
+        const meta = new ProviderMeta(token, { useClass: d.value });
         return new ProviderSymbol(
           this._program,
           this.metadataResolver.getProviderMetadata(meta),

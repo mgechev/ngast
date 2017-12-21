@@ -1,9 +1,9 @@
 import * as ts from 'typescript';
 // import {writeFileSync} from 'fs';
 
-import {ProjectSymbols} from '../';
-import {createProgramFromTsConfig} from './utils/create-program';
-import {resourceResolver} from './utils/resource-resolver';
+import { ProjectSymbols } from '../';
+import { createProgramFromTsConfig } from './utils/create-program';
+import { resourceResolver } from './utils/resource-resolver';
 
 const defaultErrorReporter = (e: any, path: string) => console.error(e, path);
 
@@ -17,8 +17,11 @@ describe('ContextSymbols', () => {
 
     it('should return directive based on node and file name', () => {
       const contextSymbols = new ProjectSymbols(program, resourceResolver, defaultErrorReporter);
-      const sourceFile = program.getSourceFiles().filter(f => f.fileName.indexOf('fixture') >= 0).pop();
-      const node = (sourceFile.getSourceFile().statements[4] as any);
+      const sourceFile = program
+        .getSourceFiles()
+        .filter(f => f.fileName.indexOf('fixture') >= 0)
+        .pop();
+      const node = sourceFile.getSourceFile().statements[4] as any;
       const dir = contextSymbols.getDirectiveFromNode(node, sourceFile.fileName);
       expect(dir.isComponent()).toBeTruthy();
       expect(dir.getNonResolvedMetadata().selector).toBe('main-component');
@@ -74,8 +77,8 @@ describe('ContextSymbols', () => {
       const contextSymbols = new ProjectSymbols(program, resourceResolver, defaultErrorReporter);
       contextSymbols.updateProgram(createProgramFromTsConfig(__dirname + '/../../test/fixture/basic/tsconfig.json'));
       const p = contextSymbols.getProviders().map(p => p.getMetadata().token.identifier.reference.name);
-      expect(p.pop()).toBe('BasicViewProvider');
-      expect(p.pop()).toBe('BasicProvider');
+      expect(p.some(n => n === 'BasicViewProvider')).toBeTruthy();
+      expect(p.some(n => n === 'BasicProvider')).toBeTruthy();
     });
   });
 
@@ -85,6 +88,5 @@ describe('ContextSymbols', () => {
     beforeEach(() => {
       program = createProgramFromTsConfig(__dirname + '/../../test/fixture/routing/tsconfig.json');
     });
-
   });
 });

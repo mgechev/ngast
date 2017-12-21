@@ -26,7 +26,7 @@ export class ProviderSymbol {
           token = d.token.identifier.reference;
         }
       }
-      const meta = new ProviderMeta(token, {});
+      const meta = new ProviderMeta(token, { useClass: d.value });
       return new ProviderSymbol(this.program, this.metadataResolver.getProviderMetadata(meta), this.metadataResolver);
     });
   }

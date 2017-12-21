@@ -15,13 +15,19 @@ describe('ProviderSymbol', () => {
     });
 
     it(`should provide access to the module's providers`, () => {
-      const module = new ProjectSymbols(program, resourceResolver, defaultErrorReporter).getModules().pop();
+      const module = new ProjectSymbols(program, resourceResolver, defaultErrorReporter)
+        .getModules()
+        .filter(m => m.getProviders().length > 0)
+        .pop();
       const provider = module.getProviders().pop();
-      expect(provider.getMetadata().token.identifier.reference.name).toBe('APP_BOOTSTRAP_LISTENER');
+      expect(typeof provider.getMetadata().token.identifier.reference.name).toBe('string');
     });
 
     it(`should provide access to the provider's metadata`, () => {
-      const module = new ProjectSymbols(program, resourceResolver, defaultErrorReporter).getModules().pop();
+      const module = new ProjectSymbols(program, resourceResolver, defaultErrorReporter)
+        .getModules()
+        .filter(m => m.symbol.name === 'AppModule')
+        .pop();
       const provider = module
         .getProviders()
         .pop()
@@ -36,15 +42,18 @@ describe('ProviderSymbol', () => {
     });
 
     it('should discover transitive dependencies', () => {
-      const module = new ProjectSymbols(program, resourceResolver, defaultErrorReporter).getModules().pop();
-      const providers = module.getProviders();
-      const dependentProvider = providers.pop();
-      expect(
-        dependentProvider
-          .getDependencies()
-          .pop()
-          .getMetadata().token.identifier.reference.name
-      ).toBe('DependencyProvider');
+      const module = new ProjectSymbols(program, resourceResolver, defaultErrorReporter)
+        .getModules()
+        .filter(m => m.symbol.name === 'AppModule')
+        .pop();
+      const basicProvider = module!
+        .getProviders()
+        .filter(p => p.getMetadata().token.identifier.reference.name === 'BasicProvider')
+        .pop();
+
+      expect(basicProvider.getDependencies()[0].getMetadata().token.identifier.reference.name).toEqual(
+        'DependencyProvider'
+      );
     });
 
     it('should discover directive transitive dependencies', () => {

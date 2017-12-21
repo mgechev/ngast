@@ -1,8 +1,8 @@
 import * as ts from 'typescript';
 
-import {ProjectSymbols} from '../';
-import {createProgramFromTsConfig} from './utils/create-program';
-import {resourceResolver} from './utils/resource-resolver';
+import { ProjectSymbols } from '../';
+import { createProgramFromTsConfig } from './utils/create-program';
+import { resourceResolver } from './utils/resource-resolver';
 
 const defaultErrorReporter = (e: any, path: string) => console.error(e, path);
 
@@ -17,7 +17,7 @@ describe('ModuleSymbol', () => {
     it('should get all modules', () => {
       const contextSymbols = new ProjectSymbols(program, resourceResolver, defaultErrorReporter);
       const modules = contextSymbols.getModules();
-      expect(modules.map(s => s.symbol.name).pop()).toBe('AppModule');
+      expect(modules.map(s => s.symbol.name).some(n => n === 'AppModule')).toBeTruthy();
     });
   });
 
