@@ -1,4 +1,4 @@
-import { ResourceResolver } from './../../dist/lib/resource-resolver.d';
+import { ResourceResolver } from '../../lib/resource-resolver';
 import { readFile, readFileSync } from 'fs';
 
 export const resourceResolver: ResourceResolver = {

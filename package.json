@@ -1,8 +1,7 @@
 {
   "name": "ngast",
   "version": "0.1.0",
-  "description":
-    "Parsing tools for Angular. The project is an abstraction over the Angular compiler which provides friendly interface.",
+  "description": "Parsing tools for Angular. The project is an abstraction over the Angular compiler which provides friendly interface.",
   "main": "ngast.bundle.js",
   "module": "index.js",
   "types": "index.d.ts",
@@ -39,13 +38,17 @@
     "zone.js": "^0.8.4"
   },
   "scripts": {
-    "build":
-      "rimraf dist && tsc && rollup -c rollup.config.js -i dist/index.js > dist/ngast.bundle.js && cp package.json dist && ts-node -P tsconfig-ts-node.json tools/cleanup.ts && cp README.md dist",
+    "build": "rimraf dist && tsc && rollup -c rollup.config.js -i dist/index.js > dist/ngast.bundle.js && cp package.json dist && ts-node -P tsconfig-ts-node.json tools/cleanup.ts && cp README.md dist",
     "build:test": "rimraf dist-test && tsc -p tsconfig-test.json",
     "test": "npm run build:test && jasmine",
     "docs": "tsc -p tsconfig-docs.json && esdoc"
   },
-  "keywords": ["AST", "Angular", "Parser", "Compiler"],
+  "keywords": [
+    "AST",
+    "Angular",
+    "Parser",
+    "Compiler"
+  ],
   "author": "Minko Gechev <mgechev@gmail.com>",
   "license": "MIT"
 }
