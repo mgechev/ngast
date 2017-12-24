@@ -1,21 +1,21 @@
-import * as ts from 'typescript';
-
-import {ProjectSymbols} from '../';
-import {createProgramFromTsConfig} from './utils/create-program';
-import {resourceResolver} from './utils/resource-resolver';
+import { ProjectSymbols } from '../';
+import { resourceResolver } from './utils/resource-resolver';
 
 const defaultErrorReporter = (e: any, path: string) => console.error(e, path);
 
 describe('PipeSymbol', () => {
-  let program: ts.Program;
+  let program: string;
 
   beforeEach(() => {
-    program = createProgramFromTsConfig(__dirname + '/../../test/fixture/routing/tsconfig.json');
+    program = __dirname + '/../../test/fixture/routing/tsconfig.json';
   });
 
-  it('should provide access to the pipe\'s metadata', () => {
+  it("should provide access to the pipe's metadata", () => {
     const contextSymbols = new ProjectSymbols(program, resourceResolver, defaultErrorReporter);
-    const pipe = contextSymbols.getPipes().pop().getMetadata();
+    const pipe = contextSymbols
+      .getPipes()
+      .pop()
+      .getMetadata();
     expect(pipe.name).toBe('samplePipe');
     expect(pipe.pure).toBe(false);
   });
@@ -26,7 +26,7 @@ describe('PipeSymbol', () => {
     expect(pipe.getNode().name.text).toBe('SamplePipe');
   });
 
-  it('should provide access to the pipe\'s metadata', () => {
+  it("should provide access to the pipe's metadata", () => {
     const contextSymbols = new ProjectSymbols(program, resourceResolver, defaultErrorReporter);
     const pipe = contextSymbols.getPipes().pop();
     expect(pipe.getDependencies()[0].getMetadata().token.identifier.reference.name).toBe('Renderer');

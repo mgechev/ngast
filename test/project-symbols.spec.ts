@@ -9,22 +9,10 @@ const defaultErrorReporter = (e: any, path: string) => console.error(e, path);
 
 describe('ContextSymbols', () => {
   describe('basic project', () => {
-    let program: ts.Program;
+    let program: string;
 
     beforeEach(() => {
-      program = createProgramFromTsConfig(__dirname + '/../../test/fixture/basic/tsconfig.json');
-    });
-
-    it('should return directive based on node and file name', () => {
-      const contextSymbols = new ProjectSymbols(program, resourceResolver, defaultErrorReporter);
-      const sourceFile = program
-        .getSourceFiles()
-        .filter(f => f.fileName.indexOf('fixture') >= 0)
-        .pop();
-      const node = sourceFile.getSourceFile().statements[4] as any;
-      const dir = contextSymbols.getDirectiveFromNode(node, sourceFile.fileName);
-      expect(dir.isComponent()).toBeTruthy();
-      expect(dir.getNonResolvedMetadata().selector).toBe('main-component');
+      program = __dirname + '/../../test/fixture/basic/tsconfig.json';
     });
 
     it('should return reference to the analyzed modules', () => {
@@ -53,13 +41,6 @@ describe('ContextSymbols', () => {
       expect(result.some(p => p.symbol.name === 'DecimalPipe')).toBeTruthy();
     });
 
-    it('should update the program', () => {
-      const contextSymbols = new ProjectSymbols(program, resourceResolver, defaultErrorReporter);
-      const spy = spyOn(ProjectSymbols.prototype as any, 'validate');
-      contextSymbols.updateProgram(createProgramFromTsConfig(__dirname + '/../../test/fixture/basic/tsconfig.json'));
-      expect(spy).toHaveBeenCalled();
-    });
-
     it('should not return duplicate modules', () => {
       const contextSymbols = new ProjectSymbols(program, resourceResolver, defaultErrorReporter);
       const modules = contextSymbols.getModules();
@@ -70,12 +51,14 @@ describe('ContextSymbols', () => {
         modulesMap[n] += 1;
         expect(modulesMap[n]).toBe(1);
       });
-      contextSymbols.updateProgram(createProgramFromTsConfig(__dirname + '/../../test/fixture/basic/tsconfig.json'));
     });
 
     it('should be able to discover all providers', () => {
-      const contextSymbols = new ProjectSymbols(program, resourceResolver, defaultErrorReporter);
-      contextSymbols.updateProgram(createProgramFromTsConfig(__dirname + '/../../test/fixture/basic/tsconfig.json'));
+      const contextSymbols = new ProjectSymbols(
+        __dirname + '/../../test/fixture/basic/tsconfig.json',
+        resourceResolver,
+        defaultErrorReporter
+      );
       const p = contextSymbols.getProviders().map(p => p.getMetadata().token.identifier.reference.name);
       expect(p.some(n => n === 'BasicViewProvider')).toBeTruthy();
       expect(p.some(n => n === 'BasicProvider')).toBeTruthy();

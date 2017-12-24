@@ -1,17 +1,14 @@
-import * as ts from 'typescript';
-
 import { ProjectSymbols } from '../';
-import { createProgramFromTsConfig } from './utils/create-program';
 import { resourceResolver } from './utils/resource-resolver';
 
 const defaultErrorReporter = (e: any, path: string) => console.error(e, path);
 
 describe('ModuleSymbol', () => {
-  let program: ts.Program;
+  let program: string;
 
   describe('basic specs', () => {
     beforeEach(() => {
-      program = createProgramFromTsConfig(__dirname + '/../../test/fixture/generic-config/tsconfig.json');
+      program = __dirname + '/../../test/fixture/generic-config/tsconfig.json';
     });
 
     it('should get all modules', () => {

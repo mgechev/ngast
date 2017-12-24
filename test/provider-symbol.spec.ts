@@ -1,17 +1,14 @@
-import * as ts from 'typescript';
-
 import { ProjectSymbols } from '../';
-import { createProgramFromTsConfig } from './utils/create-program';
 import { resourceResolver } from './utils/resource-resolver';
 
 const defaultErrorReporter = (e: any, path: string) => console.error(e, path);
 
 describe('ProviderSymbol', () => {
-  let program: ts.Program;
+  let program: string;
 
   describe('basic example', () => {
     beforeEach(() => {
-      program = createProgramFromTsConfig(__dirname + '/../../test/fixture/routing/tsconfig.json');
+      program = __dirname + '/../../test/fixture/routing/tsconfig.json';
     });
 
     it(`should provide access to the module's providers`, () => {
@@ -38,7 +35,7 @@ describe('ProviderSymbol', () => {
 
   describe('basic primitive token example', () => {
     beforeEach(() => {
-      program = createProgramFromTsConfig(__dirname + '/../../test/fixture/basic-primitive-token/tsconfig.json');
+      program = __dirname + '/../../test/fixture/basic-primitive-token/tsconfig.json';
     });
 
     it('should discover transitive dependencies', () => {

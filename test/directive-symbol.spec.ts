@@ -1,17 +1,14 @@
-import * as ts from 'typescript';
-
 import { ProjectSymbols } from '../';
-import { createProgramFromTsConfig } from './utils/create-program';
 import { resourceResolver } from './utils/resource-resolver';
 
 const defaultErrorReporter = (e: any, path: string) => console.error(e, path);
 
 describe('DirectiveSymbol', () => {
   describe('inline metadata', () => {
-    let program: ts.Program;
+    let program: string;
 
     beforeEach(() => {
-      program = createProgramFromTsConfig(__dirname + '/../../test/fixture/basic/tsconfig.json');
+      program = __dirname + '/../../test/fixture/basic/tsconfig.json';
     });
 
     it(`should provide access to the directive's metadata`, () => {
@@ -67,10 +64,10 @@ describe('DirectiveSymbol', () => {
   });
 
   describe('external metadata and directives', () => {
-    let program: ts.Program;
+    let program: string;
 
     beforeEach(() => {
-      program = createProgramFromTsConfig(__dirname + '/../../test/fixture/routing/tsconfig.json');
+      program = __dirname + '/../../test/fixture/routing/tsconfig.json';
     });
 
     it('should read external templates', () => {
@@ -106,10 +103,10 @@ describe('DirectiveSymbol', () => {
   });
 
   describe('external styles', () => {
-    let program: ts.Program;
+    let program: string;
 
     beforeEach(() => {
-      program = createProgramFromTsConfig(__dirname + '/../../test/fixture/routing/tsconfig.json');
+      program = __dirname + '/../../test/fixture/routing/tsconfig.json';
     });
 
     it('should work inline styles', () => {
@@ -136,10 +133,10 @@ describe('DirectiveSymbol', () => {
   });
 
   describe('directive deps', () => {
-    let program: ts.Program;
+    let program: string;
 
     beforeEach(() => {
-      program = createProgramFromTsConfig(__dirname + '/../../test/fixture/directive-deps/tsconfig.json');
+      program = __dirname + '/../../test/fixture/directive-deps/tsconfig.json';
     });
 
     it('should find directive dependencies', () => {
@@ -149,7 +146,7 @@ describe('DirectiveSymbol', () => {
     });
 
     it('should work with directive with no deps', () => {
-      const currentProgram = createProgramFromTsConfig(__dirname + '/../../test/fixture/basic/tsconfig.json');
+      const currentProgram = __dirname + '/../../test/fixture/basic/tsconfig.json';
       const contextSymbols = new ProjectSymbols(currentProgram, resourceResolver, defaultErrorReporter);
       const directive = contextSymbols.getDirectives().pop();
       expect(directive.getDependencies().length).toBe(0);
