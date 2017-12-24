@@ -79,6 +79,7 @@ export class ProjectSymbols {
     this.compilerHost = createCompilerHost({ options: config.options });
     this.program = createProgram({ rootNames: config.rootNames, options: config.options, host: this.compilerHost });
     this.init();
+    // this.clearCaches();
   }
 
   /**
@@ -89,8 +90,6 @@ export class ProjectSymbols {
    * @memberOf ProjectSymbols
    */
   getModules(): ModuleSymbol[] {
-    this.clearCaches();
-    this.init();
     const resultMap: Map<StaticSymbol, CompileNgModuleMetadata> = new Map();
     this.getAnalyzedModules().ngModules.forEach((m, s) => {
       resultMap.set(m.type.reference, m);
@@ -230,10 +229,10 @@ export class ProjectSymbols {
     );
   }
 
-  private clearCaches() {
-    this.metadataResolver.clearCache();
-    this.directiveNormalizer.clearCache();
-  }
+  // private clearCaches() {
+  //   this.metadataResolver.clearCache();
+  //   this.directiveNormalizer.clearCache();
+  // }
 
   private init() {
     const staticSymbolCache = new StaticSymbolCache();
