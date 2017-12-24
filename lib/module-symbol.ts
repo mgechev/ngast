@@ -10,7 +10,7 @@ import {
   PipeResolver
 } from '@angular/compiler';
 import { ResourceResolver } from './resource-resolver';
-import {ProjectSymbols} from './project-symbols';
+import { ProjectSymbols } from './project-symbols';
 import { Symbol } from './symbol';
 import { DirectiveSymbol } from './directive-symbol';
 import { PipeSymbol } from './pipe-symbol';
@@ -29,15 +29,16 @@ export class ModuleSymbol extends Symbol {
     private pipeResolver: PipeResolver,
     private reflector: StaticReflector,
     private resourceResolver: ResourceResolver,
-    private projectSymbols: ProjectSymbols) {
-      super(program, symbol);
-      const meta = this.metadataResolver.getNgModuleMetadata(symbol);
-      if (meta) {
-        this.module = meta;
-      } else {
-        throw new Error('No metadata for ' + symbol.name);
-      }
+    private projectSymbols: ProjectSymbols
+  ) {
+    super(program, symbol);
+    const meta = this.metadataResolver.getNgModuleMetadata(symbol);
+    if (meta) {
+      this.module = meta;
+    } else {
+      throw new Error('No metadata for ' + symbol.name);
     }
+  }
 
   getBootstrapComponents() {
     return this.getWrapperDirectives(this.module.bootstrapComponents);
@@ -102,13 +103,7 @@ export class ModuleSymbol extends Symbol {
 
   private getWrappedPipes(pipes: CompileIdentifierMetadata[]) {
     return pipes.map(i => {
-      return new PipeSymbol(
-        this._program,
-        i.reference,
-        this.pipeResolver,
-        this.metadataResolver,
-        this.projectSymbols
-      );
+      return new PipeSymbol(this._program, i.reference, this.pipeResolver, this.metadataResolver, this.projectSymbols);
     });
   }
 

@@ -25,14 +25,14 @@ import {
   GeneratedFile
 } from '@angular/compiler';
 
-import { AngularCompilerOptions, MetadataCollector } from '@angular/compiler-cli';
+import { MetadataCollector, readConfiguration, CompilerOptions } from '@angular/compiler-cli';
+import { createCompilerHost, createProgram, CompilerHost, Program } from '@angular/compiler-cli/ngtools2';
 
 import { PipeSymbol } from './pipe-symbol';
 import { DirectiveSymbol } from './directive-symbol';
 import { ModuleSymbol } from './module-symbol';
 import { ProviderSymbol } from './provider-symbol';
 import { CompileProviderMetadata } from '@angular/compiler';
-import { createCompilerHost } from 'typescript';
 import { TsCompilerAotCompilerTypeCheckHostAdapter } from '@angular/compiler-cli/src/transformers/compiler_host';
 
 export interface ErrorReporter {
@@ -56,9 +56,10 @@ export class ProjectSymbols {
   private directiveResolver: DirectiveResolver;
   private urlResolver: UrlResolver;
   private directiveNormalizer: DirectiveNormalizer;
-  private lastProgram: ts.Program;
-  private options: AngularCompilerOptions;
+  private program: Program;
+  private compilerHost: CompilerHost;
   private analyzedModules: NgAnalyzedModules;
+  private options: CompilerOptions;
 
   /**
    * Creates an instance of ProjectSymbols.
@@ -69,11 +70,14 @@ export class ProjectSymbols {
    * @memberOf ProjectSymbols
    */
   constructor(
-    private program: ts.Program,
+    private tsconfigPath: string,
     private resourceResolver: ResourceResolver,
     private errorReporter: ErrorReporter
   ) {
-    this.options = this.program.getCompilerOptions();
+    const config = readConfiguration(this.tsconfigPath);
+    this.options = config.options;
+    this.compilerHost = createCompilerHost({ options: config.options });
+    this.program = createProgram({ rootNames: config.rootNames, options: config.options, host: this.compilerHost });
     this.init();
   }
 
@@ -85,7 +89,8 @@ export class ProjectSymbols {
    * @memberOf ProjectSymbols
    */
   getModules(): ModuleSymbol[] {
-    this.validate();
+    this.clearCaches();
+    this.init();
     const resultMap: Map<StaticSymbol, CompileNgModuleMetadata> = new Map();
     this.getAnalyzedModules().ngModules.forEach((m, s) => {
       resultMap.set(m.type.reference, m);
@@ -94,7 +99,7 @@ export class ProjectSymbols {
     resultMap.forEach(v =>
       result.push(
         new ModuleSymbol(
-          this.program,
+          this.program.getTsProgram(),
           v.type.reference,
           this.metadataResolver,
           this.directiveNormalizer,
@@ -122,7 +127,7 @@ export class ProjectSymbols {
       .map(
         symbol =>
           new DirectiveSymbol(
-            this.program,
+            this.program.getTsProgram(),
             symbol,
             this.metadataResolver,
             this.directiveNormalizer,
@@ -144,7 +149,7 @@ export class ProjectSymbols {
   getPipes(): PipeSymbol[] {
     return this.extractProgramSymbols()
       .filter(v => this.metadataResolver.isPipe(v))
-      .map(p => new PipeSymbol(this.program, p, this.pipeResolver, this.metadataResolver, this));
+      .map(p => new PipeSymbol(this.program.getTsProgram(), p, this.pipeResolver, this.metadataResolver, this));
   }
 
   /**
@@ -169,22 +174,6 @@ export class ProjectSymbols {
   }
 
   /**
-   * Updates the program which has impact over the loaded symbols.
-   * In case the `update` method is called with program different from
-   * the current one, all the internal caches will be cleared.
-   *
-   * @param {ts.Program} program
-   *
-   * @memberOf ProjectSymbols
-   */
-  updateProgram(program: ts.Program): void {
-    if (program !== this.program) {
-      this.program = program;
-      this.validate();
-    }
-  }
-
-  /**
    * Returns directive based on `ClassDeclaration` node and a filename.
    *
    * @param {ts.ClassDeclaration} declaration
@@ -193,11 +182,11 @@ export class ProjectSymbols {
    * @memberOf DirectiveSymbol
    */
   getDirectiveFromNode(declaration: ts.ClassDeclaration, fileName: string) {
-    const sourceFile = this.program.getSourceFile(fileName);
+    const sourceFile = this.program.getTsProgram().getSourceFile(fileName);
     const identifier = declaration.name;
     if (identifier) {
       return new DirectiveSymbol(
-        this.program,
+        this.program.getTsProgram(),
         this.reflector.getStaticSymbol(sourceFile.fileName, identifier.text),
         this.metadataResolver,
         this.directiveNormalizer,
@@ -222,7 +211,7 @@ export class ProjectSymbols {
       };
 
       analyzedModules = this.analyzedModules = analyzeNgModules(
-        this.program.getRootFileNames(),
+        this.program.getTsProgram().getRootFileNames(),
         analyzeHost,
         this.staticSymbolResolver,
         this.metadataResolver
@@ -234,17 +223,11 @@ export class ProjectSymbols {
   private extractProgramSymbols() {
     return [].concat.apply(
       [],
-      this.program.getSourceFiles().map(f => this.staticSymbolResolver.getSymbolsOf(f.fileName))
+      this.program
+        .getTsProgram()
+        .getSourceFiles()
+        .map(f => this.staticSymbolResolver.getSymbolsOf(f.fileName))
     );
-  }
-
-  private validate() {
-    const program = this.program;
-    if (this.lastProgram !== program) {
-      this.clearCaches();
-      this.lastProgram = program;
-      this.init();
-    }
   }
 
   private clearCaches() {
@@ -279,15 +262,15 @@ export class ProjectSymbols {
       useJit: false
     });
 
-    const defaultDir = this.program.getCurrentDirectory();
+    const defaultDir = this.program.getTsProgram().getCurrentDirectory();
     this.options.baseUrl = this.options.baseUrl || defaultDir;
     this.options.basePath = this.options.basePath || defaultDir;
     this.options.genDir = this.options.genDir || defaultDir;
 
     this.staticResolverHost = new TsCompilerAotCompilerTypeCheckHostAdapter(
-      this.program.getRootFileNames(),
+      this.program.getTsProgram().getRootFileNames(),
       this.options,
-      createCompilerHost(this.program.getCompilerOptions()),
+      this.compilerHost,
       new MetadataCollector(),
       {
         generateFile: (genFileName, baseFileName) => new GeneratedFile('', '', ''),

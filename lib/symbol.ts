@@ -1,6 +1,5 @@
 import * as ts from 'typescript';
-import {StaticSymbol} from '@angular/compiler';
-
+import { StaticSymbol } from '@angular/compiler';
 
 /**
  * Base class which provides primitive for the DirectiveSymbol and
@@ -10,7 +9,6 @@ import {StaticSymbol} from '@angular/compiler';
  * @class Symbol
  */
 export class Symbol {
-
   /**
    * Creates an instance of Symbol.
    *
@@ -32,8 +30,10 @@ export class Symbol {
   getNode(): ts.ClassDeclaration | undefined {
     const program = this._program.getSourceFile(this._symbol.filePath);
     const findNode = (node: ts.Node) => {
-      if (node.kind === ts.SyntaxKind.ClassDeclaration &&
-         ((node as ts.ClassDeclaration).name || { text: undefined }).text === this._symbol.name) {
+      if (
+        node.kind === ts.SyntaxKind.ClassDeclaration &&
+        ((node as ts.ClassDeclaration).name || { text: undefined }).text === this._symbol.name
+      ) {
         return node;
       } else {
         return ts.forEachChild(node, findNode);
@@ -41,7 +41,6 @@ export class Symbol {
     };
     return findNode(program);
   }
-
 
   /**
    * The wrapped `StaticSymbol` from `@angular/compiler`.
