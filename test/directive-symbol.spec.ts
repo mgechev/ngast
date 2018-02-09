@@ -73,7 +73,8 @@ describe('DirectiveSymbol', () => {
     it('should read external templates', () => {
       const contextSymbols = new ProjectSymbols(program, resourceResolver, defaultErrorReporter);
       const directive = contextSymbols.getDirectives().pop();
-      expect(directive.getResolvedMetadata().template).toBe(
+      const template = directive.getResolvedMetadata().template.replace(/\r/g, '');
+      expect(template).toBe(
         '{{ a | samplePipe }}\n<div *ngIf="visible">Hello world</div>\n'
       );
       expect(directive.getResolvedMetadata().templateUrl.endsWith('main.component.html')).toBeTruthy();

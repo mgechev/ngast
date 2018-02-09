@@ -77,7 +77,10 @@ export class ProjectSymbols {
     const config = readConfiguration(this.tsconfigPath);
     this.options = config.options;
     this.compilerHost = createCompilerHost({ options: config.options });
-    this.program = createProgram({ rootNames: config.rootNames, options: config.options, host: this.compilerHost });
+    // Replace all `\` with a forward slash to align with typescript's `normalizePath`.
+    // On Windows, different slashes cause errors while trying to compare module symbols
+    const rootNames = config.rootNames.map(rootName => rootName.replace(/\\/g, '/'));
+    this.program = createProgram({ rootNames, options: config.options, host: this.compilerHost });
     this.init();
     // this.clearCaches();
   }
