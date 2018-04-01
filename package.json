@@ -10,34 +10,31 @@
     "url": "git+https://github.com/mgechev/ngast.git"
   },
   "peerDependencies": {
-    "@angular/compiler": "^5.1.0",
-    "@angular/compiler-cli": "^5.1.0",
-    "@angular/core": "^5.1.0",
-    "typescript": "~2.5.0"
+    "@angular/compiler": "6.0.0-rc.1",
+    "@angular/compiler-cli": "6.0.0-rc.1",
+    "@angular/core": "6.0.0-rc.1",
+    "typescript": "~2.7.2"
   },
   "devDependencies": {
-    "@angular/common": "5.2.6",
-    "@angular/compiler": "5.2.6",
-    "@angular/compiler-cli": "5.2.6",
-    "@angular/core": "5.2.6",
-    "@angular/platform-browser": "5.2.6",
-    "@angular/platform-browser-dynamic": "5.2.6",
-    "@angular/router": "5.2.6",
-    "@angular/tsc-wrapped": "^0.5.2",
-    "@angular/forms": "^5.2.6",
-    "@angular/http": "^5.2.6",
+    "@angular/common": "6.0.0-rc.1",
+    "@angular/compiler": "6.0.0-rc.1",
+    "@angular/compiler-cli": "6.0.0-rc.1",
+    "@angular/core": "6.0.0-rc.1",
+    "@angular/platform-browser": "6.0.0-rc.1",
+    "@angular/platform-browser-dynamic": "6.0.0-rc.1",
+    "@angular/router": "6.0.0-rc.1",
+    "@angular/tsc-wrapped": "^4.4.6",
     "@types/jasmine": "^2.5.41",
     "@types/node": "^7.0.2",
     "esdoc": "^0.5.2",
     "jasmine": "^2.5.3",
     "rimraf": "^2.5.4",
     "rollup": "^0.41.4",
-    "rxjs": "^5.5.0",
+    "rxjs": "^6.0.0-rc.0",
     "ts-node": "^4.0.0",
     "tsickle": "^0.21.1",
     "tslint": "^4.3.1",
-    "typescript": "~2.5.0",
-    "zone.js": "^0.8.4"
+    "zone.js": "~0.8.20"
   },
   "scripts": {
     "build": "rimraf dist && tsc && rollup -c rollup.config.js -i dist/index.js > dist/ngast.bundle.js && cp package.json dist && ts-node -P tsconfig-ts-node.json tools/cleanup.ts && cp README.md dist",
@@ -52,5 +49,8 @@
     "Compiler"
   ],
   "author": "Minko Gechev <mgechev@gmail.com>",
-  "license": "MIT"
+  "license": "MIT",
+  "dependencies": {
+    "typescript": "^2.7.2"
+  }
 }

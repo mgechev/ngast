@@ -185,6 +185,9 @@ export class ProjectSymbols {
    */
   getDirectiveFromNode(declaration: ts.ClassDeclaration, fileName: string) {
     const sourceFile = this.program.getTsProgram().getSourceFile(fileName);
+    if (!sourceFile) {
+      throw new Error(`Cannot get the program's source file`);
+    }
     const identifier = declaration.name;
     if (identifier) {
       return new DirectiveSymbol(
@@ -213,7 +216,7 @@ export class ProjectSymbols {
       };
 
       analyzedModules = this.analyzedModules = analyzeNgModules(
-        this.program.getTsProgram().getRootFileNames(),
+        this.program.getTsProgram().getRootFileNames() as string[],
         analyzeHost,
         this.staticSymbolResolver,
         this.metadataResolver
