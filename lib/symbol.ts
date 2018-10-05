@@ -39,6 +39,9 @@ export class Symbol {
         return ts.forEachChild(node, findNode);
       }
     };
+    if (program === undefined) {
+      throw new Error('Cannot find program');
+    }
     return findNode(program);
   }
 

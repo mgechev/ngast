@@ -7,6 +7,7 @@
     "experimentalDecorators": true,
     "stripInternal": true,
     "declaration": true,
+    "skipLibCheck": true,
     "outDir": "./dist-test",
     "lib": ["es2015", "dom"]
   },

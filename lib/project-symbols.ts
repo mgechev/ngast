@@ -26,7 +26,7 @@ import {
 } from '@angular/compiler';
 
 import { MetadataCollector, readConfiguration, CompilerOptions } from '@angular/compiler-cli';
-import { createCompilerHost, createProgram, CompilerHost, Program } from '@angular/compiler-cli';
+import { createCompilerHost, createProgram, CompilerHost, Program } from '@angular/compiler-cli/ngtools2';
 
 import { PipeSymbol } from './pipe-symbol';
 import { DirectiveSymbol } from './directive-symbol';
