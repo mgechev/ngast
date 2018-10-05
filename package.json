@@ -13,7 +13,7 @@
     "@angular/compiler": "7.0.0-rc.0",
     "@angular/compiler-cli": "7.0.0-rc.0",
     "@angular/core": "7.0.0-rc.0",
-    "typescript": "~2.7.2"
+    "typescript": "~3.1.1"
   },
   "devDependencies": {
     "@angular/common": "7.0.0-rc.0",
@@ -23,18 +23,17 @@
     "@angular/platform-browser": "7.0.0-rc.0",
     "@angular/platform-browser-dynamic": "7.0.0-rc.0",
     "@angular/router": "7.0.0-rc.0",
-    "@angular/tsc-wrapped": "^4.4.6",
     "@types/jasmine": "^2.5.41",
     "@types/node": "^7.0.2",
-    "esdoc": "^0.5.2",
+    "esdoc": "^1.1.0",
     "jasmine": "^2.5.3",
     "rimraf": "^2.5.4",
     "rollup": "^0.41.4",
     "rxjs": "^6.3.3",
     "ts-node": "^4.0.0",
     "tsickle": "^0.21.1",
-    "tslint": "^4.3.1",
-    "zone.js": "~0.8.20"
+    "tslint": "^5.11.0",
+    "zone.js": "~0.8.26"
   },
   "scripts": {
     "build": "rimraf dist && tsc && rollup -c rollup.config.js -i dist/index.js > dist/ngast.bundle.js && cp package.json dist && ts-node -P tsconfig-ts-node.json tools/cleanup.ts && cp README.md dist",
@@ -51,6 +50,6 @@
   "author": "Minko Gechev <mgechev@gmail.com>",
   "license": "MIT",
   "dependencies": {
-    "typescript": "^2.7.2"
+    "typescript": "~3.1.1"
   }
 }
