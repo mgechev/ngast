@@ -17,7 +17,8 @@
     "test/directive-symbol.spec.ts",
     "test/module-symbol.spec.ts",
     "test/pipe-symbol.spec.ts",
-    "test/provider-symbol.spec.ts"
+    "test/provider-symbol.spec.ts",
+    "test/dep-parsing.spec.ts"
   ],
   "angularCompilerOptions": {
     "skipTemplateCodegen": true
