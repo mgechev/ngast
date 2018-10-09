@@ -22,11 +22,18 @@ import {
   analyzeNgModules,
   NgAnalyzedModules,
   CompileNgModuleMetadata,
-  GeneratedFile
+  AotCompiler,
+  StyleCompiler,
+  NgModuleCompiler,
+  TypeScriptEmitter,
+  ViewCompiler,
+  TemplateParser,
+  Lexer,
+  Parser
 } from '@angular/compiler';
 
 import { MetadataCollector, readConfiguration, CompilerOptions } from '@angular/compiler-cli';
-import { createCompilerHost, createProgram, CompilerHost, Program } from '@angular/compiler-cli/ngtools2';
+import { createProgram, CompilerHost, Program } from '@angular/compiler-cli/ngtools2';
 
 import { PipeSymbol } from './pipe-symbol';
 import { DirectiveSymbol } from './directive-symbol';
@@ -34,6 +41,8 @@ import { ModuleSymbol } from './module-symbol';
 import { ProviderSymbol } from './provider-symbol';
 import { CompileProviderMetadata } from '@angular/compiler';
 import { TsCompilerAotCompilerTypeCheckHostAdapter } from '@angular/compiler-cli/src/transformers/compiler_host';
+import { InjectableCompiler } from '@angular/compiler/src/injectable_compiler';
+import { TypeCheckCompiler } from '@angular/compiler/src/view_compiler/type_check_compiler';
 
 export interface ErrorReporter {
   (error: any, path: string): void;
@@ -60,6 +69,7 @@ export class ProjectSymbols {
   private compilerHost: CompilerHost;
   private analyzedModules: NgAnalyzedModules;
   private options: CompilerOptions;
+  private compiler: AotCompiler;
 
   /**
    * Creates an instance of ProjectSymbols.
@@ -76,13 +86,7 @@ export class ProjectSymbols {
   ) {
     const config = readConfiguration(this.tsconfigPath);
     this.options = config.options;
-    this.compilerHost = createCompilerHost({ options: config.options });
-    // Replace all `\` with a forward slash to align with typescript's `normalizePath`.
-    // On Windows, different slashes cause errors while trying to compare module symbols
-    const rootNames = config.rootNames.map(rootName => rootName.replace(/\\/g, '/'));
-    this.program = createProgram({ rootNames, options: config.options, host: this.compilerHost });
-    this.init();
-    // this.clearCaches();
+    this.init(this.options, config.rootNames);
   }
 
   /**
@@ -133,7 +137,6 @@ export class ProjectSymbols {
             symbol,
             this.metadataResolver,
             this.directiveNormalizer,
-            this.directiveResolver,
             this.reflector,
             this.resourceResolver,
             this
@@ -195,7 +198,6 @@ export class ProjectSymbols {
         this.reflector.getStaticSymbol(sourceFile.fileName, identifier.text),
         this.metadataResolver,
         this.directiveNormalizer,
-        this.directiveResolver,
         this.reflector,
         this.resourceResolver,
         this
@@ -240,79 +242,84 @@ export class ProjectSymbols {
   //   this.directiveNormalizer.clearCache();
   // }
 
-  private init() {
-    const staticSymbolCache = new StaticSymbolCache();
-
-    const summaryResolver = new AotSummaryResolver(
-      {
-        loadSummary(filePath: string) {
-          return '';
-        },
-        isSourceFile(sourceFilePath: string) {
-          return true;
-        },
-        toSummaryFileName(host) {
-          return '';
-        },
-        fromSummaryFileName(host) {
-          return '';
-        }
-      },
-      staticSymbolCache
-    );
-
-    const parser = new HtmlParser();
-    const config = new CompilerConfig({
-      defaultEncapsulation: ViewEncapsulation.Emulated,
-      useJit: false
-    });
-
-    const defaultDir = this.program.getTsProgram().getCurrentDirectory();
-    this.options.baseUrl = this.options.baseUrl || defaultDir;
-    this.options.basePath = this.options.basePath || defaultDir;
-    this.options.genDir = this.options.genDir || defaultDir;
+  private init(options: ts.CompilerOptions, rootNames: string[]) {
+    this.compilerHost = ts.createCompilerHost(this.options, true);
+    // Replace all `\` with a forward slash to align with typescript's `normalizePath`.
+    // On Windows, different slashes cause errors while trying to compare module symbols
+    rootNames = rootNames.map(rootName => rootName.replace(/\\/g, '/'));
 
     this.staticResolverHost = new TsCompilerAotCompilerTypeCheckHostAdapter(
-      this.program.getTsProgram().getRootFileNames(),
+      rootNames,
       this.options,
       this.compilerHost,
       new MetadataCollector(),
       {
-        generateFile: (genFileName, baseFileName) => new GeneratedFile('', '', ''),
-        findGeneratedFileNames: fileName => []
+        generateFile: (genFileName, baseFileName) => {
+          return this.compiler.emitBasicStub(genFileName, baseFileName);
+        },
+        findGeneratedFileNames: fileName => {
+          return this.compiler.findGeneratedFileNames(fileName);
+        }
       }
     );
 
-    this.staticSymbolResolver = new StaticSymbolResolver(
-      this.staticResolverHost,
-      staticSymbolCache,
-      summaryResolver,
-      this.errorReporter
-    );
-
-    this.summaryResolver = new AotSummaryResolver(this.staticResolverHost, staticSymbolCache);
-
-    this.reflector = new StaticReflector(this.summaryResolver, this.staticSymbolResolver, [], [], this.errorReporter);
-
-    const ngModuleResolver = new NgModuleResolver(this.reflector);
-    this.directiveResolver = new DirectiveResolver(this.reflector);
-    this.pipeResolver = new PipeResolver(this.reflector);
+    this.program = createProgram({ rootNames, options: options, host: this.staticResolverHost });
 
     this.urlResolver = createOfflineCompileUrlResolver();
-    this.directiveNormalizer = new DirectiveNormalizer(this.resourceResolver, this.urlResolver, parser, config);
-
+    const symbolCache = new StaticSymbolCache();
+    this.summaryResolver = new AotSummaryResolver(this.staticResolverHost, symbolCache);
+    this.staticSymbolResolver = new StaticSymbolResolver(this.staticResolverHost, symbolCache, this.summaryResolver);
+    this.reflector = new StaticReflector(this.summaryResolver, this.staticSymbolResolver, [], []);
+    const htmlParser = new HtmlParser();
+    const config = new CompilerConfig({
+      defaultEncapsulation: ViewEncapsulation.Emulated,
+      useJit: false
+    });
+    this.pipeResolver = new PipeResolver(this.reflector);
+    this.directiveResolver = new DirectiveResolver(this.reflector);
+    this.directiveNormalizer = new DirectiveNormalizer(
+      {
+        get: function(url) {
+          return this.staticResolverHost.loadResource(url);
+        }
+      },
+      this.urlResolver,
+      htmlParser,
+      config
+    );
+    const registry = new DomElementSchemaRegistry();
     this.metadataResolver = new CompileMetadataResolver(
-      new CompilerConfig(),
-      parser,
-      ngModuleResolver,
+      config,
+      htmlParser,
+      new NgModuleResolver(this.reflector),
       this.directiveResolver,
       this.pipeResolver,
-      summaryResolver,
-      new DomElementSchemaRegistry(),
+      this.summaryResolver,
+      registry,
       this.directiveNormalizer,
-      new ɵConsole(),
-      staticSymbolCache,
+      console,
+      symbolCache,
       this.reflector
+    );
+    const viewCompiler = new ViewCompiler(this.reflector);
+    const typeCheckCompiler = new TypeCheckCompiler(options, this.reflector);
+    var expressionParser = new Parser(new Lexer());
+    var tmplParser = new TemplateParser(config, this.reflector, expressionParser, registry, htmlParser, console, []);
+    this.compiler = new AotCompiler(
+      config,
+      options,
+      this.staticResolverHost,
+      this.reflector,
+      this.metadataResolver,
+      tmplParser,
+      new StyleCompiler(this.urlResolver),
+      viewCompiler,
+      typeCheckCompiler,
+      new NgModuleCompiler(this.reflector),
+      new InjectableCompiler(this.reflector, !!options.enableIvy),
+      new TypeScriptEmitter(),
+      this.summaryResolver,
+      this.staticSymbolResolver
     );
   }
 }

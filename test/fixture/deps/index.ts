@@ -1,6 +1,9 @@
 import { NgModule, Component, Inject } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
+import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { CommonModule } from '@angular/common';
+
+import { MatExpansionModule } from '@angular/material';
 
 export class BasicProvider {}
 
@@ -17,7 +20,7 @@ export class CompositeProvider {
 }
 
 @NgModule({
-  imports: [CommonModule, BrowserModule],
+  imports: [CommonModule, BrowserModule, MatExpansionModule, BrowserAnimationsModule],
   exports: [MainComponent],
   declarations: [MainComponent],
   bootstrap: [MainComponent],

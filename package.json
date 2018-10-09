@@ -1,6 +1,6 @@
 {
   "name": "ngast",
-  "version": "0.2.0",
+  "version": "0.2.1",
   "description": "Parsing tools for Angular. The project is an abstraction over the Angular compiler which provides friendly interface.",
   "main": "ngast.bundle.js",
   "module": "index.js",
@@ -10,19 +10,23 @@
     "url": "git+https://github.com/mgechev/ngast.git"
   },
   "peerDependencies": {
-    "@angular/compiler": "7.0.0-rc.0",
-    "@angular/compiler-cli": "7.0.0-rc.0",
-    "@angular/core": "7.0.0-rc.0",
-    "typescript": "~3.1.1"
+    "@angular/compiler": "^7.0.0-rc.0",
+    "@angular/compiler-cli": "^7.0.0-rc.0",
+    "@angular/core": "^7.0.0-rc.0",
+    "typescript": "~3.1.0"
   },
   "devDependencies": {
-    "@angular/common": "7.0.0-rc.0",
-    "@angular/compiler": "7.0.0-rc.0",
-    "@angular/compiler-cli": "7.0.0-rc.0",
-    "@angular/core": "7.0.0-rc.0",
-    "@angular/platform-browser": "7.0.0-rc.0",
-    "@angular/platform-browser-dynamic": "7.0.0-rc.0",
-    "@angular/router": "7.0.0-rc.0",
+    "@angular/animations": "^7.0.0-rc.0",
+    "@angular/cdk": "^7.0.0-rc.0",
+    "@angular/common": "^7.0.0-rc.0",
+    "@angular/compiler": "^7.0.0-rc.0",
+    "@angular/compiler-cli": "^7.0.0-rc.0",
+    "@angular/core": "^7.0.0-rc.0",
+    "@angular/forms": "^7.0.0-rc.0",
+    "@angular/material": "^7.0.0-rc.0",
+    "@angular/platform-browser": "^7.0.0-rc.0",
+    "@angular/platform-browser-dynamic": "^7.0.0-rc.0",
+    "@angular/router": "^7.0.0-rc.0",
     "@types/jasmine": "^2.5.41",
     "@types/node": "^7.0.2",
     "esdoc": "^1.1.0",
@@ -32,7 +36,7 @@
     "rxjs": "^6.3.3",
     "ts-node": "^4.0.0",
     "tslint": "^5.11.0",
-    "zone.js": "~0.8.26"
+    "zone.js": "^0.8.26"
   },
   "scripts": {
     "build": "rimraf dist && tsc && rollup -c rollup.config.js -i dist/index.js > dist/ngast.bundle.js && cp package.json dist && ts-node -P tsconfig-ts-node.json tools/cleanup.ts && cp README.md dist",
@@ -49,6 +53,6 @@
   "author": "Minko Gechev <mgechev@gmail.com>",
   "license": "MIT",
   "dependencies": {
-    "typescript": "~3.1.1"
+    "typescript": "~3.1.0"
   }
 }

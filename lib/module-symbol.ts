@@ -114,7 +114,6 @@ export class ModuleSymbol extends Symbol {
         i.reference,
         this.metadataResolver,
         this.directiveNormalizer,
-        this.resolver,
         this.reflector,
         this.resourceResolver,
         this.projectSymbols

@@ -2,7 +2,6 @@ import { Program } from 'typescript';
 import { SchemaMetadata, resolveForwardRef } from '@angular/core';
 import {
   StaticSymbol,
-  DirectiveResolver,
   CompileMetadataResolver,
   StaticReflector,
   UrlResolver,
@@ -131,7 +130,6 @@ export class DirectiveSymbol extends Symbol {
     symbol: StaticSymbol,
     private metadataResolver: CompileMetadataResolver,
     private directiveNormalizer: DirectiveNormalizer,
-    private resolver: DirectiveResolver,
     private reflector: StaticReflector,
     private resourceResolver: ResourceResolver,
     private projectSymbols: ProjectSymbols
@@ -289,7 +287,7 @@ export class DirectiveSymbol extends Symbol {
   getTemplateAst(): TemplateAstResult {
     let result: TemplateAstResult;
     try {
-      const resolvedMetadata = this.metadataResolver.getNonNormalizedDirectiveMetadata(this.symbol as any);
+      const resolvedMetadata = this.metadataResolver.getNonNormalizedDirectiveMetadata(this.symbol);
       const dirMetadata = this.getResolvedMetadata();
       if (dirMetadata) {
         const source = dirMetadata.template;
