@@ -2,7 +2,7 @@ import * as ts from 'typescript';
 
 import { ResourceResolver } from './resource-resolver';
 
-import { ViewEncapsulation, ɵConsole } from '@angular/core';
+import { ViewEncapsulation } from '@angular/core';
 import {
   CompileMetadataResolver,
   NgModuleResolver,
@@ -29,17 +29,17 @@ import {
   ViewCompiler,
   TemplateParser,
   Lexer,
-  Parser
+  Parser,
+  CompileProviderMetadata
 } from '@angular/compiler';
 
 import { MetadataCollector, readConfiguration, CompilerOptions } from '@angular/compiler-cli';
-import { createProgram, CompilerHost, Program } from '@angular/compiler-cli/ngtools2';
+import { CompilerHost, Program } from '@angular/compiler-cli/ngtools2';
 
 import { PipeSymbol } from './pipe-symbol';
 import { DirectiveSymbol } from './directive-symbol';
 import { ModuleSymbol } from './module-symbol';
 import { ProviderSymbol } from './provider-symbol';
-import { CompileProviderMetadata } from '@angular/compiler';
 import { TsCompilerAotCompilerTypeCheckHostAdapter } from '@angular/compiler-cli/src/transformers/compiler_host';
 import { InjectableCompiler } from '@angular/compiler/src/injectable_compiler';
 import { TypeCheckCompiler } from '@angular/compiler/src/view_compiler/type_check_compiler';
@@ -65,7 +65,7 @@ export class ProjectSymbols {
   private directiveResolver: DirectiveResolver;
   private urlResolver: UrlResolver;
   private directiveNormalizer: DirectiveNormalizer;
-  private program: Program;
+  private program: ts.Program;
   private compilerHost: CompilerHost;
   private analyzedModules: NgAnalyzedModules;
   private options: CompilerOptions;
@@ -105,7 +105,7 @@ export class ProjectSymbols {
     resultMap.forEach(v =>
       result.push(
         new ModuleSymbol(
-          this.program.getTsProgram(),
+          this.program,
           v.type.reference,
           this.metadataResolver,
           this.directiveNormalizer,
@@ -133,7 +133,7 @@ export class ProjectSymbols {
       .map(
         symbol =>
           new DirectiveSymbol(
-            this.program.getTsProgram(),
+            this.program,
             symbol,
             this.metadataResolver,
             this.directiveNormalizer,
@@ -154,7 +154,7 @@ export class ProjectSymbols {
   getPipes(): PipeSymbol[] {
     return this.extractProgramSymbols()
       .filter(v => this.metadataResolver.isPipe(v))
-      .map(p => new PipeSymbol(this.program.getTsProgram(), p, this.pipeResolver, this.metadataResolver, this));
+      .map(p => new PipeSymbol(this.program, p, this.pipeResolver, this.metadataResolver, this));
   }
 
   /**
@@ -187,14 +187,14 @@ export class ProjectSymbols {
    * @memberOf DirectiveSymbol
    */
   getDirectiveFromNode(declaration: ts.ClassDeclaration, fileName: string) {
-    const sourceFile = this.program.getTsProgram().getSourceFile(fileName);
+    const sourceFile = this.program.getSourceFile(fileName);
     if (!sourceFile) {
       throw new Error(`Cannot get the program's source file`);
     }
     const identifier = declaration.name;
     if (identifier) {
       return new DirectiveSymbol(
-        this.program.getTsProgram(),
+        this.program,
         this.reflector.getStaticSymbol(sourceFile.fileName, identifier.text),
         this.metadataResolver,
         this.directiveNormalizer,
@@ -218,7 +218,7 @@ export class ProjectSymbols {
       };
 
       analyzedModules = this.analyzedModules = analyzeNgModules(
-        this.program.getTsProgram().getRootFileNames() as string[],
+        this.program.getRootFileNames() as string[],
         analyzeHost,
         this.staticSymbolResolver,
         this.metadataResolver
@@ -231,8 +231,8 @@ export class ProjectSymbols {
     return [].concat.apply(
       [],
       this.program
-        .getTsProgram()
         .getSourceFiles()
+        .filter(f => this.staticSymbolResolver.hasDecorators(f.fileName))
         .map(f => this.staticSymbolResolver.getSymbolsOf(f.fileName))
     );
   }
@@ -262,8 +262,6 @@ export class ProjectSymbols {
         }
       }
     );
-
-    this.program = createProgram({ rootNames, options: options, host: this.staticResolverHost });
 
     this.urlResolver = createOfflineCompileUrlResolver();
     const symbolCache = new StaticSymbolCache();
@@ -321,5 +319,6 @@ export class ProjectSymbols {
       this.summaryResolver,
       this.staticSymbolResolver
     );
+    this.program = ts.createProgram({ rootNames, options: options, host: this.staticResolverHost });
   }
 }

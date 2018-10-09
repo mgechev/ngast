@@ -148,6 +148,7 @@ export class DirectiveSymbol extends Symbol {
    * @memberOf DirectiveSymbol
    */
   getNonResolvedMetadata(): CompileDirectiveMetadata | null {
+    // console.log(this.symbol.name, this.symbol.filePath);
     const data = this.metadataResolver.getNonNormalizedDirectiveMetadata(this.symbol);
     if (data) {
       return data.metadata;
