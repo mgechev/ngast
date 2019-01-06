@@ -19,6 +19,7 @@ Projects using ngast:
 - [ngrev](https://github.com/mgechev/ngrev) - Tool for reverse engineering of Angular applications.
 - [codelyzer](https://github.com/mgechev/codelyzer) - Static code analysis for Angular projects.
 - [ngworld](https://github.com/mgechev/ngworld) - Visualization of Angular projects.
+- [ng-app-counter](https://github.com/jamaks/ng-app-counter) - Counter for Angular applications.
 
 # License
 
