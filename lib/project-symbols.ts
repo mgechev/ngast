@@ -277,7 +277,7 @@ export class ProjectSymbols {
     this.directiveResolver = new DirectiveResolver(this.reflector);
     this.directiveNormalizer = new DirectiveNormalizer(
       {
-        get: function(url) {
+        get: (url) => {
           return this.staticResolverHost.loadResource(url);
         }
       },
