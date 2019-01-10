@@ -36,6 +36,7 @@
     "rxjs": "^6.3.3",
     "ts-node": "^4.0.0",
     "tslint": "^5.11.0",
+    "typescript": "~3.1.6",
     "zone.js": "^0.8.26"
   },
   "scripts": {
@@ -51,8 +52,5 @@
     "Compiler"
   ],
   "author": "Minko Gechev <mgechev@gmail.com>",
-  "license": "MIT",
-  "dependencies": {
-    "typescript": "~3.1.0"
-  }
+  "license": "MIT"
 }
