@@ -168,43 +168,28 @@ export class DirectiveSymbol extends Symbol {
    * @memberOf DirectiveSymbol
    */
   getResolvedMetadata(): CompileTemplateMetadata | null {
-    const metadata = this.metadataResolver.getNonNormalizedDirectiveMetadata(this.symbol);
-    const componentType = resolveForwardRef(this.symbol);
-    if (!metadata) {
+    const directiveInfo = this.getDirectiveMetadata();
+    if(!directiveInfo) {
       return null;
     }
-    const componentUrl = this.reflector.componentModuleUrl(componentType);
-    const templateMetadata = metadata.metadata.template;
-    // Required because otherwise the normalizer gets confused.
-    if (!templateMetadata) {
-      return null;
-    }
-    if (!templateMetadata.template && templateMetadata.templateUrl) {
-      templateMetadata.templateUrl = this.urlResolver.resolve(componentUrl, templateMetadata.templateUrl);
-      templateMetadata.template = this.resourceResolver.getSync(templateMetadata.templateUrl);
-    }
-    if (templateMetadata.styleUrls.length) {
-      templateMetadata.styleUrls = templateMetadata.styleUrls.map(s => this.urlResolver.resolve(componentUrl, s));
-      templateMetadata.styles = templateMetadata.styles.concat(
-        templateMetadata.styleUrls.map(s => this.resourceResolver.getSync(s))
-      );
-    }
+    this.templateDataVoid(directiveInfo);
+    this.stylesDataVoid(directiveInfo);
     const module = this.getModule();
     if (!module) {
       return null;
     }
-    const config = Object.assign({}, templateMetadata, {
+    const config = Object.assign({}, directiveInfo.templateMetadata, {
       ngModuleType: module.type.reference,
-      moduleUrl: componentUrl,
+      moduleUrl: directiveInfo.componentUrl,
       templateUrl: null,
       styleUrls: null,
-      componentType
+      componentType: directiveInfo.componentType
     });
     const currentMetadata = this.directiveNormalizer.normalizeTemplate(config) as CompileTemplateMetadata;
-    currentMetadata.template = templateMetadata.template;
-    currentMetadata.templateUrl = templateMetadata.templateUrl;
-    currentMetadata.styles = templateMetadata.styles;
-    currentMetadata.styleUrls = templateMetadata.styleUrls;
+    currentMetadata.template = directiveInfo.templateMetadata.template;
+    currentMetadata.templateUrl = directiveInfo.templateMetadata.templateUrl;
+    currentMetadata.styles = directiveInfo.templateMetadata.styles;
+    currentMetadata.styleUrls = directiveInfo.templateMetadata.styleUrls;
     return currentMetadata;
   }
 
@@ -289,9 +274,10 @@ export class DirectiveSymbol extends Symbol {
     let result: TemplateAstResult;
     try {
       const resolvedMetadata = this.metadataResolver.getNonNormalizedDirectiveMetadata(this.symbol);
-      const dirMetadata = this.getResolvedMetadata();
-      if (dirMetadata) {
-        const source = dirMetadata.template;
+      const directiveInfo = this.getDirectiveMetadata();
+      if (directiveInfo.templateMetadata) {
+        this.templateDataVoid(directiveInfo);
+        const source = directiveInfo.templateMetadata.template;
         if (!source) {
           result = { errors: [{ message: 'Cannot find template for the directive' }] };
         } else {
@@ -395,5 +381,41 @@ export class DirectiveSymbol extends Symbol {
     } else {
       return false;
     }
+  }
+  private templateDataVoid(directiveInfo) {
+    if (!directiveInfo.templateMetadata.template && directiveInfo.templateMetadata.templateUrl) {
+      directiveInfo.templateMetadata.templateUrl = this.urlResolver.resolve(directiveInfo.componentUrl,
+        directiveInfo.templateMetadata.templateUrl);
+      directiveInfo.templateMetadata.template = this.resourceResolver.getSync(directiveInfo.templateMetadata.templateUrl);
+    }
+  }
+  private stylesDataVoid(directiveInfo) {
+    if (directiveInfo.templateMetadata.styleUrls.length) {
+      directiveInfo.templateMetadata.styleUrls = directiveInfo.templateMetadata.styleUrls.map(s =>
+        this.urlResolver.resolve(directiveInfo.componentUrl, s)
+      );
+      directiveInfo.templateMetadata.styles = directiveInfo.templateMetadata.styles.concat(
+        directiveInfo.templateMetadata.styleUrls.map(s => this.resourceResolver.getSync(s))
+      );
+    }
+  }
+  private getDirectiveMetadata() {
+    const metadata = this.metadataResolver.getNonNormalizedDirectiveMetadata(this.symbol);
+    const componentType = resolveForwardRef(this.symbol);
+    if (!metadata) {
+      return null;
+    }
+    const componentUrl = this.reflector.componentModuleUrl(componentType);
+    const templateMetadata = metadata.metadata.template;
+    // Required because otherwise the normalizer gets confused.
+    if (!templateMetadata) {
+      return null;
+    }
+    return {
+      metadata,
+      componentType,
+      componentUrl,
+      templateMetadata
+    };
   }
 }
