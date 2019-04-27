@@ -275,7 +275,7 @@ export class DirectiveSymbol extends Symbol {
     try {
       const resolvedMetadata = this.metadataResolver.getNonNormalizedDirectiveMetadata(this.symbol);
       const directiveInfo = this.getDirectiveMetadata();
-      if (directiveInfo.templateMetadata) {
+      if (directiveInfo && directiveInfo.templateMetadata) {
         this.templateDataVoid(directiveInfo);
         const source = directiveInfo.templateMetadata.template;
         if (!source) {
