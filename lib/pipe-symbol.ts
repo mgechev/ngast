@@ -59,7 +59,7 @@ export class PipeSymbol extends Symbol {
    * @memberOf PipeSymbol
    */
   getMetadata(): Pipe | null {
-    return this.resolver.resolve(resolveForwardRef(this.symbol));
+    return this.resolver.resolve(resolveForwardRef<any>(this.symbol));
   }
 
   getDependencies() {
