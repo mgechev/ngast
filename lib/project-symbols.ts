@@ -33,9 +33,7 @@ import {
   CompileProviderMetadata
 } from '@angular/compiler';
 
-import { MetadataCollector, readConfiguration, CompilerOptions } from '@angular/compiler-cli';
-import { CompilerHost, Program } from '@angular/compiler-cli/ngtools2';
-
+import { MetadataCollector, readConfiguration, CompilerOptions, CompilerHost } from '@angular/compiler-cli';
 import { PipeSymbol } from './pipe-symbol';
 import { DirectiveSymbol } from './directive-symbol';
 import { ModuleSymbol } from './module-symbol';

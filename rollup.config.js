@@ -1,5 +1,6 @@
-export default {
-  format: 'umd',
-  moduleName: 'ngast'
+module.exports = {
+  output: {
+    format: 'umd',
+    name: 'ngast'
+  }
 };
-
