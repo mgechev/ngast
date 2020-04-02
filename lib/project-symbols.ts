@@ -217,8 +217,10 @@ export class ProjectSymbols {
         }
       };
 
+      // The root filenames may not contain a module itself, but only reference one (f.e. main.ts)
+      const filenames = this.program.getSourceFiles().map(sf => sf.fileName);
       analyzedModules = this.analyzedModules = analyzeNgModules(
-        this.program.getRootFileNames() as string[],
+        filenames,
         analyzeHost,
         this.staticSymbolResolver,
         this.metadataResolver
