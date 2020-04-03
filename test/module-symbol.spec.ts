@@ -14,7 +14,23 @@ describe('ModuleSymbol', () => {
     it('should get all modules', () => {
       const contextSymbols = new ProjectSymbols(program, resourceResolver, defaultErrorReporter);
       const modules = contextSymbols.getModules();
-      expect(modules.map(s => s.symbol.name).some(n => n === 'AppModule')).toBeTruthy();
+      const moduleNames = modules.map(s => s.symbol.name);
+      expect(moduleNames.includes('AppModule')).toBeTruthy();
+      expect(moduleNames.includes('AboutModule')).toBeTruthy();
+    });
+  });
+
+  describe('file import specs', () => {
+    beforeEach(() => {
+      program = __dirname + '/../../test/fixture/referenced-root-module/tsconfig.json';
+    });
+
+    it('should get all modules', () => {
+      const contextSymbols = new ProjectSymbols(program, resourceResolver, defaultErrorReporter);
+      const modules = contextSymbols.getModules();
+      const moduleNames = modules.map(s => s.symbol.name);
+      expect(moduleNames.includes('AppModule')).toBeTruthy();
+      expect(moduleNames.includes('AboutModule')).toBeTruthy();
     });
   });
 
