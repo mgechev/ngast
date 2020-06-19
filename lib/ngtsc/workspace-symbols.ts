@@ -109,7 +109,7 @@ export class WorkspaceSymbols {
   }
 
   /** Handler for @Injectable() annotations */
-  private get injectableHandler() {
+  get injectableHandler() {
     return this.lazy('injectableHandler', () => new InjectableDecoratorHandler(
         this.reflector,
         this.defaultImportTracker,
@@ -121,7 +121,7 @@ export class WorkspaceSymbols {
   }
 
   /** Handler for @Pipe() annotations */
-  private get pipeHandler() {
+  get pipeHandler() {
     return this.lazy('pipeHandler', () => new PipeDecoratorHandler(
         this.reflector,
         this.evaluator,
@@ -135,7 +135,7 @@ export class WorkspaceSymbols {
   }
 
   /** Handler for @Directive() annotations */
-  private get directiveHandler() {
+  get directiveHandler() {
     return this.lazy('directiveHandler', () => new DirectiveDecoratorHandler(
         this.reflector,
         this.evaluator,
@@ -151,7 +151,7 @@ export class WorkspaceSymbols {
   }
 
   /** Handler for @NgModule() annotations */
-  private get moduleHandler() {
+  get moduleHandler() {
     return this.lazy('moduleHandler', () => new NgModuleDecoratorHandler(
         this.reflector,
         this.evaluator,
@@ -172,7 +172,7 @@ export class WorkspaceSymbols {
   }
 
   /** Handler for @Component() annotations */
-  private get cmptHandler() {
+  get cmptHandler() {
     return this.lazy('cmptHandler', () => new ComponentDecoratorHandler(
         this.reflector,
         this.evaluator,
