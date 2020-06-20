@@ -38,7 +38,7 @@ interface Toolkit {
   evaluator: PartialEvaluator;
   dtsReader: DtsMetadataReader;
   metaRegistry: CompoundMetadataRegistry;
-  scopeReader: ComponentScopeReader;
+  scopeRegistry: LocalModuleScopeRegistry;
   metaReader: CompoundMetadataReader;
   aliasingHost: AliasingHost;
   localMetaReader: LocalMetadataRegistry;
@@ -266,30 +266,32 @@ export class WorkspaceSymbols {
 
   // ----- PRIVATE ----- //
 
+  /** Typescript type checker use to semantically analyze a source file */
   private get checker() {
     return this.lazy('checker', () => this.program.getTypeChecker());
   }
 
+  /** Static reflection of declarations using the TypeScript type checker */
   private get reflector() {
     return this.lazy('reflector', () => new TypeScriptReflectionHost(this.checker));
   }
 
+  /** Registers and records usages of Identifers that came from default import statements (import X from 'some/module') */
   private get defaultImportTracker() {
     return this.lazy('defaultImportTracker', () => new DefaultImportTracker());
   }
 
+  /** Keeps track of classes that can be constructed via dependency injection (e.g. injectables, directives, pipes) */
   private get injectableRegistry() {
     return this.lazy('injectableRegistry', () => new InjectableClassRegistry(this.reflector));
   }
 
+  // @todo() support oldProgram https://github.com/angular/angular/blob/master/packages/compiler-cli/src/ngtsc/core/src/compiler.ts#L130
   private get incrementalDriver() {
-    return this.lazy('incrementalDriver', () => {
-      // @todo() support oldProgram https://github.com/angular/angular/blob/master/packages/compiler-cli/src/ngtsc/core/src/compiler.ts#L130
-      const incrementalDriver = IncrementalDriver.fresh(this.program);
-      return incrementalDriver;
-    });
+    return this.lazy('incrementalDriver', () => IncrementalDriver.fresh(this.program));
   }
 
+  /** Evaluate typecript Expression & update the dependancy graph accordingly */
   private get evaluator() {
     return this.lazy('evaluator', () => new PartialEvaluator(
       this.reflector,
@@ -298,10 +300,12 @@ export class WorkspaceSymbols {
     ));
   }
 
+  /** (pre)Load resources using cache */
   private get resourceManager() {
     return this.lazy('resourceManager', () => new HostResourceLoader(this.host, this.options));
   }
 
+  /** Resolve the module source-files references in lazy-loaded routes */
   private get moduleResolver() {
     return this.lazy('moduleResolver', () => {
       const moduleResolutionCache = createModuleResolutionCache(
@@ -312,10 +316,12 @@ export class WorkspaceSymbols {
     });
   }
 
+  /** Entry source file of the host */
   private get entryPoint() {
     return this.host.entryPoint !== null ? getSourceFileOrNull(this.program, this.host.entryPoint) : null;
   }
 
+  /** Generates and consumes alias re-exports */
   private get aliasingHost() {
     return this.lazy('aliasingHost', () => {
       let aliasingHost: AliasingHost | null = null;
@@ -331,6 +337,7 @@ export class WorkspaceSymbols {
     });
   }
 
+  /** Generates `Expression`s which refer to `Reference`s in a given context. */
   private get refEmitter() {
     return this.lazy('refEmitter', () => {
       const { rootDir, rootDirs, _useHostForImportGeneration } = this.options;
@@ -361,34 +368,40 @@ export class WorkspaceSymbols {
     });
   }
 
+  /** A registry of directive, pipe, and module metadata for types defined in the current compilation */
   private get localMetaReader() {
     return this.lazy('localMetaReader', () => new LocalMetadataRegistry());
   }
 
+  /** A `MetadataReader` that can read metadata from `.d.ts` files, which have static Ivy properties */
   private get dtsReader() {
     return this.lazy('dtsReader', () => new DtsMetadataReader(this.checker, this.reflector));
   }
 
-  private get scopeReader() {
-    return this.lazy('scopeReader', () => {
+  /** Collects information about local NgModules, Directives, Components, and Pipes (declare in the ts.Program) */
+  private get scopeRegistry() {
+    return this.lazy('scopeRegistry', () => {
       const depScopeReader = new MetadataDtsModuleScopeResolver(this.dtsReader, this.aliasingHost);
       return new LocalModuleScopeRegistry(this.localMetaReader, depScopeReader, this.refEmitter, this.aliasingHost);
     });
   }
 
-  // alias of scopeReader
-  private get scopeRegistry() {
-    return this.scopeReader as LocalModuleScopeRegistry;
+  /** Read information about the compilation scope of components. */
+  private get scopeReader() {
+    return this.scopeRegistry as ComponentScopeReader;
   }
 
+  /** Register metadata from local NgModules, Directives, Components, and Pipes */
   private get metaRegistry() {
     return this.lazy('metaRegistry', () => new CompoundMetadataRegistry([ this.localMetaReader, this.scopeRegistry ]));
   }
 
+  /** Register metadata from local declaration files (.d.ts) */
   private get metaReader() {
     return this.lazy('metaReader', () => new CompoundMetadataReader([ this.localMetaReader, this.dtsReader ]));
   }
 
+  /** Used by DecoratorHandlers to register references during analysis */
   private get referencesRegistry() {
     return this.lazy('referencesRegistry', () => {
       let referencesRegistry: ReferencesRegistry;
@@ -402,10 +415,12 @@ export class WorkspaceSymbols {
     });
   }
 
+  /** Analyze lazy loaded routes */
   private get routeAnalyzer() {
     return this.lazy('routeAnalyzer', () => new NgModuleRouteAnalyzer(this.moduleResolver, this.evaluator));
   }
 
+  /** Analyzes a `ts.Program` for cycles. */
   private get cycleAnalyzer() {
     return this.lazy('cycleAnalyzer', () => {
       const importGraph = new ImportGraph(this.moduleResolver);
@@ -413,14 +428,17 @@ export class WorkspaceSymbols {
     });
   }
 
+  /** Keeps track of declaration transform (`DtsTransform`) per source file */
   private get dtsTransforms() {
     return this.lazy('dtsTransforms', () => new DtsTransformRegistry());
   }
 
+  /** Scan `ModuleWithProvider` classes */
   private get mwpScanner() {
     return this.lazy('mwpScanner', () => new ModuleWithProvidersScanner(this.reflector, this.evaluator, this.refEmitter));
   }
 
+  /** Lazy load & memorize every tool in the `WorkspaceSymbols`'s toolkit */
   private lazy<K extends keyof Toolkit>(key: K, load: () => Toolkit[K]): Partial<Toolkit>[K] {
     if (!this.toolkit[key]) {
       this.toolkit[key] = load();
