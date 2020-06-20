@@ -5,7 +5,7 @@ import { NgCompilerHost } from '@angular/compiler-cli/src/ngtsc/core';
 import { NgCompilerOptions } from '@angular/compiler-cli/src/ngtsc/core/api';
 import { InjectableDecoratorHandler, PipeDecoratorHandler, DirectiveDecoratorHandler, ReferencesRegistry, NoopReferencesRegistry, NgModuleDecoratorHandler, ComponentDecoratorHandler } from '@angular/compiler-cli/src/ngtsc/annotations';
 import { NgtscCompilerHost, FileSystem, LogicalFileSystem, NodeJSFileSystem } from '@angular/compiler-cli/src/ngtsc/file_system';
-import { TypeScriptReflectionHost } from '@angular/compiler-cli/src/ngtsc/reflection';
+import { TypeScriptReflectionHost, ClassDeclaration } from '@angular/compiler-cli/src/ngtsc/reflection';
 import { PartialEvaluator } from '@angular/compiler-cli/src/ngtsc/partial_evaluator';
 import { IncrementalDriver } from '@angular/compiler-cli/src/ngtsc/incremental';
 import { DefaultImportTracker, ReferenceEmitStrategy, AliasingHost, Reference, ReferenceEmitter, LogicalProjectStrategy, RelativePathStrategy, PrivateExportAliasingHost, LocalIdentifierStrategy, AbsoluteModuleStrategy, AliasStrategy, UnifiedModulesStrategy, UnifiedModulesAliasingHost, ModuleResolver } from '@angular/compiler-cli/src/ngtsc/imports';
@@ -16,14 +16,16 @@ import { NgModuleRouteAnalyzer } from '@angular/compiler-cli/src/ngtsc/routing';
 import { CycleAnalyzer, ImportGraph } from '@angular/compiler-cli/src/ngtsc/cycles';
 import { HostResourceLoader } from '@angular/compiler-cli/src/ngtsc/resource';
 import { ReferenceGraph } from '@angular/compiler-cli/src/ngtsc/entry_point';
-import { TraitCompiler, DtsTransformRegistry } from '@angular/compiler-cli/src/ngtsc/transform';
+import { TraitCompiler, DtsTransformRegistry, ClassRecord } from '@angular/compiler-cli/src/ngtsc/transform';
 import { PerfRecorder, NOOP_PERF_RECORDER } from '@angular/compiler-cli/src/ngtsc/perf';
 import { ModuleWithProvidersScanner } from '@angular/compiler-cli/src/ngtsc/modulewithproviders';
+import { AnnotationNames, hasDecoratorName } from './utils';
+import { ModuleSymbol } from './module.symbol';
 
 interface Toolkit {
   program: Program;
   host: NgCompilerHost;
-  traitCompiler: TraitCompiler;
+  traitCompiler: NgastCompiler;
   // Handler
   injectableHandler: InjectableDecoratorHandler;
   pipeHandler: PipeDecoratorHandler;
@@ -74,6 +76,31 @@ class ReferenceGraphAdapter implements ReferencesRegistry {
   }
 }
 
+/** TraitCompiler with friendly interface */
+export class NgastCompiler extends TraitCompiler {
+
+  /** Perform analysis for one node */
+  async analyzeNode(node: ClassDeclaration<Declaration>) {
+    this.analyzeClass(node, null);
+  }
+
+  allRecords(annotation?: AnnotationNames) {
+    const records: ClassRecord[] = [];
+    this.fileToClasses.forEach(nodes => {
+      nodes.forEach(node => {
+        const record = this.recordFor(node);
+        if (record) {
+          // If an annotation is given return only the expected annotated node
+          if (!annotation || (annotation && hasDecoratorName(record.node, annotation))) {
+            records.push(record);
+          }
+        }
+      });
+    });
+    return records;
+  }
+
+}
 
 // All the code here comes from the ngtsc Compiler file, for more detail see :
 // https://github.com/angular/angular/blob/9.1.x/packages/compiler-cli/src/ngtsc/core/src/compiler.ts
@@ -83,6 +110,7 @@ export class WorkspaceSymbols {
   private rootNames: string[];
   private toolkit: Partial<Toolkit> = {};
   private isCore = false;
+  private analysed = false;
 
   constructor(
     private tsconfigPath: string,
@@ -117,7 +145,7 @@ export class WorkspaceSymbols {
 
   /** Process all classes in the program */
   get traitCompiler() {
-    return this.lazy('traitCompiler', () => new TraitCompiler(
+    return this.lazy('traitCompiler', () => new NgastCompiler(
         [this.cmptHandler, this.directiveHandler, this.pipeHandler, this.injectableHandler, this.moduleHandler],
         this.reflector,
         this.perfRecorder,
@@ -217,8 +245,32 @@ export class WorkspaceSymbols {
     );
   }
 
+  /** Register metadata from local NgModules, Directives, Components, and Pipes */
+  public get metaRegistry() {
+    return this.lazy('metaRegistry', () => new CompoundMetadataRegistry([ this.localMetaReader, this.scopeRegistry ]));
+  }
+
+  /** Register metadata from local declaration files (.d.ts) */
+  public get metaReader() {
+    return this.lazy('metaReader', () => new CompoundMetadataReader([ this.localMetaReader, this.dtsReader ]));
+  }
+  
+  /** Collects information about local NgModules, Directives, Components, and Pipes (declare in the ts.Program) */
+  public get scopeRegistry() {
+    return this.lazy('scopeRegistry', () => {
+      const depScopeReader = new MetadataDtsModuleScopeResolver(this.dtsReader, this.aliasingHost);
+      return new LocalModuleScopeRegistry(this.localMetaReader, depScopeReader, this.refEmitter, this.aliasingHost);
+    });
+  }
+
+
+  public getAllModules() {
+    this.ensureAnalysis();
+    return this.traitCompiler.allRecords('NgModule').map(({ node }) => new ModuleSymbol(this, node));
+  }
+
   /** Perform analysis on all projects */
-  public analyzeAll() {
+  private analyzeAll() {
     // Analyse all files
     const analyzeSpan = this.perfRecorder.start('analyze');
     for (const sf of this.program.getSourceFiles()) {
@@ -227,7 +279,6 @@ export class WorkspaceSymbols {
       }
       const analyzeFileSpan = this.perfRecorder.start('analyzeFile', sf);
       this.traitCompiler.analyzeSync(sf);
-      // @question: Should we use type replacement ??
       const addTypeReplacement = (node: Declaration, type: Type): void => {
         this.dtsTransforms.getReturnTypeTransform(sf).addTypeReplacement(node, type);
       };
@@ -240,7 +291,7 @@ export class WorkspaceSymbols {
     // Record NgModule Scope Dependancies
     const recordSpan = this.perfRecorder.start('recordDependencies');
     const depGraph = this.incrementalDriver.depGraph;
-    for (const scope of this.scopeRegistry!.getCompilationScopes()) {
+    for (const scope of this.scopeRegistry.getCompilationScopes()) {
       const file = scope.declaration.getSourceFile();
       const ngModuleFile = scope.ngModule.getSourceFile();
       depGraph.addTransitiveDependency(ngModuleFile, file);
@@ -261,7 +312,9 @@ export class WorkspaceSymbols {
 
     // Calculate which files need to be emitted
     this.incrementalDriver.recordSuccessfulAnalysis(this.traitCompiler);
+    this.analysed = true;
   }
+
 
 
   // ----- PRIVATE ----- //
@@ -325,7 +378,7 @@ export class WorkspaceSymbols {
   private get aliasingHost() {
     return this.lazy('aliasingHost', () => {
       let aliasingHost: AliasingHost | null = null;
-      const { rootDir, rootDirs, _useHostForImportGeneration, generateDeepReexports } = this.options;
+      const { _useHostForImportGeneration, generateDeepReexports } = this.options;
       if (this.host.unifiedModulesHost === null || !_useHostForImportGeneration) {
         if (this.entryPoint === null && generateDeepReexports === true) {
           aliasingHost = new PrivateExportAliasingHost(this.reflector);
@@ -378,28 +431,11 @@ export class WorkspaceSymbols {
     return this.lazy('dtsReader', () => new DtsMetadataReader(this.checker, this.reflector));
   }
 
-  /** Collects information about local NgModules, Directives, Components, and Pipes (declare in the ts.Program) */
-  private get scopeRegistry() {
-    return this.lazy('scopeRegistry', () => {
-      const depScopeReader = new MetadataDtsModuleScopeResolver(this.dtsReader, this.aliasingHost);
-      return new LocalModuleScopeRegistry(this.localMetaReader, depScopeReader, this.refEmitter, this.aliasingHost);
-    });
-  }
-
   /** Read information about the compilation scope of components. */
   private get scopeReader() {
     return this.scopeRegistry as ComponentScopeReader;
   }
 
-  /** Register metadata from local NgModules, Directives, Components, and Pipes */
-  private get metaRegistry() {
-    return this.lazy('metaRegistry', () => new CompoundMetadataRegistry([ this.localMetaReader, this.scopeRegistry ]));
-  }
-
-  /** Register metadata from local declaration files (.d.ts) */
-  private get metaReader() {
-    return this.lazy('metaReader', () => new CompoundMetadataReader([ this.localMetaReader, this.dtsReader ]));
-  }
 
   /** Used by DecoratorHandlers to register references during analysis */
   private get referencesRegistry() {
@@ -444,6 +480,12 @@ export class WorkspaceSymbols {
       this.toolkit[key] = load();
     }
     return this.toolkit[key];
+  }
+
+  private ensureAnalysis() {
+    if (!this.analysed) {
+      this.analyzeAll();
+    }
   }
 }
 
