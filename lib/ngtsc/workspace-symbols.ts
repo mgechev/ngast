@@ -1,4 +1,5 @@
 import { createProgram, Program, createModuleResolutionCache, TypeChecker, getOriginalNode, Declaration } from 'typescript';
+import { Type } from '@angular/compiler';
 import { readConfiguration } from '@angular/compiler-cli';
 import { NgCompilerHost } from '@angular/compiler-cli/src/ngtsc/core';
 import { NgCompilerOptions } from '@angular/compiler-cli/src/ngtsc/core/api';
@@ -15,10 +16,14 @@ import { NgModuleRouteAnalyzer } from '@angular/compiler-cli/src/ngtsc/routing';
 import { CycleAnalyzer, ImportGraph } from '@angular/compiler-cli/src/ngtsc/cycles';
 import { HostResourceLoader } from '@angular/compiler-cli/src/ngtsc/resource';
 import { ReferenceGraph } from '@angular/compiler-cli/src/ngtsc/entry_point';
+import { TraitCompiler, DtsTransformRegistry } from '@angular/compiler-cli/src/ngtsc/transform';
+import { PerfRecorder, NOOP_PERF_RECORDER } from '@angular/compiler-cli/src/ngtsc/perf';
+import { ModuleWithProvidersScanner } from '@angular/compiler-cli/src/ngtsc/modulewithproviders';
 
 interface Toolkit {
   program: Program;
   host: NgCompilerHost;
+  traitCompiler: TraitCompiler;
   // Handler
   injectableHandler: InjectableDecoratorHandler;
   pipeHandler: PipeDecoratorHandler;
@@ -45,11 +50,9 @@ interface Toolkit {
   moduleResolver: ModuleResolver;
   cycleAnalyzer: CycleAnalyzer;
   incrementalDriver: IncrementalDriver;
+  dtsTransforms: DtsTransformRegistry;
+  mwpScanner: ModuleWithProvidersScanner;
 }
-
-type ToolkitRecord = Partial<{
-  [key in keyof Toolkit]: Toolkit[key]
-}>;
 
 // code from :
 // https://github.com/angular/angular/blob/9.1.x/packages/compiler-cli/src/ngtsc/core/src/compiler.ts#L821
@@ -72,22 +75,26 @@ class ReferenceGraphAdapter implements ReferencesRegistry {
 }
 
 
+// All the code here comes from the ngtsc Compiler file, for more detail see :
+// https://github.com/angular/angular/blob/9.1.x/packages/compiler-cli/src/ngtsc/core/src/compiler.ts
 
 export class WorkspaceSymbols {
   private options: NgCompilerOptions;
   private rootNames: string[];
-  private toolkit: ToolkitRecord = {};
+  private toolkit: Partial<Toolkit> = {};
   private isCore = false;
 
   constructor(
     private tsconfigPath: string,
     private fs: FileSystem = new NodeJSFileSystem(),
+    private perfRecorder: PerfRecorder = NOOP_PERF_RECORDER
   ) {
     const config = readConfiguration(this.tsconfigPath);
     this.options = config.options;
     this.rootNames = config.rootNames;
   }
 
+  // ------ PUBLIC API ----- //
 
   /** Angular wrapper around the typescript host compiler */
   get host() {
@@ -105,6 +112,19 @@ export class WorkspaceSymbols {
         rootNames: this.host.inputFiles,
         options: this.options
       })
+    );
+  }
+
+  /** Process all classes in the program */
+  get traitCompiler() {
+    return this.lazy('traitCompiler', () => new TraitCompiler(
+        [this.cmptHandler, this.directiveHandler, this.pipeHandler, this.injectableHandler, this.moduleHandler],
+        this.reflector,
+        this.perfRecorder,
+        this.incrementalDriver,
+        this.options.compileNonExportedClasses !== false,
+        this.dtsTransforms
+      )
     );
   }
 
@@ -197,6 +217,54 @@ export class WorkspaceSymbols {
     );
   }
 
+  /** Perform analysis on all projects */
+  public analyzeAll() {
+    // Analyse all files
+    const analyzeSpan = this.perfRecorder.start('analyze');
+    for (const sf of this.program.getSourceFiles()) {
+      if (sf.isDeclarationFile) {
+        continue;
+      }
+      const analyzeFileSpan = this.perfRecorder.start('analyzeFile', sf);
+      this.traitCompiler.analyzeSync(sf);
+      // @question: Should we use type replacement ??
+      const addTypeReplacement = (node: Declaration, type: Type): void => {
+        this.dtsTransforms.getReturnTypeTransform(sf).addTypeReplacement(node, type);
+      };
+      this.mwpScanner.scan(sf, { addTypeReplacement });
+      this.perfRecorder.stop(analyzeFileSpan);
+    }
+    this.perfRecorder.stop(analyzeSpan);
+    this.traitCompiler.resolve();
+
+    // Record NgModule Scope Dependancies
+    const recordSpan = this.perfRecorder.start('recordDependencies');
+    const depGraph = this.incrementalDriver.depGraph;
+    for (const scope of this.scopeRegistry!.getCompilationScopes()) {
+      const file = scope.declaration.getSourceFile();
+      const ngModuleFile = scope.ngModule.getSourceFile();
+      depGraph.addTransitiveDependency(ngModuleFile, file);
+      depGraph.addDependency(file, ngModuleFile);
+      const meta = this.metaReader.getDirectiveMetadata(new Reference(scope.declaration));
+      // For components
+      if (meta !== null && meta.isComponent) {
+        depGraph.addTransitiveResources(ngModuleFile, file);
+        for (const directive of scope.directives) {
+          depGraph.addTransitiveDependency(file, directive.ref.node.getSourceFile());
+        }
+        for (const pipe of scope.pipes) {
+          depGraph.addTransitiveDependency(file, pipe.ref.node.getSourceFile());
+        }
+      }
+    }
+    this.perfRecorder.stop(recordSpan);
+
+    // Calculate which files need to be emitted
+    this.incrementalDriver.recordSuccessfulAnalysis(this.traitCompiler);
+  }
+
+
+  // ----- PRIVATE ----- //
 
   private get checker() {
     return this.lazy('checker', () => this.program.getTypeChecker());
@@ -345,8 +413,15 @@ export class WorkspaceSymbols {
     });
   }
 
+  private get dtsTransforms() {
+    return this.lazy('dtsTransforms', () => new DtsTransformRegistry());
+  }
 
-  private lazy<K extends keyof ToolkitRecord>(key: K, load: () => ToolkitRecord[K]): ToolkitRecord[K] {
+  private get mwpScanner() {
+    return this.lazy('mwpScanner', () => new ModuleWithProvidersScanner(this.reflector, this.evaluator, this.refEmitter));
+  }
+
+  private lazy<K extends keyof Toolkit>(key: K, load: () => Toolkit[K]): Partial<Toolkit>[K] {
     if (!this.toolkit[key]) {
       this.toolkit[key] = load();
     }
