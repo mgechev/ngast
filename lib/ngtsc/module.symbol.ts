@@ -23,6 +23,10 @@ export class ModuleSymbol {
     public node: ClassDeclaration<Declaration>,
   ) {}
 
+  get name() {
+    return this.node.name.getText();
+  }
+
   get errors() {
     return this.trait?.state === TraitState.ERRORED ? this.trait.diagnostics : null;
   }

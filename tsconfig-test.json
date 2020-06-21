@@ -18,9 +18,11 @@
     "test/module-symbol.spec.ts",
     "test/pipe-symbol.spec.ts",
     "test/provider-symbol.spec.ts",
-    "test/dep-parsing.spec.ts"
+    "test/dep-parsing.spec.ts",
   ],
+  "include": ["test/ngtsc/*.spec.ts"],
   "angularCompilerOptions": {
-    "skipTemplateCodegen": true
+    "skipTemplateCodegen": true,
+    "enableIvy": true
   }
 }
