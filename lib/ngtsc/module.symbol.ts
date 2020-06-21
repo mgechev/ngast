@@ -1,42 +1,30 @@
-import { Declaration } from 'typescript';
+import { Declaration, isClassDeclaration, Node } from 'typescript';
 import { ClassDeclaration, Decorator } from '@angular/compiler-cli/src/ngtsc/reflection';
 import { Trait, TraitState } from '@angular/compiler-cli/src/ngtsc/transform';
-import { Reference } from '@angular/compiler-cli/src/ngtsc/imports';
-import { isNgModuleTrait } from './utils';
+import { isNgModuleTrait, hasDecoratorName } from './utils';
 import { WorkspaceSymbols } from './workspace-symbols';
 import { NgModuleAnalysis } from '@angular/compiler-cli/src/ngtsc/annotations/src/ng_module';
 
-export class ModuleSymbol {
-  private ref: Reference<ClassDeclaration<Declaration>>;
-  private _trait?: Trait<Decorator, NgModuleAnalysis, unknown>;
+function findNgModule(node: Node) {
+  let module: any;
+  node.forEachChild(child => {
+    if (isClassDeclaration(child) && hasDecoratorName(child, 'NgModule')) {
+      module = child;
+    }
+  });
+  return module;
+}
 
-  static fromPath(
-    workspace: WorkspaceSymbols,
-    path: string
-  ) {
-    const sf = workspace.program.getSourceFile(path);
-    // check for NgModule node
-    // return new ModuleSymbol(workspace, node);
-  }
+export class ModuleSymbol {
+  private _trait?: Trait<Decorator, NgModuleAnalysis, unknown>;
 
   constructor(
     private workspace: WorkspaceSymbols,
-    private node: ClassDeclaration<Declaration>,
+    public node: ClassDeclaration<Declaration>,
   ) {}
 
-  private ensureAnalysis() {
-    if (!this.record) {
-      this.workspace.traitCompiler.analyzeNode(this.node);
-      // @question: Should I run scopeRegistry.getCompilationScopes() here ???
-      this._trait = this.record.traits.find(trait => isNgModuleTrait(trait)) as any;
-    }
-  }
-
-  private get trait() {
-    if (!this._trait) {
-      this._trait = this.record.traits.find(trait => isNgModuleTrait(trait)) as any;
-    }
-    return this._trait;
+  get errors() {
+    return this.trait?.state === TraitState.ERRORED ? this.trait.diagnostics : null;
   }
 
   get isAnalysed() {
@@ -49,7 +37,10 @@ export class ModuleSymbol {
 
   get metadata() {
     this.ensureAnalysis();
-    return this.workspace.metaReader.getNgModuleMetadata(this.ref);
+    // getNgModuleMetadata uses only the node from the ref to access metadata
+    // see : https://github.com/angular/angular/blob/9.1.x/packages/compiler-cli/src/ngtsc/metadata/src/registry.ts#L19
+    const ref = { node: this.node } as any;
+    return this.workspace.metaReader.getNgModuleMetadata(ref);
   }
 
   get scope() {
@@ -65,4 +56,33 @@ export class ModuleSymbol {
     }
   }
 
+  public analyse() {
+    this.workspace.traitCompiler.analyzeNode(this.node);
+    this.workspace.traitCompiler.resolveNode(this.node);
+    // @question should we record NgModule Scope Dependancies here ???
+    this._trait = this.record.traits.find(trait => isNgModuleTrait(trait)) as any;
+  }
+
+  private get trait() {
+    if (!this._trait) {
+      this._trait = this.record?.traits.find(trait => isNgModuleTrait(trait)) as any;
+    }
+    return this._trait;
+  }
+
+  private ensureAnalysis() {
+    if (!this.record) {
+      this.analyse();
+    }
+  }
+}
+
+/** Get the first NgModule found in the file with this path */
+export function getModuleSymbol(workspace: WorkspaceSymbols, path: string) {
+  const sf = workspace.program.getSourceFile(path);
+  const node = findNgModule(sf);
+  if (!node) {
+    throw new Error('No @NgModule decorated class found for path: ' + path);
+  }
+  return new ModuleSymbol(workspace, node as ClassDeclaration);
 }
