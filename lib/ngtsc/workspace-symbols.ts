@@ -5,7 +5,7 @@ import { NgCompilerHost } from '@angular/compiler-cli/src/ngtsc/core';
 import { NgCompilerOptions } from '@angular/compiler-cli/src/ngtsc/core/api';
 import { InjectableDecoratorHandler, PipeDecoratorHandler, DirectiveDecoratorHandler, ReferencesRegistry, NoopReferencesRegistry, NgModuleDecoratorHandler, ComponentDecoratorHandler } from '@angular/compiler-cli/src/ngtsc/annotations';
 import { NgtscCompilerHost, FileSystem, LogicalFileSystem, NodeJSFileSystem } from '@angular/compiler-cli/src/ngtsc/file_system';
-import { TypeScriptReflectionHost, ClassDeclaration } from '@angular/compiler-cli/src/ngtsc/reflection';
+import { TypeScriptReflectionHost } from '@angular/compiler-cli/src/ngtsc/reflection';
 import { PartialEvaluator } from '@angular/compiler-cli/src/ngtsc/partial_evaluator';
 import { IncrementalDriver } from '@angular/compiler-cli/src/ngtsc/incremental';
 import { DefaultImportTracker, ReferenceEmitStrategy, AliasingHost, Reference, ReferenceEmitter, LogicalProjectStrategy, RelativePathStrategy, PrivateExportAliasingHost, LocalIdentifierStrategy, AbsoluteModuleStrategy, AliasStrategy, UnifiedModulesStrategy, UnifiedModulesAliasingHost, ModuleResolver } from '@angular/compiler-cli/src/ngtsc/imports';
@@ -16,16 +16,16 @@ import { NgModuleRouteAnalyzer } from '@angular/compiler-cli/src/ngtsc/routing';
 import { CycleAnalyzer, ImportGraph } from '@angular/compiler-cli/src/ngtsc/cycles';
 import { HostResourceLoader } from '@angular/compiler-cli/src/ngtsc/resource';
 import { ReferenceGraph } from '@angular/compiler-cli/src/ngtsc/entry_point';
-import { TraitCompiler, DtsTransformRegistry, ClassRecord } from '@angular/compiler-cli/src/ngtsc/transform';
+import { DtsTransformRegistry } from '@angular/compiler-cli/src/ngtsc/transform';
 import { PerfRecorder, NOOP_PERF_RECORDER } from '@angular/compiler-cli/src/ngtsc/perf';
 import { ModuleWithProvidersScanner } from '@angular/compiler-cli/src/ngtsc/modulewithproviders';
-import { AnnotationNames, hasDecoratorName } from './utils';
 import { ModuleSymbol } from './module.symbol';
+import { NgastTraitCompiler } from './trait-compiler';
 
 interface Toolkit {
   program: Program;
   host: NgCompilerHost;
-  traitCompiler: NgastCompiler;
+  traitCompiler: NgastTraitCompiler;
   // Handler
   injectableHandler: InjectableDecoratorHandler;
   pipeHandler: PipeDecoratorHandler;
@@ -76,32 +76,6 @@ class ReferenceGraphAdapter implements ReferencesRegistry {
   }
 }
 
-/** TraitCompiler with friendly interface */
-export class NgastCompiler extends TraitCompiler {
-
-  /** Perform analysis for one node */
-  async analyzeNode(node: ClassDeclaration<Declaration>) {
-    this.analyzeClass(node, null);
-  }
-
-  allRecords(annotation?: AnnotationNames) {
-    const records: ClassRecord[] = [];
-    this.fileToClasses.forEach(nodes => {
-      nodes.forEach(node => {
-        const record = this.recordFor(node);
-        if (record) {
-          // If an annotation is given return only the expected annotated node
-          if (!annotation || (annotation && hasDecoratorName(record.node, annotation))) {
-            records.push(record);
-          }
-        }
-      });
-    });
-    return records;
-  }
-
-}
-
 // All the code here comes from the ngtsc Compiler file, for more detail see :
 // https://github.com/angular/angular/blob/9.1.x/packages/compiler-cli/src/ngtsc/core/src/compiler.ts
 
@@ -145,7 +119,7 @@ export class WorkspaceSymbols {
 
   /** Process all classes in the program */
   get traitCompiler() {
-    return this.lazy('traitCompiler', () => new NgastCompiler(
+    return this.lazy('traitCompiler', () => new NgastTraitCompiler(
         [this.cmptHandler, this.directiveHandler, this.pipeHandler, this.injectableHandler, this.moduleHandler],
         this.reflector,
         this.perfRecorder,
@@ -254,7 +228,7 @@ export class WorkspaceSymbols {
   public get metaReader() {
     return this.lazy('metaReader', () => new CompoundMetadataReader([ this.localMetaReader, this.dtsReader ]));
   }
-  
+
   /** Collects information about local NgModules, Directives, Components, and Pipes (declare in the ts.Program) */
   public get scopeRegistry() {
     return this.lazy('scopeRegistry', () => {
@@ -279,6 +253,7 @@ export class WorkspaceSymbols {
       }
       const analyzeFileSpan = this.perfRecorder.start('analyzeFile', sf);
       this.traitCompiler.analyzeSync(sf);
+      // Scan for ModuleWithProvider
       const addTypeReplacement = (node: Declaration, type: Type): void => {
         this.dtsTransforms.getReturnTypeTransform(sf).addTypeReplacement(node, type);
       };
@@ -286,6 +261,8 @@ export class WorkspaceSymbols {
       this.perfRecorder.stop(analyzeFileSpan);
     }
     this.perfRecorder.stop(analyzeSpan);
+
+    // Resolve compilation
     this.traitCompiler.resolve();
 
     // Record NgModule Scope Dependancies

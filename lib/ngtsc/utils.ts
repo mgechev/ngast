@@ -6,15 +6,16 @@ import {
   ComponentDecoratorHandler,
 } from '@angular/compiler-cli/src/ngtsc/annotations';
 import { DecoratorHandler, Trait } from '@angular/compiler-cli/src/ngtsc/transform';
-import { Decorator, ClassDeclaration } from '@angular/compiler-cli/src/ngtsc/reflection';
+import { Decorator, ClassDeclaration as ngClassDeclaration } from '@angular/compiler-cli/src/ngtsc/reflection';
 import { InjectableHandlerData } from '@angular/compiler-cli/src/ngtsc/annotations/src/injectable';
 import { PipeHandlerData } from '@angular/compiler-cli/src/ngtsc/annotations/src/pipe';
 import { DirectiveHandlerData } from '@angular/compiler-cli/src/ngtsc/annotations/src/directive';
 import { NgModuleAnalysis } from '@angular/compiler-cli/src/ngtsc/annotations/src/ng_module';
 import { ComponentAnalysisData } from '@angular/compiler-cli/src/ngtsc/annotations/src/component';
-import { isCallExpression } from "typescript";
+import { isCallExpression, ClassDeclaration as tsClassDeclaration } from 'typescript';
 
 // ----- Node Type Guard ----- //
+type ClassDeclaration = ngClassDeclaration | tsClassDeclaration;
 export type AnnotationNames = 'NgModule' | 'Pipe' | 'Injectable' | 'Directive' | 'Component';
 export function hasDecoratorName(node: ClassDeclaration, name: AnnotationNames) {
   return node.decorators?.some(decorator => {
