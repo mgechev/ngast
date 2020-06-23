@@ -2,7 +2,8 @@ import { Declaration } from 'typescript';
 import { ClassDeclaration } from '@angular/compiler-cli/src/ngtsc/reflection';
 import { TraitCompiler, TraitState, ResolveResult, ClassRecord } from '@angular/compiler-cli/src/ngtsc/transform';
 import { FatalDiagnosticError } from '@angular/compiler-cli/src/ngtsc/diagnostics';
-import { AnnotationNames, hasDecoratorName } from './utils';
+import { AnnotationNames, hasLocalAnnotation, hasDtsAnnotation } from './utils';
+import { isFromDtsFile } from '@angular/compiler-cli/src/ngtsc/util/src/typescript';
 
 /** TraitCompiler with friendly interface */
 export class NgastTraitCompiler extends TraitCompiler {
@@ -75,8 +76,14 @@ export class NgastTraitCompiler extends TraitCompiler {
       nodes.forEach(node => {
         const record = this.recordFor(node);
         if (record) {
-          // If an annotation is given return only the expected annotated node
-          if (!annotation || (annotation && hasDecoratorName(record.node, annotation))) {
+          if (!annotation) {
+            records.push(record);
+          } else if (isFromDtsFile(node)) {
+            const members = this['reflector'].getMembersOfClass(node);
+            if (hasDtsAnnotation(members, annotation)) {
+              records.push(record);
+            }
+          } else if (hasLocalAnnotation(record.node, annotation)) {
             records.push(record);
           }
         }

@@ -21,6 +21,7 @@ import { PerfRecorder, NOOP_PERF_RECORDER } from '@angular/compiler-cli/src/ngts
 import { ModuleWithProvidersScanner } from '@angular/compiler-cli/src/ngtsc/modulewithproviders';
 import { NgModuleSymbol } from './module.symbol';
 import { NgastTraitCompiler } from './trait-compiler';
+import { ComponentSymbol } from './component.symbol';
 
 interface Toolkit {
   program: Program;
@@ -259,6 +260,11 @@ export class WorkspaceSymbols {
   public getAllModules() {
     this.ensureAnalysis();
     return this.traitCompiler.allRecords('NgModule').map(({ node }) => new NgModuleSymbol(this, node));
+  }
+
+  public getAllComponents() {
+    this.ensureAnalysis();
+    return this.traitCompiler.allRecords('Component').map(({ node }) => new ComponentSymbol(this, node));
   }
 
   /** Perform analysis on all projects */

@@ -5,7 +5,6 @@ import { DeclarationSymbol, findSymbol } from '.';
 import { ComponentSymbol } from './component.symbol';
 import { assertDeps } from './utils';
 import { Reference } from '@angular/compiler-cli/src/ngtsc/imports';
-import { ClassDeclaration } from '@angular/compiler-cli/src/ngtsc/reflection';
 import { ResolvedValue } from '@angular/compiler-cli/src/ngtsc/partial_evaluator';
 
 export class NgModuleSymbol extends Symbol<NgModuleAnalysis> {

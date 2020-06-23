@@ -24,14 +24,16 @@ export function getDecoratorName(decorator: Decorator) {
   return isCallExpression(expression) && expression.expression.getText();
 }
 
-export function hasDecoratorName(node: ClassDeclaration, name: AnnotationNames) {
+/** Verify if class is decorated with an annotation */
+export function hasLocalAnnotation(node: ClassDeclaration, name: AnnotationNames) {
   return node.decorators?.some(decorator => getDecoratorName(decorator) === name);
 }
 
-/** Verify if class is decorated with an annotation */
-export function hasAnnotationDecorator(node: ClassDeclaration) {
-  return node.decorators?.some(decorator => annotationNames.includes(getDecoratorName(decorator) as any));
+/** Vrify if the dts class has the static annotation */
+export function hasDtsAnnotation(members: ClassMember[], name: AnnotationNames) {
+  return members?.some(m => m.isStatic && m.name in annotationTheta);
 }
+
 
 /** Get the name of the annotation of the local class if any */
 export function getLocalAnnotation(decorators?: NodeArray<Decorator>): AnnotationNames | undefined {

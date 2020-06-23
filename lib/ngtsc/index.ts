@@ -1,6 +1,6 @@
 import { isIdentifier } from 'typescript';
 import { ClassDeclaration } from '@angular/compiler-cli/src/ngtsc/reflection';
-import { hasDecoratorName, getLocalAnnotation, getDtsAnnotation } from './utils';
+import { getLocalAnnotation, getDtsAnnotation, hasLocalAnnotation } from './utils';
 import { WorkspaceSymbols } from './workspace.symbols';
 import { NgModuleSymbol } from './module.symbol';
 import { InjectableSymbol } from './injectable.symbol';
@@ -83,7 +83,7 @@ export function getSymbolByAnnotation<A extends keyof SymbolFactory>(
   if (sf) {
     let node: ClassDeclaration | null = null;
     sf.forEachChild(child => {
-      if (!node && workspace.reflector.isClass(child) && hasDecoratorName(child, annotation)) {
+      if (!node && workspace.reflector.isClass(child) && hasLocalAnnotation(child, annotation)) {
         node = child as ClassDeclaration;
       }
     });
