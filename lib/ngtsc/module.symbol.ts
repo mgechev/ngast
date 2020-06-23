@@ -90,6 +90,8 @@ export class NgModuleSymbol extends Symbol<NgModuleAnalysis> {
   }
 
   getLazyRoutes() {
-    return this.workspace.routeAnalyzer.listLazyRoutes(this.node.getSourceFile().fileName);
+    // Absolute path, replace ".ts" "#ModuleName"
+    const entryKey = this.node.getSourceFile().fileName.replace('.ts', `#${this.name}`);
+    return this.workspace.routeAnalyzer.listLazyRoutes(entryKey);
   }
 }
