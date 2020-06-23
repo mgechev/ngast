@@ -33,7 +33,7 @@ export abstract class Symbol<AnalysisData> {
     return this.node.name.getText();
   }
 
-  get errors() {
+  get diagnostics() {
     return this.trait?.state === TraitState.ERRORED ? this.trait.diagnostics : null;
   }
 
@@ -47,6 +47,11 @@ export abstract class Symbol<AnalysisData> {
 
   get analysis() {
     this.ensureAnalysis();
+    if (this.trait?.state === TraitState.ERRORED) {
+      const message = `An error occured during analysis of "${this.name}". `;
+      const solution = `Check diagnostics in [${this.annotation}Symbol].diagnostics. `;
+      throw new Error(message + solution);
+    }
     // As we analyzed the node above it should be ok...
     if (this.trait?.state === TraitState.ANALYZED || this.trait?.state === TraitState.RESOLVED) {
       return this.trait.analysis;

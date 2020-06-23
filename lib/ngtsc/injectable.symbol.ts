@@ -9,7 +9,9 @@ export class InjectableSymbol extends Symbol<InjectableHandlerData> {
   protected readonly annotation = 'Injectable';
 
   get deps() {
-    return this.analysis.ctorDeps;
+    return this.metadata.userDeps
+      ? this.metadata.userDeps
+      : this.analysis.ctorDeps;
   }
 
   get metadata() {

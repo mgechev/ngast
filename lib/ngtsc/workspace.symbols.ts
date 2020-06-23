@@ -19,7 +19,7 @@ import { ReferenceGraph } from '@angular/compiler-cli/src/ngtsc/entry_point';
 import { DtsTransformRegistry } from '@angular/compiler-cli/src/ngtsc/transform';
 import { PerfRecorder, NOOP_PERF_RECORDER } from '@angular/compiler-cli/src/ngtsc/perf';
 import { ModuleWithProvidersScanner } from '@angular/compiler-cli/src/ngtsc/modulewithproviders';
-import { ModuleSymbol } from './module.symbol';
+import { NgModuleSymbol } from './module.symbol';
 import { NgastTraitCompiler } from './trait-compiler';
 
 interface Toolkit {
@@ -224,6 +224,15 @@ export class WorkspaceSymbols {
     return this.lazy('reflector', () => new TypeScriptReflectionHost(this.checker));
   }
 
+  /** Evaluate typecript Expression & update the dependancy graph accordingly */
+  public get evaluator() {
+    return this.lazy('evaluator', () => new PartialEvaluator(
+      this.reflector,
+      this.checker,
+      this.incrementalDriver.depGraph
+    ));
+  }
+
   /** Register metadata from local NgModules, Directives, Components, and Pipes */
   public get metaRegistry() {
     return this.lazy('metaRegistry', () => new CompoundMetadataRegistry([ this.localMetaReader, this.scopeRegistry ]));
@@ -242,10 +251,14 @@ export class WorkspaceSymbols {
     });
   }
 
+  /** Analyze lazy loaded routes */
+  public get routeAnalyzer() {
+    return this.lazy('routeAnalyzer', () => new NgModuleRouteAnalyzer(this.moduleResolver, this.evaluator));
+  }
 
   public getAllModules() {
     this.ensureAnalysis();
-    return this.traitCompiler.allRecords('NgModule').map(({ node }) => new ModuleSymbol(this, node));
+    return this.traitCompiler.allRecords('NgModule').map(({ node }) => new NgModuleSymbol(this, node));
   }
 
   /** Perform analysis on all projects */
@@ -322,14 +335,6 @@ export class WorkspaceSymbols {
     return this.lazy('incrementalDriver', () => IncrementalDriver.fresh(this.program));
   }
 
-  /** Evaluate typecript Expression & update the dependancy graph accordingly */
-  private get evaluator() {
-    return this.lazy('evaluator', () => new PartialEvaluator(
-      this.reflector,
-      this.checker,
-      this.incrementalDriver.depGraph
-    ));
-  }
 
   /** (pre)Load resources using cache */
   private get resourceManager() {
@@ -427,11 +432,6 @@ export class WorkspaceSymbols {
       }
       return referencesRegistry;
     });
-  }
-
-  /** Analyze lazy loaded routes */
-  private get routeAnalyzer() {
-    return this.lazy('routeAnalyzer', () => new NgModuleRouteAnalyzer(this.moduleResolver, this.evaluator));
   }
 
   /** Analyzes a `ts.Program` for cycles. */

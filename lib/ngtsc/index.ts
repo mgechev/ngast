@@ -2,7 +2,7 @@ import { isIdentifier } from 'typescript';
 import { ClassDeclaration } from '@angular/compiler-cli/src/ngtsc/reflection';
 import { hasDecoratorName, getLocalAnnotation, getDtsAnnotation } from './utils';
 import { WorkspaceSymbols } from './workspace.symbols';
-import { ModuleSymbol } from './module.symbol';
+import { NgModuleSymbol } from './module.symbol';
 import { InjectableSymbol } from './injectable.symbol';
 import { DirectiveSymbol } from './directive.symbol';
 import { ComponentSymbol } from './component.symbol';
@@ -13,7 +13,7 @@ import { isFromDtsFile } from '@angular/compiler-cli/src/ngtsc/util/src/typescri
 export type DeclarationSymbol = ComponentSymbol | DirectiveSymbol | PipeSymbol;
 
 const symbolFactory = {
-  'NgModule': (workspace: WorkspaceSymbols, node: ClassDeclaration) => new ModuleSymbol(workspace, node),
+  'NgModule': (workspace: WorkspaceSymbols, node: ClassDeclaration) => new NgModuleSymbol(workspace, node),
   'Injectable': (workspace: WorkspaceSymbols, node: ClassDeclaration) => new InjectableSymbol(workspace, node),
   'Directive': (workspace: WorkspaceSymbols, node: ClassDeclaration) => new DirectiveSymbol(workspace, node),
   'Component': (workspace: WorkspaceSymbols, node: ClassDeclaration) => new ComponentSymbol(workspace, node),
@@ -98,7 +98,7 @@ export function getSymbolByAnnotation<A extends keyof SymbolFactory>(
 
 
 /** Get the first NgModule found in the file with this path */
-export function getModuleSymbol(workspace: WorkspaceSymbols, path: string) {
+export function getNgModuleSymbol(workspace: WorkspaceSymbols, path: string) {
   return getSymbolByAnnotation(workspace, path, 'NgModule');
 }
 
