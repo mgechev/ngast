@@ -14,7 +14,7 @@ export class NgastTraitCompiler extends TraitCompiler {
 
   resolveNode(node: ClassDeclaration<Declaration>) {
     const record = this.recordFor(node);
-    for (let trait of record.traits) {
+    for (let trait of record?.traits || []) {
       const handler = trait.handler;
       switch (trait.state) {
         case TraitState.SKIPPED:

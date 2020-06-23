@@ -1,78 +1,51 @@
-import {
-  InjectableDecoratorHandler,
-  PipeDecoratorHandler,
-  DirectiveDecoratorHandler,
-  NgModuleDecoratorHandler,
-  ComponentDecoratorHandler,
-} from '@angular/compiler-cli/src/ngtsc/annotations';
-import { DecoratorHandler, Trait } from '@angular/compiler-cli/src/ngtsc/transform';
-import { Decorator, ClassDeclaration as ngClassDeclaration } from '@angular/compiler-cli/src/ngtsc/reflection';
-import { InjectableHandlerData } from '@angular/compiler-cli/src/ngtsc/annotations/src/injectable';
-import { PipeHandlerData } from '@angular/compiler-cli/src/ngtsc/annotations/src/pipe';
-import { DirectiveHandlerData } from '@angular/compiler-cli/src/ngtsc/annotations/src/directive';
-import { NgModuleAnalysis } from '@angular/compiler-cli/src/ngtsc/annotations/src/ng_module';
-import { ComponentAnalysisData } from '@angular/compiler-cli/src/ngtsc/annotations/src/component';
-import { isCallExpression, ClassDeclaration as tsClassDeclaration } from 'typescript';
+import { ClassDeclaration as ngClassDeclaration, ClassMember } from '@angular/compiler-cli/src/ngtsc/reflection';
+import { isCallExpression, ClassDeclaration as tsClassDeclaration, Decorator, NodeArray, isIdentifier, Identifier } from 'typescript';
+import { WrappedNodeExpr, R3DependencyMetadata } from '@angular/compiler';
+
+export const annotationNames = ['NgModule', 'Pipe', 'Injectable', 'Directive', 'Component'] as const;
+
+export const annotationTheta = {
+  'ɵmod': 'NgModule',
+  'ɵdir': 'Directive',
+  'ɵinj': 'Injectable',
+  'ɵpipe': 'Pipe',
+  'ɵcmp': 'Component',
+  // 'ɵfac': 'Factory'
+  // 'ɵloc': 'LocalID'
+};
 
 // ----- Node Type Guard ----- //
 type ClassDeclaration = ngClassDeclaration | tsClassDeclaration;
-export type AnnotationNames = 'NgModule' | 'Pipe' | 'Injectable' | 'Directive' | 'Component';
+export type AnnotationNames = typeof annotationNames[number];
+
+export function getDecoratorName(decorator: Decorator) {
+  const expression = decorator.expression;
+  return isCallExpression(expression) && expression.expression.getText();
+}
+
 export function hasDecoratorName(node: ClassDeclaration, name: AnnotationNames) {
-  return node.decorators?.some(decorator => {
-    const expression = decorator.expression;
-    return isCallExpression(expression) && expression.expression.getText() === name;
-  });
+  return node.decorators?.some(decorator => getDecoratorName(decorator) === name);
 }
 
-// ----- Handler Type Guard ----- //
-export function isInjectableDecoratorHandler(
-  handler: DecoratorHandler<unknown, unknown, unknown>
-): handler is InjectableDecoratorHandler {
-  return handler.name === 'InjectableDecoratorHandler';
+/** Verify if class is decorated with an annotation */
+export function hasAnnotationDecorator(node: ClassDeclaration) {
+  return node.decorators?.some(decorator => annotationNames.includes(getDecoratorName(decorator) as any));
 }
 
-export function isPipeDecoratorHandler(
-  handler: DecoratorHandler<unknown, unknown, unknown>
-): handler is PipeDecoratorHandler {
-  return handler.name === 'PipeDecoratorHandler';
+/** Get the name of the annotation of the local class if any */
+export function getLocalAnnotation(decorators?: NodeArray<Decorator>): AnnotationNames | undefined {
+  return decorators?.map(getDecoratorName).find(name => annotationNames.includes(name as any)) as AnnotationNames;
 }
 
-export function isDirectiveDecoratorHandler(
-  handler: DecoratorHandler<unknown, unknown, unknown>
-): handler is DirectiveDecoratorHandler {
-  return handler.name === 'DirectiveDecoratorHandler';
-}
-
-export function isNgModuleDecoratorHandler(
-  handler: DecoratorHandler<unknown, unknown, unknown>
-): handler is NgModuleDecoratorHandler {
-  return handler.name === 'NgModuleDecoratorHandler';
-}
-
-export function isComponentDecoratorHandler(
-  handler: DecoratorHandler<unknown, unknown, unknown>
-): handler is ComponentDecoratorHandler {
-  return handler.name === 'ComponentDecoratorHandler';
+/** Ge the name of the annotation of a dts class if any */
+export function getDtsAnnotation(members?: ClassMember[]): AnnotationNames | undefined {
+  const member = members?.find(m => m.isStatic && m.name in annotationTheta);
+  return member ? annotationTheta[member.name] : undefined;
 }
 
 
-// ----- Trait Type Guard ----- //
-export function isInjectableTrait(trait: Trait<any, any, any>): trait is Trait<Decorator, InjectableHandlerData, unknown> {
-  return isInjectableDecoratorHandler(trait.handler);
-}
-
-export function isPipeTrait(trait: Trait<any, any, any>): trait is Trait<Decorator, PipeHandlerData, unknown> {
-  return isPipeDecoratorHandler(trait.handler);
-}
-
-export function isDirectiveTrait(trait: Trait<any, any, any>): trait is Trait<Decorator, DirectiveHandlerData, unknown> {
-  return isPipeDecoratorHandler(trait.handler);
-}
-
-export function isNgModuleTrait(trait: Trait<any, any, any>): trait is Trait<Decorator, NgModuleAnalysis, unknown> {
-  return isNgModuleDecoratorHandler(trait.handler);
-}
-
-export function isComponentTrait(trait: Trait<any, any, any>): trait is Trait<Decorator, ComponentAnalysisData, unknown> {
-  return isComponentDecoratorHandler(trait.handler);
+export function getDepNode(dep: R3DependencyMetadata): Identifier |undefined {
+  if ((dep.token instanceof WrappedNodeExpr) && isIdentifier(dep.token.node)) {
+    return dep.token.node;
+  }
 }

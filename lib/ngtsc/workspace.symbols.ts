@@ -42,7 +42,7 @@ interface Toolkit {
   metaRegistry: CompoundMetadataRegistry;
   scopeRegistry: LocalModuleScopeRegistry;
   metaReader: CompoundMetadataReader;
-  aliasingHost: AliasingHost;
+  aliasingHost: AliasingHost | null;
   localMetaReader: LocalMetadataRegistry;
   refEmitter: ReferenceEmitter;
   referencesRegistry: ReferencesRegistry;
@@ -120,7 +120,7 @@ export class WorkspaceSymbols {
   /** Process all classes in the program */
   get traitCompiler() {
     return this.lazy('traitCompiler', () => new NgastTraitCompiler(
-        [this.cmptHandler, this.directiveHandler, this.pipeHandler, this.injectableHandler, this.moduleHandler],
+        [this.cmptHandler, this.directiveHandler as any, this.pipeHandler, this.injectableHandler, this.moduleHandler],
         this.reflector,
         this.perfRecorder,
         this.incrementalDriver,
@@ -167,7 +167,7 @@ export class WorkspaceSymbols {
         this.defaultImportTracker,
         this.injectableRegistry,
         this.isCore,
-        this.options.annotateForClosureCompiler
+        !!this.options.annotateForClosureCompiler
       )
     );
   }
@@ -186,7 +186,7 @@ export class WorkspaceSymbols {
         this.refEmitter,
         this.host.factoryTracker,
         this.defaultImportTracker,
-        this.options.annotateForClosureCompiler,
+        !!this.options.annotateForClosureCompiler,
         this.injectableRegistry,
         this.options.i18nInLocale
       )
@@ -214,9 +214,14 @@ export class WorkspaceSymbols {
         this.defaultImportTracker,
         this.incrementalDriver.depGraph,
         this.injectableRegistry,
-        this.options.annotateForClosureCompiler,
+        !!this.options.annotateForClosureCompiler,
       )
     );
+  }
+
+  /** Static reflection of declarations using the TypeScript type checker */
+  public get reflector() {
+    return this.lazy('reflector', () => new TypeScriptReflectionHost(this.checker));
   }
 
   /** Register metadata from local NgModules, Directives, Components, and Pipes */
@@ -301,10 +306,6 @@ export class WorkspaceSymbols {
     return this.lazy('checker', () => this.program.getTypeChecker());
   }
 
-  /** Static reflection of declarations using the TypeScript type checker */
-  private get reflector() {
-    return this.lazy('reflector', () => new TypeScriptReflectionHost(this.checker));
-  }
 
   /** Registers and records usages of Identifers that came from default import statements (import X from 'some/module') */
   private get defaultImportTracker() {
@@ -452,11 +453,11 @@ export class WorkspaceSymbols {
   }
 
   /** Lazy load & memorize every tool in the `WorkspaceSymbols`'s toolkit */
-  private lazy<K extends keyof Toolkit>(key: K, load: () => Toolkit[K]): Partial<Toolkit>[K] {
+  private lazy<K extends keyof Toolkit>(key: K, load: () => Toolkit[K]): Toolkit[K] {
     if (!this.toolkit[key]) {
       this.toolkit[key] = load();
     }
-    return this.toolkit[key];
+    return this.toolkit[key] as Toolkit[K];
   }
 
   private ensureAnalysis() {
