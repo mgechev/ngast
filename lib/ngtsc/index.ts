@@ -10,6 +10,8 @@ import { PipeSymbol } from './pipe.symbol';
 import { Expression, WrappedNodeExpr } from '@angular/compiler';
 import { isFromDtsFile } from '@angular/compiler-cli/src/ngtsc/util/src/typescript';
 
+export type DeclarationSymbol = ComponentSymbol | DirectiveSymbol | PipeSymbol;
+
 const symbolFactory = {
   'NgModule': (workspace: WorkspaceSymbols, node: ClassDeclaration) => new ModuleSymbol(workspace, node),
   'Injectable': (workspace: WorkspaceSymbols, node: ClassDeclaration) => new InjectableSymbol(workspace, node),

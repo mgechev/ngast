@@ -1,6 +1,7 @@
 import { ClassDeclaration as ngClassDeclaration, ClassMember } from '@angular/compiler-cli/src/ngtsc/reflection';
 import { isCallExpression, ClassDeclaration as tsClassDeclaration, Decorator, NodeArray, isIdentifier, Identifier } from 'typescript';
-import { WrappedNodeExpr, R3DependencyMetadata } from '@angular/compiler';
+import { R3DependencyMetadata } from '@angular/compiler';
+import { AssertionError } from 'assert';
 
 export const annotationNames = ['NgModule', 'Pipe', 'Injectable', 'Directive', 'Component'] as const;
 
@@ -44,8 +45,8 @@ export function getDtsAnnotation(members?: ClassMember[]): AnnotationNames | und
 }
 
 
-export function getDepNode(dep: R3DependencyMetadata): Identifier |undefined {
-  if ((dep.token instanceof WrappedNodeExpr) && isIdentifier(dep.token.node)) {
-    return dep.token.node;
+export function assertDeps(deps: R3DependencyMetadata[] | 'invalid', name: string): asserts deps is R3DependencyMetadata[] {
+  if (!deps || deps === 'invalid') {
+    throw new AssertionError({ message: `Invalid depenancies in "${name}".` });
   }
 }

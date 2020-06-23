@@ -77,30 +77,4 @@ export abstract class Symbol<AnalysisData> {
   public isSymbol<A extends AnnotationNames>(name: A): this is FactoryOutput<A> {
     return this.annotation === name;
   }
-
-  /** Get the dependancies as Symbols */
-  // THIS METHOD THROW AN ERROR !!!
-  // public getDependancies() {
-  //   if (!this.deps) {
-  //     return [];
-  //   }
-  //   if (this.deps === 'invalid') {
-  //     const message = `Dependancies of ${this.annotation} "${this.name}" are invalid. `;
-  //     const solution = `Check [${this.annotation}].errors to get more details. `;
-  //     throw new Error(message + solution);
-  //   }
-  //   return this.deps.map(getDepNode)
-  //     .filter(v => !!v)
-  //     .map(id => this.workspace.reflector.getDeclarationOfIdentifier(id))
-  //     .map(decl => {
-  //       if (this.workspace.reflector.isClass(decl.node)) {
-  //         return getSymbolOf(this.workspace, decl.node);
-  //       } else {
-  //         // todo return dependancies an
-  //       }
-  //     })
-  //     .filter(v => !!v);
-  // }
-
-
 }

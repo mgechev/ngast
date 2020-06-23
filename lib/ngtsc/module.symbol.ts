@@ -2,7 +2,9 @@ import { NgModuleAnalysis } from '@angular/compiler-cli/src/ngtsc/annotations/sr
 import { Symbol } from './symbol';
 import { isArrayLiteralExpression, isIdentifier } from 'typescript';
 import { InjectableSymbol } from './injectable.symbol';
-import { getSymbolOf, findSymbol } from '.';
+import { DeclarationSymbol, findSymbol } from '.';
+import { ComponentSymbol } from './component.symbol';
+import { assertDeps } from './utils';
 
 export class ModuleSymbol extends Symbol<NgModuleAnalysis> {
   protected readonly annotation = 'NgModule';
@@ -18,6 +20,11 @@ export class ModuleSymbol extends Symbol<NgModuleAnalysis> {
   get scope() {
     this.ensureAnalysis();
     return this.workspace.scopeRegistry.getScopeOfModule(this.node);
+  }
+
+  getDependancies() {
+    assertDeps(this.deps, this.name);
+    return this.deps.map(dep => findSymbol(this.workspace, dep.token));
   }
 
   getProviders() {
@@ -42,11 +49,18 @@ export class ModuleSymbol extends Symbol<NgModuleAnalysis> {
   }
 
   getDeclarations() {
-    // use ref.value as "type" is the expression used by ngcc in .d.ts files
-    return this.metadata.declarations.map(ref => findSymbol(this.workspace, ref.value));
+    return this.metadata.declarations.map(ref => findSymbol(this.workspace, ref.value) as DeclarationSymbol);
   }
 
   getImports() {
     return this.metadata.imports.map(ref => findSymbol(this.workspace, ref.value) as ModuleSymbol);
+  }
+
+  getExports() {
+    return this.metadata.exports.map(ref => findSymbol(this.workspace, ref.value));
+  }
+
+  getBootstap() {
+    return this.metadata.bootstrap.map(ref => findSymbol(this.workspace, ref.value) as ComponentSymbol);
   }
 }
