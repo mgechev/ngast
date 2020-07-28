@@ -1,10 +1,11 @@
-import { NgModule, Component, Inject, Injectable } from '@angular/core';
+import { NgModule, Component, Inject, Injectable, InjectionToken } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { CommonModule } from '@angular/common';
 import { MatExpansionModule } from '@angular/material/expansion';
 
 export class BasicProvider {}
+// const TOKEN = new InjectionToken('token', { providedIn: 'root', factory: () => true });
 
 @Component({
   selector: 'main-component',
@@ -12,6 +13,7 @@ export class BasicProvider {}
 })
 export class MainComponent {
   visible: boolean;
+  constructor(public p: BasicProvider, @Inject('primitive') public primitive) {}
 }
 
 @Injectable()
