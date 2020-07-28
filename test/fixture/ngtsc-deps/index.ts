@@ -4,6 +4,7 @@ import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { CommonModule } from '@angular/common';
 import { MatExpansionModule } from '@angular/material/expansion';
 
+@Injectable()
 export class BasicProvider {}
 // const TOKEN = new InjectionToken('token', { providedIn: 'root', factory: () => true });
 

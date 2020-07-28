@@ -30,20 +30,7 @@ const router = RouterModule.forRoot([
 ]);
 
 @NgModule({
-  imports: [CommonModule, BrowserModule, RouterModule.forRoot([
-    {
-      path: 'lazy-a',
-      loadChildren: () => import('./lazy-a').then(m => m.LazyAModule)
-    },
-    {
-      path: 'lazy-b',
-      loadChildren: () => import('./lazy-b').then(m => m.LazyBModule)
-    },
-    {
-      path: 'regular',
-      component: RoutingComponent
-    }
-  ])],
+  imports: [CommonModule, BrowserModule, router],
   exports: [MainComponent],
   declarations: [MainComponent],
   bootstrap: [MainComponent]
