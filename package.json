@@ -10,16 +10,17 @@
     "url": "git+https://github.com/mgechev/ngast.git"
   },
   "peerDependencies": {
-    "tslib": "^1.11.1"
+    "@angular/compiler": "^10.0.5",
+    "@angular/compiler-cli": "^10.0.5",
+    "@angular/core": "^10.0.5",
+    "tslib": "^1.11.1",
+    "typescript": "~3.9.7"
   },
   "devDependencies": {
     "@angular/animations": "^10.0.5",
     "@angular/cdk": "^9.2.0",
     "@angular/cli": "^10.0.4",
     "@angular/common": "^10.0.5",
-    "@angular/compiler": "^10.0.5",
-    "@angular/compiler-cli": "^10.0.5",
-    "@angular/core": "^10.0.5",
     "@angular/forms": "^10.0.5",
     "@angular/material": "^9.2.0",
     "@angular/platform-browser": "^10.0.5",
@@ -35,7 +36,6 @@
     "ts-node": "^8.8.1",
     "tslib": "^1.11.1",
     "tslint": "^6.1.1",
-    "typescript": "~3.9.7",
     "zone.js": "~0.10.3"
   },
   "scripts": {
