@@ -1,8 +1,8 @@
 import { isIdentifier } from 'typescript';
-import { Expression, WrappedNodeExpr, ExternalExpr } from '@angular/compiler';
+import { Expression, WrappedNodeExpr } from '@angular/compiler';
 import { ClassDeclaration } from '@angular/compiler-cli/src/ngtsc/reflection';
 import { isFromDtsFile } from '@angular/compiler-cli/src/ngtsc/util/src/typescript';
-import { getLocalAnnotation, getDtsAnnotation, hasLocalAnnotation } from './utils';
+import { getLocalAnnotation, getDtsAnnotation } from './utils';
 import { WorkspaceSymbols } from './workspace.symbols';
 import { NgModuleSymbol } from './module.symbol';
 import { InjectableSymbol } from './injectable.symbol';

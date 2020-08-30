@@ -1,5 +1,5 @@
 import { ClassDeclaration as ngClassDeclaration, ClassMember } from '@angular/compiler-cli/src/ngtsc/reflection';
-import { isCallExpression, ClassDeclaration as tsClassDeclaration, Decorator, NodeArray, isIdentifier, Identifier } from 'typescript';
+import { isCallExpression, ClassDeclaration as tsClassDeclaration, Decorator, NodeArray } from 'typescript';
 import { R3DependencyMetadata } from '@angular/compiler';
 import { AssertionError } from 'assert';
 
