@@ -175,7 +175,7 @@ export class WorkspaceSymbols {
         this.injectableRegistry,
         this.isCore,
         !!this.options.annotateForClosureCompiler,
-        this.options.compileNonExportedClasses
+        !!this.options.compileNonExportedClasses
       )
     );
   }

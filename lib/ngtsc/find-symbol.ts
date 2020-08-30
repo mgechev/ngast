@@ -9,6 +9,7 @@ import { InjectableSymbol } from './injectable.symbol';
 import { DirectiveSymbol } from './directive.symbol';
 import { ComponentSymbol } from './component.symbol';
 import { PipeSymbol } from './pipe.symbol';
+import { AnnotationNames } from './utils';
 
 export type DeclarationSymbol = ComponentSymbol | DirectiveSymbol | PipeSymbol;
 
@@ -21,7 +22,6 @@ const symbolFactory = {
 };
 
 export type SymbolFactory = typeof symbolFactory;
-export type AnnotationNames = keyof SymbolFactory;
 export type FactoryOutput<A extends keyof SymbolFactory> = ReturnType<SymbolFactory[A]>;
 export type FactoryOutputs = ReturnType<SymbolFactory[keyof SymbolFactory]>;
 
@@ -31,11 +31,11 @@ export function findSymbol(workspace: WorkspaceSymbols, expression: Expression) 
   if (expression instanceof WrappedNodeExpr && isIdentifier(expression.node)) {
     const decl = workspace.reflector.getDeclarationOfIdentifier(expression.node);
 
-    if (workspace.reflector.isClass(decl.node)) {
+    if (decl?.node && workspace.reflector.isClass(decl.node)) {
       return getSymbolOf(workspace, decl.node);
     } else {
       // TODO implement a way to load @Inject dependancies
-      console.log('Could not create symbol for node', decl.node, 'only class are supported yet');
+      console.log('Could not create symbol for node', decl?.node, 'only class are supported yet');
       return null;
     }
   }
@@ -44,7 +44,7 @@ export function findSymbol(workspace: WorkspaceSymbols, expression: Expression) 
 /** Create a symbol based on the name of the decorator or the theta static value */
 export function getSymbolOf(workspace: WorkspaceSymbols, node: ClassDeclaration) {
   const isDts = isFromDtsFile(node);
-  let annotation: AnnotationNames;
+  let annotation: AnnotationNames | undefined;
   if (isDts) {
     const members = workspace.reflector.getMembersOfClass(node);
     annotation = getDtsAnnotation(members);

@@ -47,7 +47,7 @@ export function getDtsAnnotation(members?: ClassMember[]): AnnotationNames | und
 }
 
 
-export function assertDeps(deps: R3DependencyMetadata[] | 'invalid', name: string): asserts deps is R3DependencyMetadata[] {
+export function assertDeps(deps: R3DependencyMetadata[] | 'invalid' | null, name: string): asserts deps is R3DependencyMetadata[] {
   if (!deps || deps === 'invalid') {
     throw new AssertionError({ message: `Invalid depenancies in "${name}".` });
   }

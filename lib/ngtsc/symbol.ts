@@ -45,7 +45,7 @@ export abstract class Symbol<AnalysisData> {
     return this.workspace.traitCompiler?.recordFor(this.node);
   }
 
-  get analysis() {
+  get analysis(): AnalysisData {
     this.ensureAnalysis();
     if (this.trait?.state === TraitState.ERRORED) {
       const message = `An error occured during analysis of "${this.name}". `;
@@ -55,6 +55,8 @@ export abstract class Symbol<AnalysisData> {
     // As we analyzed the node above it should be ok...
     if (this.trait?.state === TraitState.ANALYZED || this.trait?.state === TraitState.RESOLVED) {
       return this.trait.analysis;
+    } else {
+      throw new Error(`Analysis for node ${this.name} couldn't be completed`);
     }
   }
 

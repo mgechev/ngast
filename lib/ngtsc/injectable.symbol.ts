@@ -8,7 +8,7 @@ export class InjectableSymbol extends Symbol<InjectableHandlerData> {
 
   get deps() {
     return this.metadata.userDeps
-      ? this.metadata.userDeps
+      ? this.metadata?.userDeps
       : this.analysis.ctorDeps;
   }
 

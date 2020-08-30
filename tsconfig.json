@@ -4,6 +4,7 @@
     "module": "es2015",
     "sourceMap": true,
     "declaration": true,
+    "downlevelIteration": true,
     "moduleResolution": "node",
     "strictNullChecks": true,
     "emitDecoratorMetadata": true,
