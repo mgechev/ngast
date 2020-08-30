@@ -48,7 +48,7 @@ export abstract class Symbol<AnalysisData> {
   get analysis(): AnalysisData {
     this.ensureAnalysis();
     if (this.trait?.state === TraitState.ERRORED) {
-      const message = `An error occured during analysis of "${this.name}". `;
+      const message = `An error occurred during analysis of "${this.name}". `;
       const solution = `Check diagnostics in [${this.annotation}Symbol].diagnostics. `;
       throw new Error(message + solution);
     }
@@ -70,7 +70,7 @@ export abstract class Symbol<AnalysisData> {
   public analyse() {
     this.workspace.traitCompiler?.analyzeNode(this.node);
     this.workspace.traitCompiler?.resolveNode(this.node);
-    // @question should we record NgModule Scope Dependancies here ???
+    // @question should we record NgModule Scope dependencies here ???
     this._trait = this.record?.traits.find(filterByHandler(this.annotation)) as any;
   }
 

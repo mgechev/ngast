@@ -16,7 +16,7 @@ export class InjectableSymbol extends Symbol<InjectableHandlerData> {
     return this.analysis.meta;
   }
 
-  getDependancies() {
+  getDependencies() {
     assertDeps(this.deps, this.name);
     return this.deps.map(dep => this.workspace.findSymbol(dep.token));
   }

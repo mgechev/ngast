@@ -34,7 +34,7 @@ export class ComponentSymbol extends Symbol<ComponentAnalysisData> {
     return symbols;
   }
 
-  getDependancies() {
+  getDependencies() {
     assertDeps(this.deps, this.name);
     return this.deps.map(dep => this.workspace.findSymbol(dep.token));
   }

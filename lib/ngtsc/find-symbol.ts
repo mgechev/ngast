@@ -34,7 +34,7 @@ export function findSymbol(workspace: WorkspaceSymbols, expression: Expression) 
     if (decl?.node && workspace.reflector.isClass(decl.node)) {
       return getSymbolOf(workspace, decl.node);
     } else {
-      // TODO implement a way to load @Inject dependancies
+      // TODO implement a way to load @Inject dependencies
       console.log('Could not create symbol for node', decl?.node, 'only class are supported yet');
       return null;
     }

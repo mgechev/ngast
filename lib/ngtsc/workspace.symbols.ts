@@ -328,7 +328,7 @@ export class WorkspaceSymbols {
     // Resolve compilation
     this.traitCompiler.resolve();
 
-    // Record NgModule Scope Dependancies
+    // Record NgModule Scope dependencies
     const recordSpan = this.perfRecorder.start('recordDependencies');
     const depGraph = this.incrementalDriver.depGraph;
     for (const scope of this.scopeRegistry.getCompilationScopes()) {

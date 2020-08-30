@@ -21,7 +21,7 @@ export class NgModuleSymbol extends Symbol<NgModuleAnalysis> {
     return this.workspace.scopeRegistry.getScopeOfModule(this.node);
   }
 
-  getDependancies() {
+  getDependencies() {
     assertDeps(this.deps, this.name);
     return this.deps.map(dep => this.workspace.findSymbol(dep.token));
   }
