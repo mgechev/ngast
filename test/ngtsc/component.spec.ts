@@ -41,11 +41,7 @@ fdescribe('WorkspaceSymbols', () => {
 
     it('Should get dependancies', () => {
       const [component] = workspace.getAllComponents();
-      const [basic, primitive, token] = component.getDependancies();
-      if (component.deps !== 'invalid') {
-        // console.log(component.deps.map(dep => dep.token));
-        console.log(basic, primitive, token);
-      }
+      const [basic, primitive] = component.getDependancies();
       expect(basic.name).toBe('BasicProvider');
       expect(primitive.name).toBe('primitive');
     });
