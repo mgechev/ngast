@@ -1,5 +1,6 @@
-import { ProjectSymbols } from '../';
-import { resourceResolver } from './utils/resource-resolver';
+import { ProjectSymbols } from '../../lib/ngcc';
+import { resourceResolver } from '../utils/resource-resolver';
+import { getConfig } from './get-tsconfig';
 
 const defaultErrorReporter = (e: any, path: string) => console.error(e, path);
 
@@ -8,7 +9,7 @@ describe('DirectiveSymbol', () => {
     let program: string;
 
     beforeEach(() => {
-      program = __dirname + '/../../test/fixture/basic/tsconfig.json';
+      program = getConfig('basic');
     });
 
     it(`should provide access to the directive's metadata`, () => {
@@ -67,7 +68,7 @@ describe('DirectiveSymbol', () => {
     let program: string;
 
     beforeEach(() => {
-      program = __dirname + '/../../test/fixture/routing/tsconfig.json';
+      program = getConfig('routing');
     });
 
     it('should read external templates', () => {
@@ -107,7 +108,7 @@ describe('DirectiveSymbol', () => {
     let program: string;
 
     beforeEach(() => {
-      program = __dirname + '/../../test/fixture/routing/tsconfig.json';
+      program = getConfig('routing');
     });
 
     it('should work inline styles', () => {
@@ -137,7 +138,7 @@ describe('DirectiveSymbol', () => {
     let program: string;
 
     beforeEach(() => {
-      program = __dirname + '/../../test/fixture/directive-deps/tsconfig.json';
+      program = getConfig('directive-deps');
     });
 
     it('should find directive dependencies', () => {
@@ -147,7 +148,7 @@ describe('DirectiveSymbol', () => {
     });
 
     it('should work with directive with no deps', () => {
-      const currentProgram = __dirname + '/../../test/fixture/basic/tsconfig.json';
+      const currentProgram = getConfig('basic');
       const contextSymbols = new ProjectSymbols(currentProgram, resourceResolver, defaultErrorReporter);
       const directive = contextSymbols.getDirectives().pop();
       expect(directive.getDependencies().length).toBe(0);

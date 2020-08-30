@@ -1,6 +1,6 @@
 import { StaticSymbol } from '@angular/compiler';
-import { Symbol } from '../';
-import { createProgram } from './utils/create-in-memory-program';
+import { Symbol } from '../../lib/ngcc';
+import { createProgram } from '../utils/create-in-memory-program';
 
 describe('Symbol', () => {
   it('should return the source node', () => {

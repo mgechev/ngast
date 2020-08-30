@@ -1,5 +1,6 @@
-import { ProjectSymbols } from '../';
-import { resourceResolver } from './utils/resource-resolver';
+import { ProjectSymbols } from '../../lib/ngcc';
+import { resourceResolver } from '../utils/resource-resolver';
+import { getConfig } from './get-tsconfig';
 
 const defaultErrorReporter = (e: any, path: string) => console.error(e, path);
 
@@ -8,7 +9,7 @@ describe('ModuleSymbol', () => {
 
   describe('basic specs', () => {
     beforeEach(() => {
-      program = __dirname + '/../../test/fixture/generic-config/tsconfig.json';
+      program = getConfig('generic-config');
     });
 
     it('should get all modules', () => {
@@ -22,7 +23,7 @@ describe('ModuleSymbol', () => {
 
   describe('file import specs', () => {
     beforeEach(() => {
-      program = __dirname + '/../../test/fixture/referenced-root-module/tsconfig.json';
+      program = getConfig('referenced-root-module');
     });
 
     it('should get all modules', () => {

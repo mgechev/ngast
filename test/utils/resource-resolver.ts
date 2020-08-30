@@ -1,4 +1,4 @@
-import { ResourceResolver } from '../../lib/resource-resolver';
+import { ResourceResolver } from '../../lib/ngcc/resource-resolver';
 import { readFile, readFileSync } from 'fs';
 
 export const resourceResolver: ResourceResolver = {

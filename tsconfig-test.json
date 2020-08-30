@@ -3,6 +3,7 @@
     "target": "es5",
     "module": "commonjs",
     "sourceMap": true,
+    "downlevelIteration": true,
     "emitDecoratorMetadata": true,
     "experimentalDecorators": true,
     "stripInternal": true,
@@ -12,13 +13,13 @@
     "lib": ["es2015", "dom"]
   },
   "files": [
-    "test/symbol.spec.ts",
-    "test/project-symbols.spec.ts",
-    "test/directive-symbol.spec.ts",
-    "test/module-symbol.spec.ts",
-    "test/pipe-symbol.spec.ts",
-    "test/provider-symbol.spec.ts",
-    "test/dep-parsing.spec.ts",
+    "test/ngcc/symbol.spec.ts",
+    "test/ngcc/project-symbols.spec.ts",
+    "test/ngcc/directive-symbol.spec.ts",
+    "test/ngcc/module-symbol.spec.ts",
+    "test/ngcc/pipe-symbol.spec.ts",
+    "test/ngcc/provider-symbol.spec.ts",
+    "test/ngcc/dep-parsing.spec.ts",
   ],
   "include": ["test/ngtsc/*.spec.ts"],
   "angularCompilerOptions": {

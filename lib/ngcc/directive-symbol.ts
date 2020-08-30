@@ -27,8 +27,8 @@ import { ProjectSymbols } from './project-symbols';
 import { Symbol } from './symbol';
 import { ResourceResolver } from './resource-resolver';
 
-import { CssAst } from './css-parser/css-ast';
-import { parseCss } from './css-parser/parse-css';
+import { CssAst } from '../css-parser/css-ast';
+import { parseCss } from '../css-parser/parse-css';
 import { ProviderSymbol } from './provider-symbol';
 import { sep } from 'path';
 

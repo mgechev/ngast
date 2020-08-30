@@ -1,6 +1,5 @@
 import { WorkspaceSymbols } from '../../lib/ngtsc/workspace.symbols';
 import { join } from 'path';
-import { getNgModuleSymbol } from '../../lib/ngtsc/index';
 
 function getFolder(name: string) {
   return join(__dirname, '/../../../test/fixture', name);
@@ -14,13 +13,13 @@ describe('WorkspaceSymbols', () => {
     beforeEach(() => workspace = new WorkspaceSymbols(`${folder}/tsconfig.json`));
 
     it('Create module from path', () => {
-      const module = getNgModuleSymbol(workspace, `${folder}/index.ts`);
+      const [module] = workspace.getAllModules();
       expect(module.name).toBe('AppModule');
       expect(module.isAnalysed).toBeFalsy();
     });
 
     it('analyse one module', () => {
-      const module = getNgModuleSymbol(workspace, `${folder}/index.ts`);
+      const [module] = workspace.getAllModules();
       expect(module.isAnalysed).toBeFalsy();
       module.analyse();
       // Scope related API fails because of @angular/core not beeing compiled with Ivy
@@ -65,7 +64,6 @@ describe('WorkspaceSymbols', () => {
       const [module] = workspace.getAllModules();
       const providers = module.getProviders();
       const meta = providers[1].analysis;
-      console.log(meta);
       expect(providers.some(p => p.name === 'BasicProvider')).toBeTruthy();
       expect(providers.some(p => p.name === 'DependencyProvider')).toBeTruthy();
     });

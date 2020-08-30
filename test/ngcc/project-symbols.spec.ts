@@ -1,9 +1,10 @@
 import * as ts from 'typescript';
 // import {writeFileSync} from 'fs';
 
-import { ProjectSymbols } from '../';
-import { createProgramFromTsConfig } from './utils/create-program';
-import { resourceResolver } from './utils/resource-resolver';
+import { ProjectSymbols } from '../../lib/ngcc';
+import { createProgramFromTsConfig } from '../utils/create-program';
+import { resourceResolver } from '../utils/resource-resolver';
+import { getConfig } from './get-tsconfig';
 
 const defaultErrorReporter = (e: any, path: string) => console.error(e, path);
 
@@ -12,7 +13,7 @@ describe('ContextSymbols', () => {
     let program: string;
 
     beforeEach(() => {
-      program = __dirname + '/../../test/fixture/basic/tsconfig.json';
+      program = getConfig('basic');
     });
 
     it('should return reference to the analyzed modules', () => {
@@ -55,7 +56,7 @@ describe('ContextSymbols', () => {
 
     it('should be able to discover all providers', () => {
       const contextSymbols = new ProjectSymbols(
-        __dirname + '/../../test/fixture/basic/tsconfig.json',
+        getConfig('basic'),
         resourceResolver,
         defaultErrorReporter
       );
@@ -69,7 +70,7 @@ describe('ContextSymbols', () => {
     let program: ts.Program;
 
     beforeEach(() => {
-      program = createProgramFromTsConfig(__dirname + '/../../test/fixture/routing/tsconfig.json');
+      program = createProgramFromTsConfig(getConfig('routing'));
     });
   });
 });

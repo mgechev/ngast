@@ -1,5 +1,6 @@
-import { ProjectSymbols } from '../';
-import { resourceResolver } from './utils/resource-resolver';
+import { ProjectSymbols } from '../../lib/ngcc';
+import { resourceResolver } from '../utils/resource-resolver';
+import { getConfig } from './get-tsconfig';
 
 const defaultErrorReporter = (e: any, path: string) => console.error(e, path);
 
@@ -7,7 +8,7 @@ describe('PipeSymbol', () => {
   let program: string;
 
   beforeEach(() => {
-    program = __dirname + '/../../test/fixture/routing/tsconfig.json';
+    program = getConfig('routing');
   });
 
   it("should provide access to the pipe's metadata", () => {
