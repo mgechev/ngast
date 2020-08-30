@@ -8,6 +8,12 @@ import { Expression as ngExpression } from '@angular/compiler/src/output/output_
 import { isAnalysed, filterByHandler } from './symbol';
 import { AnnotationNames } from './utils';
 
+
+/////////
+// WIP //
+/////////
+
+
 const useKeys = [ 'useValue', 'useFactory', 'useExisting' ] as const;
 type UseKey = typeof useKeys[number];
 
@@ -83,22 +89,24 @@ export class ProviderRegistry {
 
   /** Find all providers of a provider expression */
   recordProviders(expression?: ngExpression | tsExpression) {
-    if (expression) {
-      const resolvedProviders = this.workspace.evaluator.evaluate(expression);
+    // WIP
+
+    // if (expression) {
+    //   const resolvedProviders = this.workspace.evaluator.evaluate(expression);
     
-      const scanRecursively = (meta: ResolvedValue)=> {
-        if (Array.isArray(meta)) {
-          for (const entry of meta) {
-            scanRecursively(entry);
-          }
-        } else if (meta instanceof Map) {
-          const metadata = getProviderMetadata(meta);
-          if (metadata) {
-            this.providers.set(metadata.provide, new Provider(metadata))
-          }
-        }
-      };
-      scanRecursively(resolvedProviders);
-    }
+    //   const scanRecursively = (meta: ResolvedValue)=> {
+    //     if (Array.isArray(meta)) {
+    //       for (const entry of meta) {
+    //         scanRecursively(entry);
+    //       }
+    //     } else if (meta instanceof Map) {
+    //       const metadata = getProviderMetadata(meta);
+    //       if (metadata) {
+    //         this.providers.set(metadata.provide, new Provider(metadata))
+    //       }
+    //     }
+    //   };
+    //   scanRecursively(resolvedProviders);
+    // }
   }
 }

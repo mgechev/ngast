@@ -35,13 +35,13 @@ export const filterByHandler = <A extends AnnotationNames>(annotation: A) => (tr
 };
 
 export const isAnalysed = <A, B, C>(trait?: Trait<A, B, C>): trait is AnalyzedTrait<A, B, C> | ResolvedTrait<A, B, C> => {
-  return trait?.state === TraitState.ANALYZED || this.trait?.state === TraitState.RESOLVED;
+  return trait?.state === TraitState.ANALYZED || trait?.state === TraitState.RESOLVED;
 }
 
 export abstract class Symbol<A extends AnnotationNames> {
   protected readonly abstract annotation: A;
   protected readonly abstract deps: R3DependencyMetadata[] | 'invalid' | null;
-  private _trait?: GetTrait<A>;
+  private _trait: GetTrait<A> | undefined;
 
   constructor(
     protected workspace: WorkspaceSymbols,
@@ -61,7 +61,7 @@ export abstract class Symbol<A extends AnnotationNames> {
   }
 
   get record() {
-    return this.workspace.traitCompiler?.recordFor(this.node);
+    return this.workspace.traitCompiler.recordFor(this.node);
   }
 
   get analysis(): Readonly<GetHandlerData<A>> {
@@ -79,7 +79,7 @@ export abstract class Symbol<A extends AnnotationNames> {
     }
   }
 
-  protected get trait() {
+  private get trait() {
     if (!this._trait) {
       this._trait = this.record?.traits.find(filterByHandler(this.annotation));
     }
@@ -90,7 +90,6 @@ export abstract class Symbol<A extends AnnotationNames> {
     this.workspace.traitCompiler?.analyzeNode(this.node);
     this.workspace.traitCompiler?.resolveNode(this.node);
     // @question should we record NgModule Scope dependencies here ???
-    this._trait = this.record?.traits.find(filterByHandler(this.annotation));
   }
 
 
