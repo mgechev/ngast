@@ -1,11 +1,11 @@
 import { createProgram, Program, createModuleResolutionCache, TypeChecker, getOriginalNode, Declaration } from 'typescript';
-import { Type } from '@angular/compiler';
+import { Type, Expression } from '@angular/compiler';
 import { readConfiguration } from '@angular/compiler-cli';
 import { NgCompilerHost } from '@angular/compiler-cli/src/ngtsc/core';
 import { NgCompilerOptions } from '@angular/compiler-cli/src/ngtsc/core/api';
 import { InjectableDecoratorHandler, PipeDecoratorHandler, DirectiveDecoratorHandler, ReferencesRegistry, NoopReferencesRegistry, NgModuleDecoratorHandler, ComponentDecoratorHandler } from '@angular/compiler-cli/src/ngtsc/annotations';
 import { NgtscCompilerHost, FileSystem, LogicalFileSystem, NodeJSFileSystem } from '@angular/compiler-cli/src/ngtsc/file_system';
-import { TypeScriptReflectionHost } from '@angular/compiler-cli/src/ngtsc/reflection';
+import { TypeScriptReflectionHost, ClassDeclaration } from '@angular/compiler-cli/src/ngtsc/reflection';
 import { PartialEvaluator } from '@angular/compiler-cli/src/ngtsc/partial_evaluator';
 import { IncrementalDriver } from '@angular/compiler-cli/src/ngtsc/incremental';
 import { DefaultImportTracker, ReferenceEmitStrategy, AliasingHost, Reference, ReferenceEmitter, LogicalProjectStrategy, RelativePathStrategy, PrivateExportAliasingHost, LocalIdentifierStrategy, AbsoluteModuleStrategy, AliasStrategy, UnifiedModulesStrategy, UnifiedModulesAliasingHost, ModuleResolver } from '@angular/compiler-cli/src/ngtsc/imports';
@@ -14,7 +14,7 @@ import { MetadataDtsModuleScopeResolver, LocalModuleScopeRegistry, ComponentScop
 import { getSourceFileOrNull, isDtsPath } from '@angular/compiler-cli/src/ngtsc/util/src/typescript';
 import { NgModuleRouteAnalyzer } from '@angular/compiler-cli/src/ngtsc/routing';
 import { CycleAnalyzer, ImportGraph } from '@angular/compiler-cli/src/ngtsc/cycles';
-import { HostResourceLoader } from '@angular/compiler-cli/src/ngtsc/resource';
+import { AdapterResourceLoader } from '@angular/compiler-cli/src/ngtsc/resource';
 import { ReferenceGraph } from '@angular/compiler-cli/src/ngtsc/entry_point';
 import { DtsTransformRegistry } from '@angular/compiler-cli/src/ngtsc/transform';
 import { PerfRecorder, NOOP_PERF_RECORDER } from '@angular/compiler-cli/src/ngtsc/perf';
@@ -22,6 +22,10 @@ import { ModuleWithProvidersScanner } from '@angular/compiler-cli/src/ngtsc/modu
 import { NgModuleSymbol } from './module.symbol';
 import { NgastTraitCompiler } from './trait-compiler';
 import { ComponentSymbol } from './component.symbol';
+import { findSymbol, getSymbolOf } from './find-symbol';
+import { InjectableSymbol } from './injectable.symbol';
+import { DirectiveSymbol } from './directive.symbol';
+import { PipeSymbol } from './pipe.symbol';
 
 interface Toolkit {
   program: Program;
@@ -49,7 +53,7 @@ interface Toolkit {
   referencesRegistry: ReferencesRegistry;
   routeAnalyzer: NgModuleRouteAnalyzer;
 
-  resourceManager: HostResourceLoader;
+  resourceManager: AdapterResourceLoader;
   moduleResolver: ModuleResolver;
   cycleAnalyzer: CycleAnalyzer;
   incrementalDriver: IncrementalDriver;
@@ -86,6 +90,7 @@ export class WorkspaceSymbols {
   private toolkit: Partial<Toolkit> = {};
   private isCore = false;
   private analysed = false;
+  private oldProgram: Program
 
   constructor(
     private tsconfigPath: string,
@@ -100,10 +105,11 @@ export class WorkspaceSymbols {
   // ------ PUBLIC API ----- //
 
   /** Angular wrapper around the typescript host compiler */
+  // TODO: add reusable program
   get host() {
     return this.lazy('host', () => {
       const baseHost = new NgtscCompilerHost(this.fs, this.options);
-      return NgCompilerHost.wrap(baseHost, this.rootNames, this.options);
+      return NgCompilerHost.wrap(baseHost, this.rootNames, this.options, this.oldProgram || null);
     });
   }
 
@@ -168,7 +174,8 @@ export class WorkspaceSymbols {
         this.defaultImportTracker,
         this.injectableRegistry,
         this.isCore,
-        !!this.options.annotateForClosureCompiler
+        !!this.options.annotateForClosureCompiler,
+        !!this.options.compileNonExportedClasses
       )
     );
   }
@@ -209,6 +216,7 @@ export class WorkspaceSymbols {
         this.options.preserveWhitespaces || false,
         this.options.i18nUseExternalIds !== false,
         this.options.enableI18nLegacyMessageIdFormat !== false,
+        this.options.i18nNormalizeLineEndingsInICUs,
         this.moduleResolver,
         this.cycleAnalyzer,
         this.refEmitter,
@@ -257,6 +265,20 @@ export class WorkspaceSymbols {
     return this.lazy('routeAnalyzer', () => new NgModuleRouteAnalyzer(this.moduleResolver, this.evaluator));
   }
 
+  /** Find a symbol based on the class expression */
+  public findSymbol(token: Expression) {
+    return findSymbol(this, token);
+  }
+  /** Find a symbol based on the class expression */
+  public getSymbol(node: ClassDeclaration) {
+    return getSymbolOf(this, node);
+  }
+
+  public getClassRecords() {
+    this.ensureAnalysis();
+    return this.traitCompiler.allRecords();
+  }
+
   public getAllModules() {
     this.ensureAnalysis();
     return this.traitCompiler.allRecords('NgModule').map(({ node }) => new NgModuleSymbol(this, node));
@@ -266,6 +288,23 @@ export class WorkspaceSymbols {
     this.ensureAnalysis();
     return this.traitCompiler.allRecords('Component').map(({ node }) => new ComponentSymbol(this, node));
   }
+
+
+  public getAllDirectives() {
+    this.ensureAnalysis();
+    return this.traitCompiler.allRecords('Directive').map(({ node }) => new DirectiveSymbol(this, node));
+  }
+
+  public getAllInjectable() {
+    this.ensureAnalysis();
+    return this.traitCompiler.allRecords('Injectable').map(({ node }) => new InjectableSymbol(this, node));
+  }
+
+  public getAllPipes() {
+    this.ensureAnalysis();
+    return this.traitCompiler.allRecords('Pipe').map(({ node }) => new PipeSymbol(this, node));
+  }
+
 
   /** Perform analysis on all projects */
   private analyzeAll() {
@@ -344,7 +383,7 @@ export class WorkspaceSymbols {
 
   /** (pre)Load resources using cache */
   private get resourceManager() {
-    return this.lazy('resourceManager', () => new HostResourceLoader(this.host, this.options));
+    return this.lazy('resourceManager', () => new AdapterResourceLoader(this.host, this.options));
   }
 
   /** Resolve the module source-files references in lazy-loaded routes */
@@ -389,7 +428,7 @@ export class WorkspaceSymbols {
         if (rootDir !== undefined || rootDirs?.length) {
           localImportStrategy = new LogicalProjectStrategy(
             this.reflector,
-            new LogicalFileSystem([ ...this.host.rootDirs ])
+            new LogicalFileSystem([ ...this.host.rootDirs ], this.host)
           );
         } else {
           localImportStrategy = new RelativePathStrategy(this.reflector);
@@ -469,6 +508,7 @@ export class WorkspaceSymbols {
   private ensureAnalysis() {
     if (!this.analysed) {
       this.analyzeAll();
+      // TODO: Implements the ProviderRegistry to keep track of FactoryProvider, ValueProvider, ...
     }
   }
 }

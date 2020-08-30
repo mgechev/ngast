@@ -1,8 +1,9 @@
-import {NgModule, Component} from '@angular/core';
+import {NgModule, Component, Injectable} from '@angular/core';
 import {BrowserModule} from '@angular/platform-browser';
 import {CommonModule} from '@angular/common';
 import { AboutModule } from './about.module';
 
+@Injectable()
 export class BasicViewProvider {}
 
 @Component({
@@ -14,6 +15,7 @@ export class MainComponent {
   visible: boolean;
 }
 
+@Injectable()
 export class BasicProvider {}
 
 @NgModule({

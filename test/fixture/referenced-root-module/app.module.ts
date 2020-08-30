@@ -1,7 +1,8 @@
-import {NgModule, Component} from '@angular/core';
+import {NgModule, Component, Injectable} from '@angular/core';
 import {BrowserModule} from '@angular/platform-browser';
 import {AboutModule} from './about.module';
 
+@Injectable()
 export class BasicViewProvider {}
 
 @Component({

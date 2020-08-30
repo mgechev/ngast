@@ -1,5 +1,5 @@
 import { ClassDeclaration as ngClassDeclaration, ClassMember } from '@angular/compiler-cli/src/ngtsc/reflection';
-import { isCallExpression, ClassDeclaration as tsClassDeclaration, Decorator, NodeArray, isIdentifier, Identifier } from 'typescript';
+import { isCallExpression, ClassDeclaration as tsClassDeclaration, Decorator, NodeArray } from 'typescript';
 import { R3DependencyMetadata } from '@angular/compiler';
 import { AssertionError } from 'assert';
 
@@ -47,7 +47,7 @@ export function getDtsAnnotation(members?: ClassMember[]): AnnotationNames | und
 }
 
 
-export function assertDeps(deps: R3DependencyMetadata[] | 'invalid', name: string): asserts deps is R3DependencyMetadata[] {
+export function assertDeps(deps: R3DependencyMetadata[] | 'invalid' | null, name: string): asserts deps is R3DependencyMetadata[] {
   if (!deps || deps === 'invalid') {
     throw new AssertionError({ message: `Invalid depenancies in "${name}".` });
   }
