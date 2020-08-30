@@ -1,4 +1,4 @@
-import { createProgram, Program, createModuleResolutionCache, TypeChecker, getOriginalNode, Declaration, isIdentifier, Identifier } from 'typescript';
+import { createProgram, Program, createModuleResolutionCache, TypeChecker, getOriginalNode, Declaration, isIdentifier, Identifier, isToken } from 'typescript';
 import { Type, Expression, WrappedNodeExpr } from '@angular/compiler';
 import { readConfiguration } from '@angular/compiler-cli';
 import { NgCompilerHost } from '@angular/compiler-cli/src/ngtsc/core';
@@ -130,6 +130,21 @@ export class WorkspaceSymbols {
     });
   }
 
+  
+  /** Evaluate typecript Expression & update the dependancy graph accordingly */
+  public get evaluator() {
+    return this.lazy('evaluator', () => new PartialEvaluator(
+      this.reflector,
+      this.checker,
+      this.incrementalDriver.depGraph
+    ));
+  }
+
+  /** Keep track of the providers other than Injectable */
+  get providerRegistry() {
+    return this.lazy('providerRegistry', () => new ProviderRegistry(this))
+  }
+
   public getClassRecords() {
     this.ensureAnalysis();
     return this.traitCompiler.allRecords();
@@ -163,23 +178,16 @@ export class WorkspaceSymbols {
 
 
   /** Find a symbol based on the class expression */
-  public findSymbol(token: Expression | Identifier) {
-    const fromIdentifier = (node: Identifier) => {
-      const decl = this.reflector.getDeclarationOfIdentifier(node);
-  
-      if (decl?.node && this.reflector.isClass(decl.node)) {
-        return this.getSymbol(decl.node);
-      } else {
-        // TODO implement a way to load @Inject dependencies
-        console.log('Could not create symbol for node', decl?.node, 'only class are supported yet');
-        return null;
+  public findSymbol(token: Expression) {
+    if (token instanceof WrappedNodeExpr) {
+      if (isIdentifier(token.node)) {
+        const decl = this.reflector.getDeclarationOfIdentifier(token.node);
+        if (decl?.node && this.reflector.isClass(decl.node)) {
+          return this.getSymbol(decl.node);
+        }
+      } else if (isToken(token.node)) {
+        return this.providerRegistry.getProvider(token.node);
       }
-    }
-    if (token instanceof WrappedNodeExpr && isIdentifier(token.node)) {
-      return fromIdentifier(token.node);
-    }
-    if (!(token instanceof Expression) && isIdentifier(token)) {
-      return fromIdentifier(token);
     }
   }
 
@@ -320,15 +328,6 @@ export class WorkspaceSymbols {
   /** Static reflection of declarations using the TypeScript type checker */
   private get reflector() {
     return this.lazy('reflector', () => new TypeScriptReflectionHost(this.checker));
-  }
-
-  /** Evaluate typecript Expression & update the dependancy graph accordingly */
-  public get evaluator() {
-    return this.lazy('evaluator', () => new PartialEvaluator(
-      this.reflector,
-      this.checker,
-      this.incrementalDriver.depGraph
-    ));
   }
 
   /** Typescript type checker use to semantically analyze a source file */
@@ -539,11 +538,6 @@ export class WorkspaceSymbols {
     this.incrementalDriver.recordSuccessfulAnalysis(this.traitCompiler);
     this.analysed = true;
   }
-
-  get providerRegistry() {
-    return this.lazy('providerRegistry', () => new ProviderRegistry(this))
-  }
-
 
   private ensureAnalysis() {
     if (!this.analysed) {

@@ -52,7 +52,7 @@ describe('WorkspaceSymbols', () => {
 
     beforeEach(() => workspace = new WorkspaceSymbols(`${folder}/tsconfig.json`));
 
-    it('Get Injector providers', () => {
+    it('Get all providers', () => {
       const [module] = workspace.getAllModules();
       const [basic, dependency] = module.getProviders();
       expect(basic.name).toBe('BasicProvider');

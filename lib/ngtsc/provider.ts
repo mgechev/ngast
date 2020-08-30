@@ -1,8 +1,8 @@
 import type { WorkspaceSymbols } from './workspace.symbols';
 import { InjectableSymbol } from './injectable.symbol';
 import { Reference } from '@angular/compiler-cli/src/ngtsc/imports';
-import { DynamicValue, ResolvedValue } from '@angular/compiler-cli/src/ngtsc/partial_evaluator';
-import { isClassDeclaration, isIdentifier, Node, isArrayLiteralExpression, Identifier } from 'typescript';
+import { DynamicValue } from '@angular/compiler-cli/src/ngtsc/partial_evaluator';
+import { isClassDeclaration, isIdentifier, Node } from 'typescript';
 import { Expression } from 'typescript';
 import { WrappedNodeExpr } from '@angular/compiler/src/output/output_ast';
 import { isAnalysed, filterByHandler } from './symbol';
@@ -19,7 +19,7 @@ const useKeys = ['useValue', 'useFactory', 'useExisting'] as const;
 type UseKey = typeof useKeys[number];
 
 interface ProviderMetadata {
-  provide: Reference | DynamicValue;
+  provide: Reference | DynamicValue | string;
   useKey: UseKey;
   value: any;
 }
@@ -44,6 +44,9 @@ export class Provider {
   ) { }
 
   get name() {
+    if (typeof this.metadata.provide === 'string') {
+      return this.metadata.provide;
+    }
     if (this.metadata.provide instanceof Reference) {
       if (isClassDeclaration(this.metadata.provide.node)) {
         return this.metadata.provide.node.name?.text;
@@ -57,10 +60,10 @@ export class Provider {
   }
 }
 
-// TODO : Create a provider registry to keep track of Providers
+// TODO : It doesn't looks like a good idea to map with the real value instead of the token...
 export class ProviderRegistry {
   /** List of all the providers that are not injectables */
-  private providers: Map<string | DynamicValue | Reference<Node>, Provider> = new Map();
+  private providers: Map<ProviderMetadata['provide'], Provider> = new Map();
   constructor(private workspace: WorkspaceSymbols) { }
 
   /** Record all providers in every NgModule, Component & Directive */
@@ -142,5 +145,13 @@ export class ProviderRegistry {
       visit(resolveValue);
     }
     return result;
+  }
+
+  /** Return the provider for a token previously stored */
+  getProvider(token: any) {
+    const resolveValue = this.workspace.evaluator.evaluate(token) as ProviderMetadata['provide'];
+    if (this.providers.has(resolveValue)) {
+      return this.providers.get(resolveValue);
+    }
   }
 }

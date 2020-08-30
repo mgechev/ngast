@@ -20,20 +20,17 @@ describe('WorkspaceSymbols', () => {
     });
   });
 
+  describe('ngtsc-deps', () => {
+    let workspace: WorkspaceSymbols;
+    const folder = getFolder('ngtsc-deps');
 
-  // TODO : reimplement when we can find ValueProvider
+    beforeEach(() => workspace = new WorkspaceSymbols(`${folder}/tsconfig.json`));
 
-  // describe('ngtsc-deps', () => {
-  //   let workspace: WorkspaceSymbols;
-  //   const folder = getFolder('ngtsc-deps');
-
-  //   beforeEach(() => workspace = new WorkspaceSymbols(`${folder}/tsconfig.json`));
-
-  //   it('Should get dependencies', () => {
-  //     const [component] = workspace.getAllComponents();
-  //     const [basic, primitive] = component.getDependencies();
-  //     expect(basic.name).toBe('BasicProvider');
-  //     expect(primitive.name).toBe('primitive');
-  //   });
-  // });
+    it('Should get dependencies', () => {
+      const [component] = workspace.getAllComponents();
+      const [basic, primitive] = component.getDependencies();
+      expect(basic.name).toBe('BasicProvider');
+      expect(primitive.name).toBe('primitive');
+    });
+  });
 });
