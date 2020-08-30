@@ -81,7 +81,7 @@ describe('WorkspaceSymbols', () => {
   //     try {
   //       module.analysis;
   //     } catch (err) {
-  //       expect(err).toBe('An error occured during analysis of "AppModule". Check diagnostics in [NgModuleSymbol].diagnostics.');
+  //       expect(err).toBe('An error occurred during analysis of "AppModule". Check diagnostics in [NgModuleSymbol].diagnostics.');
   //       expect(module.diagnostics).toBeTruthy();
   //     }
   //   });

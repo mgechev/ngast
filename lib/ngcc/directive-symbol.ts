@@ -92,7 +92,7 @@ export interface TemplateAstResult {
   parseErrors?: ParseError[];
 
   /**
-   * Non-parse errors occured during compilation.
+   * Non-parse errors occurred during compilation.
    *
    * @type {{message: string}[]}
    * @memberOf TemplateAstResult
