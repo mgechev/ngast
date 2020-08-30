@@ -2,7 +2,7 @@ import { Symbol } from './symbol';
 import { assertDeps } from './utils';
 import { CssAst } from '../css-parser/css-ast';
 import { parseCss } from '../css-parser/parse-css';
-import { InjectableSymbol } from './injectable.symbol';
+import { WrappedNodeExpr } from '@angular/compiler';
 
 export class ComponentSymbol extends Symbol<'Component'> {
   protected readonly annotation = 'Component';
@@ -21,16 +21,12 @@ export class ComponentSymbol extends Symbol<'Component'> {
   }
 
   getProviders() {
-    const symbols: InjectableSymbol[] = [];
-    // The analysis only provides the list of providers requiring factories
-    const providers = this.analysis.providersRequiringFactory;
-    if (providers) {
-      for (const provider of providers) {
-        const symbol = new InjectableSymbol(this.workspace, provider.node);
-        symbols.push(symbol);
-      }
+    const providers = this.analysis.meta.providers;
+    if (providers instanceof WrappedNodeExpr) {
+      return this.workspace.providerRegistry.getAllProviders(providers.node);
+    } else {
+      return [];
     }
-    return symbols;
   }
 
   getDependencies() {

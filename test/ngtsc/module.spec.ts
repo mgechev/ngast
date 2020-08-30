@@ -12,18 +12,10 @@ describe('WorkspaceSymbols', () => {
 
     beforeEach(() => workspace = new WorkspaceSymbols(`${folder}/tsconfig.json`));
 
-    it('Create module from path', () => {
+    it('Module is analyzed after getAllModule', () => {
       const [module] = workspace.getAllModules();
       expect(module.name).toBe('AppModule');
-      expect(module.isAnalysed).toBeFalsy();
-    });
-
-    it('analyse one module', () => {
-      const [module] = workspace.getAllModules();
-      expect(module.isAnalysed).toBeFalsy();
-      module.analyse();
-      // Scope related API fails because of @angular/core not beeing compiled with Ivy
-      // expect(module.isAnalysed).toBeTruthy();
+      expect(module.isAnalysed).toBeTruthy();
     });
 
     it('Get declarations with right Symbol', () => {
@@ -60,32 +52,13 @@ describe('WorkspaceSymbols', () => {
 
     beforeEach(() => workspace = new WorkspaceSymbols(`${folder}/tsconfig.json`));
 
-    it('Get providers', () => {
+    it('Get Injector providers', () => {
       const [module] = workspace.getAllModules();
-      const providers = module.getProviders();
-      const meta = providers[1].analysis;
-      expect(providers.some(p => p.name === 'BasicProvider')).toBeTruthy();
-      expect(providers.some(p => p.name === 'DependencyProvider')).toBeTruthy();
+      const [basic, dependency] = module.getProviders();
+      expect(basic.name).toBe('BasicProvider');
+      expect(dependency.name).toBe('DependencyProvider');
     });
   });
-
-  // Didn't manage to verify that analysis is throwing
-  // describe('deps', () => {
-  //   let workspace: WorkspaceSymbols;
-  //   const folder = getFolder('deps');
-
-  //   beforeEach(() => workspace = new WorkspaceSymbols(`${folder}/tsconfig.json`));
-
-  //   it('Should throw for undecorated class in provider', () => {
-  //     const [module] = workspace.getAllModules();
-  //     try {
-  //       module.analysis;
-  //     } catch (err) {
-  //       expect(err).toBe('An error occurred during analysis of "AppModule". Check diagnostics in [NgModuleSymbol].diagnostics.');
-  //       expect(module.diagnostics).toBeTruthy();
-  //     }
-  //   });
-  // });
 
   describe('ngtsc-deps', () => {
     let workspace: WorkspaceSymbols;
@@ -95,23 +68,10 @@ describe('WorkspaceSymbols', () => {
 
     it('Should find all providers', () => {
       const [module] = workspace.getAllModules();
-      const providers = module.getProviders();
-      expect(providers.some(p => p.name === 'BasicProvider')).toBeTruthy();
-      expect(providers.some(p => p.name === 'CompositeProvider')).toBeTruthy();
-      // Todo : what about the { useValue } ???
+      const [composite, basic] = module.getProviders();
+      expect(composite.name).toBe('CompositeProvider');
+      expect(basic.name).toBe('BasicProvider');
     });
   });
 
-  describe('ngtsc-routes', () => {
-    let workspace: WorkspaceSymbols;
-    const folder = getFolder('ngtsc-routes');
-
-    beforeEach(() => workspace = new WorkspaceSymbols(`${folder}/tsconfig.json`));
-
-    it('Find all routes', () => {
-      const module = workspace.getAllModules().find(m => m.name === 'AppModule');
-      const routes = module.getLazyRoutes();
-      expect(routes.length).toBe(3);
-    });
-  });
 });

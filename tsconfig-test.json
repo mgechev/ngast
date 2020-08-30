@@ -12,15 +12,6 @@
     "outDir": "./dist-test",
     "lib": ["es2015", "dom"]
   },
-  "files": [
-    "test/ngcc/symbol.spec.ts",
-    "test/ngcc/project-symbols.spec.ts",
-    "test/ngcc/directive-symbol.spec.ts",
-    "test/ngcc/module-symbol.spec.ts",
-    "test/ngcc/pipe-symbol.spec.ts",
-    "test/ngcc/provider-symbol.spec.ts",
-    "test/ngcc/dep-parsing.spec.ts",
-  ],
   "include": ["test/ngtsc/*.spec.ts"],
   "angularCompilerOptions": {
     "skipTemplateCodegen": true,

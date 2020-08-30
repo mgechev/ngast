@@ -2,11 +2,12 @@ import type { WorkspaceSymbols } from './workspace.symbols';
 import { InjectableSymbol } from './injectable.symbol';
 import { Reference } from '@angular/compiler-cli/src/ngtsc/imports';
 import { DynamicValue, ResolvedValue } from '@angular/compiler-cli/src/ngtsc/partial_evaluator';
-import { isClassDeclaration, isIdentifier, Node } from 'typescript';
-import { Expression as tsExpression } from 'typescript';
-import { Expression as ngExpression } from '@angular/compiler/src/output/output_ast';
+import { isClassDeclaration, isIdentifier, Node, isArrayLiteralExpression, Identifier } from 'typescript';
+import { Expression } from 'typescript';
+import { WrappedNodeExpr } from '@angular/compiler/src/output/output_ast';
 import { isAnalysed, filterByHandler } from './symbol';
 import { AnnotationNames } from './utils';
+import { ClassDeclaration } from '@angular/compiler-cli/src/ngtsc/reflection';
 
 
 /////////
@@ -14,7 +15,7 @@ import { AnnotationNames } from './utils';
 /////////
 
 
-const useKeys = [ 'useValue', 'useFactory', 'useExisting' ] as const;
+const useKeys = ['useValue', 'useFactory', 'useExisting'] as const;
 type UseKey = typeof useKeys[number];
 
 interface ProviderMetadata {
@@ -23,7 +24,7 @@ interface ProviderMetadata {
   value: any;
 }
 
-export function getProviderMetadata(provider: Map<any, any>): ProviderMetadata {
+export function getProviderMetadata(provider: Map<any, any>): ProviderMetadata | null {
   const provide = provider.get('provide');
   if (!provide) {
     return null;
@@ -40,7 +41,7 @@ export class Provider {
   constructor(
     protected workspace: WorkspaceSymbols,
     public metadata: ProviderMetadata
-  ) {}
+  ) { }
 
   get name() {
     if (this.metadata.provide instanceof Reference) {
@@ -58,11 +59,9 @@ export class Provider {
 
 // TODO : Create a provider registry to keep track of Providers
 export class ProviderRegistry {
-  /**
-   * A map of provider { [scope: Node]: { [Indentifier: Node]: Provider }}
-   */
-  providers: Map<Node, Map<Node, Provider>> = new Map();
-  constructor(private workspace: WorkspaceSymbols) {}
+  /** List of all the providers that are not injectables */
+  private providers: Map<string | DynamicValue | Reference<Node>, Provider> = new Map();
+  constructor(private workspace: WorkspaceSymbols) { }
 
   /** Record all providers in every NgModule, Component & Directive */
   recordAll() {
@@ -77,36 +76,71 @@ export class ProviderRegistry {
       });
     }
     for (const analysis of getAllAnalysis('NgModule')) {
-      this.recordProviders(analysis.providers);
+      if (analysis) {
+        this.recordProviders(analysis.providers);
+      }
     }
     for (const analysis of getAllAnalysis('Component')) {
-      this.recordProviders(analysis.meta.providers);
+      if (analysis?.meta.providers instanceof WrappedNodeExpr) {
+        this.recordProviders(analysis.meta.providers.node);
+      }
     }
     for (const analysis of getAllAnalysis('Directive')) {
-      this.recordProviders(analysis.meta.providers);
+      if (analysis?.meta.providers instanceof WrappedNodeExpr) {
+        this.recordProviders(analysis.meta.providers.node);
+      }
     }
   }
 
   /** Find all providers of a provider expression */
-  recordProviders(expression?: ngExpression | tsExpression) {
-    // WIP
+  recordProviders(expression: Expression | null) {
+    if (expression) {
+      const resolveValue = this.workspace.evaluator.evaluate(expression);
+      const visit = (value: any) => {
+        if (Array.isArray(value)) {
+          value.forEach(visit);
+        } else if (value instanceof Map) {
+          const metadata = getProviderMetadata(value);
+          if (metadata) {
+            const provider = new Provider(this.workspace, metadata);
+            this.providers.set(metadata.provide, provider);
+          }
+        }
+      }
+      visit(resolveValue);
+    }
+  }
 
-    // if (expression) {
-    //   const resolvedProviders = this.workspace.evaluator.evaluate(expression);
-    
-    //   const scanRecursively = (meta: ResolvedValue)=> {
-    //     if (Array.isArray(meta)) {
-    //       for (const entry of meta) {
-    //         scanRecursively(entry);
-    //       }
-    //     } else if (meta instanceof Map) {
-    //       const metadata = getProviderMetadata(meta);
-    //       if (metadata) {
-    //         this.providers.set(metadata.provide, new Provider(metadata))
-    //       }
-    //     }
-    //   };
-    //   scanRecursively(resolvedProviders);
-    // }
+  /** Get all providers from a list of providers in a decorator NgModule, Directive, Component */
+  getAllProviders(expression: Expression | null) {
+    const result: (InjectableSymbol | Provider)[] = [];
+    if (expression) {
+      const resolveValue = this.workspace.evaluator.evaluate(expression);
+      const addInjectable = (ref: Reference<ClassDeclaration>) => {
+        const symbol = this.workspace.getSymbol(ref.node);
+        if (symbol) {
+          result.push(symbol as InjectableSymbol);
+        }
+      }
+      const addProvider = (value: string | DynamicValue) => {
+        const provider = this.providers.get(value);
+        if (provider) result.push(provider);
+      }
+      const visit = (value: any) => {
+        if (Array.isArray(value)) {
+          value.forEach(visit);
+        } else if (value instanceof Map) {
+          if (value.has('useClass')) {
+            addInjectable(value.get('useClass'))
+          } else {
+            addProvider(value.get('provide'));
+          }
+        } else {
+          addInjectable(value);
+        }
+      }
+      visit(resolveValue);
+    }
+    return result;
   }
 }

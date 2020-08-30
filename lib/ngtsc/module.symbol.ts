@@ -29,16 +29,7 @@ export class NgModuleSymbol extends Symbol<'NgModule'> {
    * Get the providers of the module as InjectableSymbol
    */
   getProviders() {
-    const symbols: InjectableSymbol[] = [];
-    // The analysis only provides the list of providers requiring factories
-    const providers = this.analysis.providersRequiringFactory;
-    if (providers) {
-      for (const provider of providers) {
-        const symbol = new InjectableSymbol(this.workspace, provider.node);
-        symbols.push(symbol);
-      }
-    }
-    return symbols;
+    return this.workspace.providerRegistry.getAllProviders(this.analysis.providers);
   }
 
   getDeclarations() {
@@ -55,11 +46,5 @@ export class NgModuleSymbol extends Symbol<'NgModule'> {
 
   getBootstap() {
     return this.metadata.bootstrap.map(ref => this.workspace.findSymbol(ref.value) as ComponentSymbol);
-  }
-
-  getLazyRoutes() {
-    // Absolute path, replace ".ts" "#ModuleName"
-    const entryKey = this.node.getSourceFile().fileName.replace('.ts', `#${this.name}`);
-    return this.workspace.routeAnalyzer.listLazyRoutes(entryKey);
   }
 }

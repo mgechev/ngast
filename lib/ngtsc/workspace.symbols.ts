@@ -1,4 +1,4 @@
-import { createProgram, Program, createModuleResolutionCache, TypeChecker, getOriginalNode, Declaration, isIdentifier } from 'typescript';
+import { createProgram, Program, createModuleResolutionCache, TypeChecker, getOriginalNode, Declaration, isIdentifier, Identifier } from 'typescript';
 import { Type, Expression, WrappedNodeExpr } from '@angular/compiler';
 import { readConfiguration } from '@angular/compiler-cli';
 import { NgCompilerHost } from '@angular/compiler-cli/src/ngtsc/core';
@@ -27,6 +27,7 @@ import { InjectableSymbol } from './injectable.symbol';
 import { DirectiveSymbol } from './directive.symbol';
 import { PipeSymbol } from './pipe.symbol';
 import { AnnotationNames, getDtsAnnotation, getLocalAnnotation } from './utils';
+import { ProviderRegistry } from './provider';
 
 interface Toolkit {
   program: Program;
@@ -60,6 +61,7 @@ interface Toolkit {
   incrementalDriver: IncrementalDriver;
   dtsTransforms: DtsTransformRegistry;
   mwpScanner: ModuleWithProvidersScanner;
+  providerRegistry: ProviderRegistry;s
 }
 
 // code from :
@@ -161,9 +163,9 @@ export class WorkspaceSymbols {
 
 
   /** Find a symbol based on the class expression */
-  public findSymbol(token: Expression) {
-    if (token instanceof WrappedNodeExpr && isIdentifier(token.node)) {
-      const decl = this.reflector.getDeclarationOfIdentifier(token.node);
+  public findSymbol(token: Expression | Identifier) {
+    const fromIdentifier = (node: Identifier) => {
+      const decl = this.reflector.getDeclarationOfIdentifier(node);
   
       if (decl?.node && this.reflector.isClass(decl.node)) {
         return this.getSymbol(decl.node);
@@ -172,6 +174,12 @@ export class WorkspaceSymbols {
         console.log('Could not create symbol for node', decl?.node, 'only class are supported yet');
         return null;
       }
+    }
+    if (token instanceof WrappedNodeExpr && isIdentifier(token.node)) {
+      return fromIdentifier(token.node);
+    }
+    if (!(token instanceof Expression) && isIdentifier(token)) {
+      return fromIdentifier(token);
     }
   }
 
@@ -315,7 +323,7 @@ export class WorkspaceSymbols {
   }
 
   /** Evaluate typecript Expression & update the dependancy graph accordingly */
-  private get evaluator() {
+  public get evaluator() {
     return this.lazy('evaluator', () => new PartialEvaluator(
       this.reflector,
       this.checker,
@@ -532,10 +540,15 @@ export class WorkspaceSymbols {
     this.analysed = true;
   }
 
+  get providerRegistry() {
+    return this.lazy('providerRegistry', () => new ProviderRegistry(this))
+  }
+
 
   private ensureAnalysis() {
     if (!this.analysed) {
       this.analyzeAll();
+      this.providerRegistry.recordAll();
       // TODO: Implements the ProviderRegistry to keep track of FactoryProvider, ValueProvider, ...
     }
   }

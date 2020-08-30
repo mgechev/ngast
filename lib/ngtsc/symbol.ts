@@ -99,7 +99,7 @@ export abstract class Symbol<A extends AnnotationNames> {
     }
   }
 
-  public isSymbol(name: A): this is FactoryOutput<A> {
+  public isSymbol(name: AnnotationNames): this is FactoryOutput<A> {
     return this.annotation === name;
   }
 }
