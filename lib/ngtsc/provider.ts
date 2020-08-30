@@ -3,7 +3,10 @@ import { InjectableSymbol } from './injectable.symbol';
 import { Reference } from '@angular/compiler-cli/src/ngtsc/imports';
 import { DynamicValue, ResolvedValue } from '@angular/compiler-cli/src/ngtsc/partial_evaluator';
 import { isClassDeclaration, isIdentifier, Node } from 'typescript';
-import { Expression } from 'typescript';
+import { Expression as tsExpression } from 'typescript';
+import { Expression as ngExpression } from '@angular/compiler/src/output/output_ast';
+import { isAnalysed, filterByHandler } from './symbol';
+import { AnnotationNames } from './utils';
 
 const useKeys = [ 'useValue', 'useFactory', 'useExisting' ] as const;
 type UseKey = typeof useKeys[number];
@@ -52,49 +55,50 @@ export class ProviderRegistry {
   /**
    * A map of provider { [scope: Node]: { [Indentifier: Node]: Provider }}
    */
-  providers: Map<Node, Map<Node, Provider>>;
+  providers: Map<Node, Map<Node, Provider>> = new Map();
   constructor(private workspace: WorkspaceSymbols) {}
 
   /** Record all providers in every NgModule, Component & Directive */
   recordAll() {
-    // TODO
+    // Helper fn to get all analysis of an annotation
+    const getAllAnalysis = <A extends AnnotationNames>(annotation: A) => {
+      const records = this.workspace.traitCompiler.allRecords(annotation);
+      return records.map(record => {
+        const [analysis] = record.traits.filter(filterByHandler<A>(annotation))
+          .filter(isAnalysed)
+          .map(trait => trait.analysis);
+        return analysis;
+      });
+    }
+    for (const analysis of getAllAnalysis('NgModule')) {
+      this.recordProviders(analysis.providers);
+    }
+    for (const analysis of getAllAnalysis('Component')) {
+      this.recordProviders(analysis.meta.providers);
+    }
+    for (const analysis of getAllAnalysis('Directive')) {
+      this.recordProviders(analysis.meta.providers);
+    }
   }
 
   /** Find all providers of a provider expression */
-  getProviders(expression: Expression) {
-    const providers: (InjectableSymbol | Provider)[] = [];
+  recordProviders(expression?: ngExpression | tsExpression) {
+    if (expression) {
       const resolvedProviders = this.workspace.evaluator.evaluate(expression);
-  
-      const addProvider = (value: ResolvedValue) => {
-        if (value instanceof Reference) {
-          if (this.workspace.reflector.isClass(value.node)) {
-            const inj = new InjectableSymbol(this.workspace, value.node);
-            providers.push(inj);
-          }
-        }
-      };
-  
-      const recursivelyAddProviders = (meta: ResolvedValue)=> {
+    
+      const scanRecursively = (meta: ResolvedValue)=> {
         if (Array.isArray(meta)) {
           for (const entry of meta) {
-            recursivelyAddProviders(entry);
+            scanRecursively(entry);
           }
         } else if (meta instanceof Map) {
-          // useClass is considered as an injectable by the compiler
-          if (meta.has('useClass') && meta.has('provide')) {
-            addProvider(meta.get('useClass'));
-          } else {
-            const metadata = getProviderMetadata(meta);
-            if (metadata) {
-              const provider = new Provider(this.workspace, metadata);
-              providers.push(provider);
-            }
+          const metadata = getProviderMetadata(meta);
+          if (metadata) {
+            this.providers.set(metadata.provide, new Provider(metadata))
           }
-        } else {
-          addProvider(meta);
         }
       };
-      recursivelyAddProviders(resolvedProviders);
-    return providers;
+      scanRecursively(resolvedProviders);
+    }
   }
 }
