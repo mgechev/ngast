@@ -1,9 +1,8 @@
-import { InjectableHandlerData } from '@angular/compiler-cli/src/ngtsc/annotations/src/injectable';
 import { Symbol } from './symbol';
 import { assertDeps } from './utils';
 
 
-export class InjectableSymbol extends Symbol<InjectableHandlerData> {
+export class InjectableSymbol extends Symbol<'Injectable'> {
   protected readonly annotation = 'Injectable';
 
   get deps() {

@@ -1,11 +1,10 @@
 import { Symbol } from './symbol';
-import { ComponentAnalysisData } from '@angular/compiler-cli/src/ngtsc/annotations/src/component';
 import { assertDeps } from './utils';
 import { CssAst } from '../css-parser/css-ast';
 import { parseCss } from '../css-parser/parse-css';
 import { InjectableSymbol } from './injectable.symbol';
 
-export class ComponentSymbol extends Symbol<ComponentAnalysisData> {
+export class ComponentSymbol extends Symbol<'Component'> {
   protected readonly annotation = 'Component';
 
   get deps() {

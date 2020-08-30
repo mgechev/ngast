@@ -1,8 +1,7 @@
 import { Symbol } from './symbol';
-import { PipeHandlerData } from '@angular/compiler-cli/src/ngtsc/annotations/src/pipe';
 import { assertDeps } from './utils';
 
-export class PipeSymbol extends Symbol<PipeHandlerData> {
+export class PipeSymbol extends Symbol<'Pipe'> {
   protected readonly annotation = 'Pipe';
 
   get deps() {

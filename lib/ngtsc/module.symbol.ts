@@ -1,11 +1,10 @@
-import { NgModuleAnalysis } from '@angular/compiler-cli/src/ngtsc/annotations/src/ng_module';
 import { Symbol } from './symbol';
 import { InjectableSymbol } from './injectable.symbol';
 import type { DeclarationSymbol } from './find-symbol';
 import type { ComponentSymbol } from './component.symbol';
 import { assertDeps } from './utils';
 
-export class NgModuleSymbol extends Symbol<NgModuleAnalysis> {
+export class NgModuleSymbol extends Symbol<'NgModule'> {
   protected readonly annotation = 'NgModule';
 
   get deps() {
