@@ -184,6 +184,8 @@ export class WorkspaceSymbols {
         const decl = this.reflector.getDeclarationOfIdentifier(token.node);
         if (decl?.node && this.reflector.isClass(decl.node)) {
           return this.getSymbol(decl.node);
+        } else if (decl?.node) {
+          return this.providerRegistry.getProvider(decl.node);
         }
       } else if (isToken(token.node)) {
         return this.providerRegistry.getProvider(token.node);

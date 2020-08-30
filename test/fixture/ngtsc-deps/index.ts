@@ -6,20 +6,29 @@ import { MatExpansionModule } from '@angular/material/expansion';
 
 @Injectable()
 export class BasicProvider {}
-// const TOKEN = new InjectionToken('token', { providedIn: 'root', factory: () => true });
+
+const TOKEN = new InjectionToken('token');
+export const factory = () => true;
 
 @Component({
   selector: 'main-component',
-  template: '<div *ngIf="visible">Hello world</div>'
+  template: '<div>Hello world</div>'
 })
 export class MainComponent {
   visible: boolean;
-  constructor(public p: BasicProvider, @Inject('primitive') public primitive) {}
+  constructor(
+    public p: BasicProvider,
+    @Inject('primitive') public primitive,
+    @Inject(TOKEN) public isTrue,
+  ) {}
 }
 
 @Injectable()
 export class CompositeProvider {
-  constructor(public p: BasicProvider, @Inject('primitive') public primitive: string) {}
+  constructor(
+    public p: BasicProvider,
+    @Inject('primitive') public primitive: string,
+  ) {}
 }
 
 @NgModule({
@@ -27,6 +36,11 @@ export class CompositeProvider {
   exports: [MainComponent],
   declarations: [MainComponent],
   bootstrap: [MainComponent],
-  providers: [CompositeProvider, BasicProvider, { provide: 'primitive', useValue: '42' }]
+  providers: [
+    CompositeProvider,
+    BasicProvider,
+    { provide: 'primitive', useValue: '42' },
+    { provide: TOKEN, useFactory: factory },
+  ]
 })
 export class AppModule {}

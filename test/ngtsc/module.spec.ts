@@ -68,9 +68,11 @@ describe('WorkspaceSymbols', () => {
 
     it('Should find all providers', () => {
       const [module] = workspace.getAllModules();
-      const [composite, basic] = module.getProviders();
+      const [composite, basic, primitive, token] = module.getProviders();
       expect(composite.name).toBe('CompositeProvider');
       expect(basic.name).toBe('BasicProvider');
+      expect(primitive.name).toBe('primitive');
+      expect(token.name).toBe('TOKEN');
     });
   });
 

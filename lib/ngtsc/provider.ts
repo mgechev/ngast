@@ -2,7 +2,7 @@ import type { WorkspaceSymbols } from './workspace.symbols';
 import { InjectableSymbol } from './injectable.symbol';
 import { Reference } from '@angular/compiler-cli/src/ngtsc/imports';
 import { DynamicValue } from '@angular/compiler-cli/src/ngtsc/partial_evaluator';
-import { isClassDeclaration, isIdentifier, Node } from 'typescript';
+import { isClassDeclaration, isIdentifier, Identifier } from 'typescript';
 import { Expression } from 'typescript';
 import { WrappedNodeExpr } from '@angular/compiler/src/output/output_ast';
 import { isAnalysed, filterByHandler } from './symbol';
@@ -63,7 +63,7 @@ export class Provider {
 // TODO : It doesn't looks like a good idea to map with the real value instead of the token...
 export class ProviderRegistry {
   /** List of all the providers that are not injectables */
-  private providers: Map<ProviderMetadata['provide'], Provider> = new Map();
+  private providers: Map<string | Identifier, Provider> = new Map();
   constructor(private workspace: WorkspaceSymbols) { }
 
   /** Record all providers in every NgModule, Component & Directive */
@@ -104,9 +104,10 @@ export class ProviderRegistry {
           value.forEach(visit);
         } else if (value instanceof Map) {
           const metadata = getProviderMetadata(value);
-          if (metadata) {
+          const key = getKeyFromProvide(metadata?.provide);
+          if (metadata && key) {
             const provider = new Provider(this.workspace, metadata);
-            this.providers.set(metadata.provide, provider);
+            this.providers.set(key, provider);
           }
         }
       }
@@ -125,9 +126,12 @@ export class ProviderRegistry {
           result.push(symbol as InjectableSymbol);
         }
       }
-      const addProvider = (value: string | DynamicValue) => {
-        const provider = this.providers.get(value);
-        if (provider) result.push(provider);
+      const addProvider = (value: ProviderMetadata['provide']) => {
+        const key = getKeyFromProvide(value);
+        if (key && this.providers.has(key)) {
+          const provider = this.providers.get(key);
+          if (provider) result.push(provider);
+        }
       }
       const visit = (value: any) => {
         if (Array.isArray(value)) {
@@ -149,9 +153,21 @@ export class ProviderRegistry {
 
   /** Return the provider for a token previously stored */
   getProvider(token: any) {
-    const resolveValue = this.workspace.evaluator.evaluate(token) as ProviderMetadata['provide'];
-    if (this.providers.has(resolveValue)) {
-      return this.providers.get(resolveValue);
+    const value = this.workspace.evaluator.evaluate(token) as ProviderMetadata['provide'];
+    const key = getKeyFromProvide(value);
+    if (key && this.providers.has(key)) {
+      return this.providers.get(key);
+    }
+  }
+}
+
+// TODO: check to use declaration instead of Identifier ...
+function getKeyFromProvide(provide?: ProviderMetadata['provide']): string | Identifier | undefined {
+  if (provide) {
+    if (provide instanceof DynamicValue && isIdentifier(provide.node)) {
+      return provide.node;
+    } else if (typeof provide === 'string') {
+      return provide;
     }
   }
 }
