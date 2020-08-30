@@ -3,8 +3,8 @@ import { ClassDeclaration, Decorator } from '@angular/compiler-cli/src/ngtsc/ref
 import { Declaration } from 'typescript';
 import { TraitState, Trait } from '@angular/compiler-cli/src/ngtsc/transform';
 import { R3DependencyMetadata } from '@angular/compiler';
-import { AnnotationNames } from './utils';
-import { FactoryOutput } from '.';
+import type { AnnotationNames } from './utils';
+import type { FactoryOutput } from './find-symbol';
 
 const handlerName = {
   'NgModule': 'NgModuleDecoratorHandler',

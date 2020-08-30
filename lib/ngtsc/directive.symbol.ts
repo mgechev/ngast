@@ -1,7 +1,6 @@
 import { Symbol } from './symbol';
 import { DirectiveHandlerData } from '@angular/compiler-cli/src/ngtsc/annotations/src/directive';
 import { assertDeps } from './utils';
-import { findSymbol } from '.';
 
 export class DirectiveSymbol extends Symbol<DirectiveHandlerData> {
   protected readonly annotation = 'Directive';
@@ -16,6 +15,6 @@ export class DirectiveSymbol extends Symbol<DirectiveHandlerData> {
 
   getDependancies() {
     assertDeps(this.deps, this.name);
-    return this.deps.map(dep => findSymbol(this.workspace, dep.token));
+    return this.deps.map(dep => this.workspace.findSymbol(dep.token));
   }
 }

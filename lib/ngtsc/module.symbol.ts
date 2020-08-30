@@ -1,11 +1,9 @@
 import { NgModuleAnalysis } from '@angular/compiler-cli/src/ngtsc/annotations/src/ng_module';
 import { Symbol } from './symbol';
 import { InjectableSymbol } from './injectable.symbol';
-import { DeclarationSymbol, findSymbol } from '.';
-import { ComponentSymbol } from './component.symbol';
+import type { DeclarationSymbol } from './find-symbol';
+import type { ComponentSymbol } from './component.symbol';
 import { assertDeps } from './utils';
-import { Reference } from '@angular/compiler-cli/src/ngtsc/imports';
-import { ResolvedValue } from '@angular/compiler-cli/src/ngtsc/partial_evaluator';
 
 export class NgModuleSymbol extends Symbol<NgModuleAnalysis> {
   protected readonly annotation = 'NgModule';
@@ -25,67 +23,39 @@ export class NgModuleSymbol extends Symbol<NgModuleAnalysis> {
 
   getDependancies() {
     assertDeps(this.deps, this.name);
-    return this.deps.map(dep => findSymbol(this.workspace, dep.token));
+    return this.deps.map(dep => this.workspace.findSymbol(dep.token));
   }
 
   /**
-   * Get the providers of the module.
-   * WARNING: It doesn't maintain the order
+   * Get the providers of the module as InjectableSymbol
    */
   getProviders() {
-    const providers: InjectableSymbol[] = [];
-    const resolvedProviders = this.workspace.evaluator.evaluate(this.analysis.providers);
-
-    const addProvider = (value: ResolvedValue) => {
-      if (value instanceof Reference) {
-        if (this.workspace.reflector.isClass(value.node)) {
-          const inj = new InjectableSymbol(this.workspace, value.node);
-          providers.push(inj);
-        }
+    const symbols: InjectableSymbol[] = [];
+    // The analysis only provides the list of providers requiring factories
+    const providers = this.analysis.providersRequiringFactory;
+    if (providers) {
+      for (const provider of providers) {
+        const symbol = new InjectableSymbol(this.workspace, provider.node);
+        symbols.push(symbol);
       }
-    };
-
-    const recursivelyAddProviders = (provider: ResolvedValue)=> {
-      if (Array.isArray(provider)) {
-        for (const entry of provider) {
-          recursivelyAddProviders(entry);
-        }
-      } else if (provider instanceof Map) {
-        const provide = provider.get('provide');
-        if (!provider) {
-          throw new Error(`Provider object in module "${this.name}" should have key "provider"`);
-        }
-        if (provider.has('useClass')) {
-          const useClass = provider.get('useClass');
-          addProvider(useClass);
-        } else if (provider.has('useValue')) {
-          const useValue = provider.get('useValue');
-          // todo : not implemented yet
-        } else if (provider.has('useFactory')) {
-          // todo : not implemented yet
-        }
-      } else {
-        addProvider(provider);
-      }
-    };
-    recursivelyAddProviders(resolvedProviders);
-    return providers;
+    }
+    return symbols;
   }
 
   getDeclarations() {
-    return this.metadata.declarations.map(ref => findSymbol(this.workspace, ref.value) as DeclarationSymbol);
+    return this.analysis.declarations.map(ref => this.workspace.getSymbol(ref.node) as DeclarationSymbol);
   }
 
   getImports() {
-    return this.metadata.imports.map(ref => findSymbol(this.workspace, ref.value) as NgModuleSymbol);
+    return this.analysis.imports.map(ref => this.workspace.getSymbol(ref.node) as NgModuleSymbol);
   }
 
   getExports() {
-    return this.metadata.exports.map(ref => findSymbol(this.workspace, ref.value));
+    return this.analysis.exports.map(ref => this.workspace.getSymbol(ref.node));
   }
 
   getBootstap() {
-    return this.metadata.bootstrap.map(ref => findSymbol(this.workspace, ref.value) as ComponentSymbol);
+    return this.metadata.bootstrap.map(ref => this.workspace.findSymbol(ref.value) as ComponentSymbol);
   }
 
   getLazyRoutes() {
