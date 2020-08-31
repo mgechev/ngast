@@ -1,4 +1,4 @@
-import { NgModule, Component, Inject, Injectable, InjectionToken } from '@angular/core';
+import { NgModule, Component, Inject, Injectable, InjectionToken, Directive } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { CommonModule } from '@angular/common';
@@ -8,11 +8,11 @@ import { MatExpansionModule } from '@angular/material/expansion';
 export class BasicProvider {}
 
 const TOKEN = new InjectionToken('token');
-export const factory = () => true;
 
 @Component({
   selector: 'main-component',
-  template: '<div>Hello world</div>'
+  template: '<div>Hello world</div>',
+  providers: [{ provide: TOKEN, useValue: true }],
 })
 export class MainComponent {
   visible: boolean;
@@ -21,6 +21,11 @@ export class MainComponent {
     @Inject('primitive') public primitive,
     @Inject(TOKEN) public isTrue,
   ) {}
+}
+
+@Directive({ selector: '[main]' })
+export class MainDirective {
+  constructor(public p: BasicProvider) {}
 }
 
 @Injectable()
@@ -34,13 +39,12 @@ export class CompositeProvider {
 @NgModule({
   imports: [CommonModule, BrowserModule, MatExpansionModule, BrowserAnimationsModule],
   exports: [MainComponent],
-  declarations: [MainComponent],
+  declarations: [MainComponent, MainDirective],
   bootstrap: [MainComponent],
   providers: [
     CompositeProvider,
     BasicProvider,
     { provide: 'primitive', useValue: '42' },
-    { provide: TOKEN, useFactory: factory },
   ]
 })
 export class AppModule {}

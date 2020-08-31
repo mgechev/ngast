@@ -72,7 +72,6 @@ describe('WorkspaceSymbols', () => {
       expect(composite.name).toBe('CompositeProvider');
       expect(basic.name).toBe('BasicProvider');
       expect(primitive.name).toBe('primitive');
-      expect(token.name).toBe('TOKEN');
     });
   });
 

@@ -22,7 +22,7 @@ import { ModuleWithProvidersScanner } from '@angular/compiler-cli/src/ngtsc/modu
 import { NgModuleSymbol } from './module.symbol';
 import { NgastTraitCompiler } from './trait-compiler';
 import { ComponentSymbol } from './component.symbol';
-import { symbolFactory } from './find-symbol';
+import { symbolFactory, FactoryOutput } from './find-symbol';
 import { InjectableSymbol } from './injectable.symbol';
 import { DirectiveSymbol } from './directive.symbol';
 import { PipeSymbol } from './pipe.symbol';
@@ -194,7 +194,7 @@ export class WorkspaceSymbols {
   }
 
   /** Find a symbol based on the class expression */
-  public getSymbol(node: ClassDeclaration) {
+  public getSymbol<A extends AnnotationNames>(node: ClassDeclaration): FactoryOutput<A> | undefined {
     const isDts = isFromDtsFile(node);
     let annotation: AnnotationNames | undefined;
     if (isDts) {
@@ -205,7 +205,7 @@ export class WorkspaceSymbols {
     }
     if (annotation && (annotation in symbolFactory)) {
       const factory = symbolFactory[annotation];
-      return factory(this, node);
+      return factory(this, node) as FactoryOutput<A>;
     }
   }
 

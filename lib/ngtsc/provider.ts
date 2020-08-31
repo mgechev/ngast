@@ -4,7 +4,7 @@ import { Reference } from '@angular/compiler-cli/src/ngtsc/imports';
 import { DynamicValue } from '@angular/compiler-cli/src/ngtsc/partial_evaluator';
 import { isClassDeclaration, isIdentifier, Identifier } from 'typescript';
 import { Expression } from 'typescript';
-import { WrappedNodeExpr } from '@angular/compiler/src/output/output_ast';
+import { WrappedNodeExpr } from '@angular/compiler';
 import { isAnalysed, filterByHandler } from './symbol';
 import { AnnotationNames } from './utils';
 import { ClassDeclaration } from '@angular/compiler-cli/src/ngtsc/reflection';
@@ -84,13 +84,15 @@ export class ProviderRegistry {
       }
     }
     for (const analysis of getAllAnalysis('Component')) {
-      if (analysis?.meta.providers instanceof WrappedNodeExpr) {
-        this.recordProviders(analysis.meta.providers.node);
+      const providers = analysis?.meta.providers;
+      if (providers instanceof WrappedNodeExpr) {
+        this.recordProviders(providers.node);
       }
     }
     for (const analysis of getAllAnalysis('Directive')) {
-      if (analysis?.meta.providers instanceof WrappedNodeExpr) {
-        this.recordProviders(analysis.meta.providers.node);
+      const providers = analysis?.meta.providers;
+      if (providers instanceof WrappedNodeExpr) {
+        this.recordProviders(providers.node);
       }
     }
   }

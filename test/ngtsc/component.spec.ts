@@ -21,7 +21,7 @@ describe('WorkspaceSymbols', () => {
     });
   });
 
-  describe('ngtsc-deps', () => {
+  fdescribe('ngtsc-deps', () => {
     let workspace: WorkspaceSymbols;
     const folder = getFolder('ngtsc-deps');
 
@@ -38,7 +38,24 @@ describe('WorkspaceSymbols', () => {
     it('Should have templateAst', () => {
       const [component] = workspace.getAllComponents();
       const [root] = component.getTemplateAst();
-      expect(root instanceof Element).toBeTruthy();
+      expect(root['name']).toBe('div');
+    });
+
+    it('Should get providers', () => {
+      const [component] = workspace.getAllComponents();
+      const [token] = component.getProviders();
+      expect(token.name).toBe('TOKEN');
+    })
+
+    it('Should get the scope selector', () => {
+      const [component] = workspace.getAllComponents();
+      const selectors = component.getSelectorScope();
+      // Own selector
+      expect(selectors.includes('main-component')).toBeTruthy();
+      // Declaration selector
+      expect(selectors.includes('[main]')).toBeTruthy();
+      // DTS
+      expect(selectors.includes('mat-accordion')).toBeTruthy();
     })
   });
 });

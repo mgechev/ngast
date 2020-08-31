@@ -5,6 +5,7 @@ import { InjectableSymbol } from './injectable.symbol';
 import { DirectiveSymbol } from './directive.symbol';
 import { ComponentSymbol } from './component.symbol';
 import { PipeSymbol } from './pipe.symbol';
+import { AnnotationNames } from './utils';
 
 export type DeclarationSymbol = ComponentSymbol | DirectiveSymbol | PipeSymbol;
 
@@ -17,5 +18,5 @@ export const symbolFactory = {
 };
 
 export type SymbolFactory = typeof symbolFactory;
-export type FactoryOutput<A extends keyof SymbolFactory> = ReturnType<SymbolFactory[A]>;
-export type FactoryOutputs = ReturnType<SymbolFactory[keyof SymbolFactory]>;
+export type FactoryOutput<A extends AnnotationNames> = ReturnType<SymbolFactory[A]>;
+export type FactoryOutputs = ReturnType<SymbolFactory[AnnotationNames]>;

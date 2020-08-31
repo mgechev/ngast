@@ -10,7 +10,7 @@
     "declaration": true,
     "skipLibCheck": true,
     "outDir": "./dist-test",
-    "lib": ["es2015", "dom"]
+    "lib": ["es2015", "dom", "es2019.array"]
   },
   "include": ["test/ngtsc/*.spec.ts"],
   "angularCompilerOptions": {

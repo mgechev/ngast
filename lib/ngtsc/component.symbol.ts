@@ -4,6 +4,8 @@ import { CssAst } from '../css-parser/css-ast';
 import { parseCss } from '../css-parser/parse-css';
 import { WrappedNodeExpr } from '@angular/compiler';
 
+const exists = <T>(value: T | undefined | null): value is T => !!(value ?? false);
+
 export class ComponentSymbol extends Symbol<'Component'> {
   protected readonly annotation = 'Component';
 
@@ -15,9 +17,24 @@ export class ComponentSymbol extends Symbol<'Component'> {
     return this.analysis.meta;
   }
 
-  get scope() {
+  getScope() {
     this.ensureAnalysis();
     return this.workspace.scopeRegistry.getScopeForComponent(this.node);
+  }
+
+  /** Return the list of available selectors for the templace */
+  getSelectorScope(): string[] {
+    const scope = this.getScope();
+    if (!scope) {
+      return []
+    } else if (scope !== 'error') {
+      return scope.compilation.directives.map(d => d.selector)
+        .filter(exists)
+        .map(selector => selector.split(','))
+        .flat();
+    } else {
+      throw new Error(`Could not find scope for component ${this.name}. Check [ComponentSymbol].diagnostics`);
+    }
   }
 
   getProviders() {
