@@ -1,11 +1,8 @@
 import { Symbol } from './symbol';
-import { assertDeps } from './utils';
+import { assertDeps, exists } from './utils';
 import { CssAst } from '../css-parser/css-ast';
 import { parseCss } from '../css-parser/parse-css';
 import { WrappedNodeExpr } from '@angular/compiler';
-import { LocalModuleScope } from '@angular/compiler-cli/src/ngtsc/scope';
-
-const exists = <T>(value: T | undefined | null): value is T => !!(value ?? false);
 
 export class ComponentSymbol extends Symbol<'Component'> {
   protected readonly annotation = 'Component';
@@ -62,7 +59,7 @@ export class ComponentSymbol extends Symbol<'Component'> {
 
   getDependencies() {
     assertDeps(this.deps, this.name);
-    return this.deps.map(dep => this.workspace.findSymbol(dep.token));
+    return this.deps.map(dep => this.workspace.findSymbol(dep.token)).filter(exists);
   }
 
   getStylesAst(): CssAst[] | null {

@@ -1,5 +1,5 @@
 import { Symbol } from './symbol';
-import { assertDeps } from './utils';
+import { assertDeps, exists } from './utils';
 
 export class PipeSymbol extends Symbol<'Pipe'> {
   protected readonly annotation = 'Pipe';
@@ -14,6 +14,6 @@ export class PipeSymbol extends Symbol<'Pipe'> {
 
   getDependencies() {
     assertDeps(this.deps, this.name);
-    return this.deps.map(dep => this.workspace.findSymbol(dep.token));
+    return this.deps.map(dep => this.workspace.findSymbol(dep.token)).filter(exists);
   }
 }

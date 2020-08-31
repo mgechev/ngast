@@ -52,3 +52,5 @@ export function assertDeps(deps: R3DependencyMetadata[] | 'invalid' | null, name
     throw new AssertionError({ message: `Invalid depenancies in "${name}".` });
   }
 }
+
+export const exists = <T>(value: T | undefined | null): value is T => !!(value ?? false);

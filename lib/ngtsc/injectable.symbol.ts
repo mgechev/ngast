@@ -1,5 +1,5 @@
 import { Symbol } from './symbol';
-import { assertDeps } from './utils';
+import { assertDeps, exists } from './utils';
 
 
 export class InjectableSymbol extends Symbol<'Injectable'> {
@@ -17,6 +17,6 @@ export class InjectableSymbol extends Symbol<'Injectable'> {
 
   getDependencies() {
     assertDeps(this.deps, this.name);
-    return this.deps.map(dep => this.workspace.findSymbol(dep.token));
+    return this.deps.map(dep => this.workspace.findSymbol(dep.token)).filter(exists);
   }
 }

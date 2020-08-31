@@ -1,8 +1,7 @@
 import { Symbol } from './symbol';
-import { InjectableSymbol } from './injectable.symbol';
 import type { DeclarationSymbol } from './find-symbol';
 import type { ComponentSymbol } from './component.symbol';
-import { assertDeps } from './utils';
+import { assertDeps, exists } from './utils';
 
 export class NgModuleSymbol extends Symbol<'NgModule'> {
   protected readonly annotation = 'NgModule';
@@ -22,7 +21,7 @@ export class NgModuleSymbol extends Symbol<'NgModule'> {
 
   getDependencies() {
     assertDeps(this.deps, this.name);
-    return this.deps.map(dep => this.workspace.findSymbol(dep.token));
+    return this.deps.map(dep => this.workspace.findSymbol(dep.token)).filter(exists);
   }
 
   /**

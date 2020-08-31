@@ -29,10 +29,9 @@ describe('ComponentSymbol', () => {
 
     it('Should get dependencies', () => {
       const [component] = workspace.getAllComponents();
-      const [basic, primitive, token] = component.getDependencies();
+      const [basic, primitive] = component.getDependencies();
       expect(basic.name).toBe('BasicProvider');
       expect(primitive.name).toBe('primitive');
-      expect(token.name).toBe('TOKEN');
     });
 
     it('Should have templateAst', () => {

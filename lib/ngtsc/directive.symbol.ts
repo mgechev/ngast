@@ -1,5 +1,5 @@
 import { Symbol } from './symbol';
-import { assertDeps } from './utils';
+import { assertDeps, exists } from './utils';
 import { WrappedNodeExpr } from '@angular/compiler';
 
 export class DirectiveSymbol extends Symbol<'Directive'> {
@@ -24,6 +24,6 @@ export class DirectiveSymbol extends Symbol<'Directive'> {
 
   getDependencies() {
     assertDeps(this.deps, this.name);
-    return this.deps.map(dep => this.workspace.findSymbol(dep.token));
+    return this.deps.map(dep => this.workspace.findSymbol(dep.token)).filter(exists);
   }
 }
