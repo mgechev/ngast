@@ -13,7 +13,6 @@ export class DirectiveSymbol extends Symbol<'Directive'> {
     return this.analysis.meta;
   }
 
-  
   getProviders() {
     const providers = this.analysis.meta.providers;
     if (providers instanceof WrappedNodeExpr) {

@@ -1,12 +1,12 @@
 import { WorkspaceSymbols } from '../../lib/ngtsc/workspace.symbols';
 import { join } from 'path';
-import { Element } from '@angular/compiler/src/render3/r3_ast';
+import { Provider } from '../../lib/ngtsc/provider';
 
 function getFolder(name: string) {
   return join(__dirname, '/../../../test/fixture', name);
 }
 
-describe('WorkspaceSymbols', () => {
+describe('ComponentSymbol', () => {
   describe('basic project', () => {
     let workspace: WorkspaceSymbols;
     const folder = getFolder('basic');
@@ -21,7 +21,7 @@ describe('WorkspaceSymbols', () => {
     });
   });
 
-  fdescribe('ngtsc-deps', () => {
+  describe('ngtsc-deps', () => {
     let workspace: WorkspaceSymbols;
     const folder = getFolder('ngtsc-deps');
 
@@ -45,6 +45,9 @@ describe('WorkspaceSymbols', () => {
       const [component] = workspace.getAllComponents();
       const [token] = component.getProviders();
       expect(token.name).toBe('TOKEN');
+      expect(token instanceof Provider).toBeTruthy()
+      expect((token as Provider).metadata.useKey).toBe('useValue');
+      expect((token as Provider).metadata.value).toBe(true);
     })
 
     it('Should get the scope selector', () => {
@@ -56,6 +59,15 @@ describe('WorkspaceSymbols', () => {
       expect(selectors.includes('[main]')).toBeTruthy();
       // DTS
       expect(selectors.includes('mat-accordion')).toBeTruthy();
+    })
+
+    it('Should get the scope pipe', () => {
+      const [component] = workspace.getAllComponents();
+      const selectors = component.getPipeScope();
+      // Local pipe
+      expect(selectors.includes('main')).toBeTrue();
+      // DTS
+      expect(selectors.includes('date')).toBeTrue();
     })
   });
 });

@@ -20,9 +20,13 @@ describe('WorkspaceSymbols', () => {
 
     it('Get declarations with right Symbol', () => {
       const [module] = workspace.getAllModules();
-      const [declaration] = module.getDeclarations();
-      expect(declaration.isSymbol('Component')).toBeTruthy();
-      expect(declaration.name).toBe('MainComponent');
+      const [component, directive, pipe] = module.getDeclarations();
+      expect(component.isSymbol('Component')).toBeTruthy();
+      expect(component.name).toBe('MainComponent');
+      expect(directive.isSymbol('Directive')).toBeTruthy();
+      expect(directive.name).toBe('MainDirective');
+      expect(pipe.isSymbol('Pipe')).toBeTruthy();
+      expect(pipe.name).toBe('MainPipe');
     });
 
     it('Get imports', () => {

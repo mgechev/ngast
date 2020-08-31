@@ -1,4 +1,4 @@
-import { NgModule, Component, Inject, Injectable, InjectionToken, Directive } from '@angular/core';
+import { NgModule, Component, Inject, Injectable, InjectionToken, Directive, Pipe, PipeTransform } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { CommonModule } from '@angular/common';
@@ -23,7 +23,10 @@ export class MainComponent {
   ) {}
 }
 
-@Directive({ selector: '[main]' })
+@Directive({
+  selector: '[main]',
+  providers: [{ provide: TOKEN, useValue: false }]
+})
 export class MainDirective {
   constructor(public p: BasicProvider) {}
 }
@@ -36,10 +39,18 @@ export class CompositeProvider {
   ) {}
 }
 
+@Pipe({ name: 'main' })
+export class MainPipe implements PipeTransform {
+  constructor(public p: BasicProvider) {}
+  transform(value: any) {
+    return value;
+  }
+}
+
 @NgModule({
   imports: [CommonModule, BrowserModule, MatExpansionModule, BrowserAnimationsModule],
   exports: [MainComponent],
-  declarations: [MainComponent, MainDirective],
+  declarations: [MainComponent, MainDirective, MainPipe],
   bootstrap: [MainComponent],
   providers: [
     CompositeProvider,

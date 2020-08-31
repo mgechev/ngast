@@ -20,7 +20,9 @@ type UseKey = typeof useKeys[number];
 
 interface ProviderMetadata {
   provide: Reference | DynamicValue | string;
+  /** The key used by the provider  */
   useKey: UseKey;
+  /** The content of the useKey */ 
   value: any;
 }
 
