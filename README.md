@@ -10,7 +10,7 @@ This library provides user friendly API for parsing Angular projects.
 $ npm i @angular/core @angular/compiler @angular/compiler-cli ngast --save
 ```
 
-Take a look at the [documentation](https://mgechev.github.io/ngast/).
+Take a look at the [documentation](https://ng-ast.github.io/ngast/).
 
 # Example
 
