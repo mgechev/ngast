@@ -1,9 +1,11 @@
-import {NgModule, Component, Renderer} from '@angular/core';
+import {NgModule, Component, Renderer2, Injectable} from '@angular/core';
 import {BrowserModule} from '@angular/platform-browser';
 import {CommonModule} from '@angular/common';
 
+@Injectable()
 export class SampleViewProvider {}
 
+@Injectable()
 export class SampleProvider {}
 
 @Component({
@@ -14,7 +16,7 @@ export class SampleProvider {}
 })
 export class MainComponent {
   visible: boolean;
-  constructor(private renderer: Renderer) {}
+  constructor(private renderer: Renderer2) {}
 }
 
 @NgModule({

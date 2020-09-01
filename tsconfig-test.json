@@ -3,24 +3,18 @@
     "target": "es5",
     "module": "commonjs",
     "sourceMap": true,
+    "downlevelIteration": true,
     "emitDecoratorMetadata": true,
     "experimentalDecorators": true,
     "stripInternal": true,
     "declaration": true,
     "skipLibCheck": true,
     "outDir": "./dist-test",
-    "lib": ["es2015", "dom"]
+    "lib": ["es2015", "dom", "es2019.array"]
   },
-  "files": [
-    "test/symbol.spec.ts",
-    "test/project-symbols.spec.ts",
-    "test/directive-symbol.spec.ts",
-    "test/module-symbol.spec.ts",
-    "test/pipe-symbol.spec.ts",
-    "test/provider-symbol.spec.ts",
-    "test/dep-parsing.spec.ts"
-  ],
+  "include": ["test/ngtsc/*.spec.ts"],
   "angularCompilerOptions": {
-    "skipTemplateCodegen": true
+    "skipTemplateCodegen": true,
+    "enableIvy": true
   }
 }

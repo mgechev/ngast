@@ -2,6 +2,7 @@ import {NgModule, Component, Injectable, Inject} from '@angular/core';
 import {BrowserModule} from '@angular/platform-browser';
 import {CommonModule} from '@angular/common';
 
+@Injectable()
 export class DependencyProvider {}
 
 @Injectable()

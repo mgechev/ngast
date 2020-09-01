@@ -1,7 +1,10 @@
-export {ProjectSymbols, ErrorReporter} from './lib/project-symbols';
-export {ModuleSymbol} from './lib/module-symbol';
-export {ProviderSymbol} from './lib/provider-symbol';
-export {DirectiveSymbol} from './lib/directive-symbol';
-export {PipeSymbol} from './lib/pipe-symbol';
-export {Symbol} from './lib/symbol';
-export {ResourceResolver} from './lib/resource-resolver';
+export * from './lib/ngtsc/symbol';
+export * from './lib/ngtsc/component.symbol';
+export * from './lib/ngtsc/directive.symbol';
+export * from './lib/ngtsc/injectable.symbol';
+export * from './lib/ngtsc/module.symbol';
+export * from './lib/ngtsc/pipe.symbol';
+export * from './lib/ngtsc/workspace.symbols';
+export * from './lib/ngtsc/trait-compiler';
+export * from './lib/ngtsc/find-symbol';
+export * from './lib/ngtsc/utils';
