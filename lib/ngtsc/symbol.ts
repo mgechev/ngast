@@ -42,6 +42,7 @@ export abstract class Symbol<A extends AnnotationNames> {
   protected readonly abstract annotation: A;
   protected readonly abstract deps: R3DependencyMetadata[] | 'invalid' | null;
   private _trait: GetTrait<A> | undefined;
+  private _path: string;
 
   constructor(
     protected workspace: WorkspaceSymbols,
@@ -50,6 +51,13 @@ export abstract class Symbol<A extends AnnotationNames> {
 
   get name() {
     return this.node.name.getText();
+  }
+
+  get path() {
+    if (!this._path) {
+      this._path = this.node.getSourceFile().fileName;
+    }
+    return this._path;
   }
 
   get diagnostics() {
