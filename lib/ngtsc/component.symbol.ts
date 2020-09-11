@@ -37,7 +37,7 @@ export class ComponentSymbol extends Symbol<'Component'> {
     } else {
       return scope.compilation.directives.map(d => d.selector)
         .filter(exists)
-        .map(selector => selector.split(','))
+        .map(selector => selector.split(',').map(s => s.trim()))
         .flat();
     }
   }
