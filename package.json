@@ -7,7 +7,7 @@
   "types": "index.d.ts",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/mgechev/ngast.git"
+    "url": "git+https://github.com/ng-ast/ngast.git"
   },
   "peerDependencies": {
     "@angular/compiler": "^10.0.0",
@@ -55,5 +55,10 @@
     "Compiler"
   ],
   "author": "Minko Gechev <mgechev@gmail.com>",
+  "contributors": [{
+    "name": "GrandSchtroumpf",
+    "email": "francois.guezengar@hotmail.fr",
+    "url": "https://github.com/GrandSchtroumpf"
+  }],
   "license": "MIT"
 }
