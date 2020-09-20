@@ -31,7 +31,7 @@ describe('WorkspaceSymbols', () => {
 
     it('Get imports', () => {
       const [module] = workspace.getAllModules();
-      const [common, browser] = module.getImports();
+      const [common, browser, local] = module.getImports();
       expect(common.name).toBe('CommonModule');
       expect(browser.name).toBe('BrowserModule');
     });
@@ -49,6 +49,19 @@ describe('WorkspaceSymbols', () => {
       expect(bootstrap.name).toBe('MainComponent');
     });
   });
+
+  describe('is dts', () => {
+    let workspace: WorkspaceSymbols;
+    const folder = getFolder('ngtsc-dts');
+    beforeEach(() => workspace = new WorkspaceSymbols(`${folder}/tsconfig.json`));
+
+    it('Check when module is dts or not', () => {
+      const [_, module] = workspace.getAllModules();
+      const [browser, local] = module.getImports();
+      expect(browser.isDts()).toBeTrue();
+      expect(local.isDts()).toBeFalse();
+    });
+  })
 
   describe('basic primitive token', () => {
     let workspace: WorkspaceSymbols;

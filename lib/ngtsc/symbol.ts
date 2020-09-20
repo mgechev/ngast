@@ -10,6 +10,7 @@ import { PipeHandlerData } from '@angular/compiler-cli/src/ngtsc/annotations/src
 import { InjectableHandlerData } from '@angular/compiler-cli/src/ngtsc/annotations/src/injectable';
 import { DirectiveHandlerData } from '@angular/compiler-cli/src/ngtsc/annotations/src/directive';
 import { ComponentAnalysisData } from '@angular/compiler-cli/src/ngtsc/annotations/src/component';
+import { isFromDtsFile } from '@angular/compiler-cli/src/ngtsc/util/src/typescript';
 
 const handlerName = {
   'NgModule': 'NgModuleDecoratorHandler',
@@ -116,5 +117,10 @@ export abstract class Symbol<A extends AnnotationNames> {
   /** Type check the current symbol against an Annotation */
   public isSymbol(name: AnnotationNames): this is FactoryOutput<A> {
     return this.annotation === name;
+  }
+
+  /** Check if symbol is from node_modules */
+  public isDts(): boolean {
+    return isFromDtsFile(this.node);
   }
 }

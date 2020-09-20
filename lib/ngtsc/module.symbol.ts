@@ -43,7 +43,15 @@ export class NgModuleSymbol extends Symbol<'NgModule'> {
     return this.analysis.declarations.map(ref => this.workspace.getSymbol(ref.node) as DeclarationSymbol);
   }
 
-  /** Get all modules imported by the current module. */
+  /**
+   * Get all modules imported by the current module.
+   * You can filter them using `imported.isDts()`
+   * @example
+   * ```typescript
+   * const imported = module.getImports();
+   * const externalImports = imported.filter(import => import.isDts());
+   * ```
+   */
   getImports() {
     return this.analysis.imports.map(ref => this.workspace.getSymbol(ref.node) as NgModuleSymbol);
   }
