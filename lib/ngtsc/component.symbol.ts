@@ -24,6 +24,7 @@ export class ComponentSymbol extends Symbol<'Component'> {
     return this.analysis.meta;
   }
 
+  /** Get the module scope of the component */
   getScope() {
     this.ensureAnalysis();
     return this.workspace.scopeRegistry.getScopeForComponent(this.node);
@@ -48,6 +49,10 @@ export class ComponentSymbol extends Symbol<'Component'> {
     return scope?.compilation.pipes.map(p => p.name) ?? []
   }
 
+  /**
+   * Return class & factory providers specific to this class
+   * @note only providers specified in the `provider` fields of the component will be returned (not the module).
+   */
   getProviders() {
     const providers = this.analysis.meta.providers;
     if (providers instanceof WrappedNodeExpr) {
@@ -57,15 +62,18 @@ export class ComponentSymbol extends Symbol<'Component'> {
     }
   }
 
+  /** Return dependencies injected in the constructor of the component */
   getDependencies() {
     assertDeps(this.deps, this.name);
     return this.deps.map(dep => this.workspace.findSymbol(dep.token)).filter(exists);
   }
 
+  /** The Style AST provided by ngast */
   getStylesAst(): CssAst[] | null {
     return this.metadata.styles.map(s => parseCss(s));
   }
 
+  /** The Template AST provided by Ivy */
   getTemplateAst() {
     return this.metadata.template.nodes;
   }

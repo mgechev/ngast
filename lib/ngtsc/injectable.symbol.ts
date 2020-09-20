@@ -15,6 +15,7 @@ export class InjectableSymbol extends Symbol<'Injectable'> {
     return this.analysis.meta;
   }
 
+  /** Return dependencies injected in the constructor of the injectable */
   getDependencies() {
     assertDeps(this.deps, this.name);
     return this.deps.map(dep => this.workspace.findSymbol(dep.token)).filter(exists);
