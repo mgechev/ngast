@@ -21,13 +21,6 @@ const config = join(process.cwd(), 'tsconfig.json');
 const workspace = new WorkspaceSymbols(config);
 ```
 
-Then you can analyse your project. For that run `analyzeAll`: 
-```typescript
-workspace.analyzeAll();
-```
-
-> The analysis is currently quite long: >10sec for a small project can go beyond 2min for a very large project.
-
 From there you can find all the decorated classes in your project : 
 ```typescript
 const modules = workspace.getAllModules();
@@ -37,7 +30,9 @@ const injectables = workspace.getAllInjectable();
 const pipes = workspace.getAllPipes();
 ```
 
-> Note: If you don't analyze your project first, the first call to one of the methods above will run analysis.
+The **first time** one of the method above is called, `ngast` will run the analysis of the workspace.
+
+> The analysis is currently quite long: >10sec for a small project can go beyond 2min for a very large project.
 
 
 # Working without Ivy
