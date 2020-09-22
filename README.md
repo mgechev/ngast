@@ -32,7 +32,7 @@ const pipes = workspace.getAllPipes();
 
 The **first time** one of the method above is called, `ngast` will run the analysis of the workspace.
 
-> The analysis is currently quite long: >10sec for a small project can go beyond 2min for a very large project.
+The analysis is currently quite long: **>10sec for a small project** can go **beyond 2min for a very large project**.
 
 
 # Working without Ivy
