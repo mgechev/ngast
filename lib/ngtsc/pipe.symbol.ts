@@ -12,6 +12,7 @@ export class PipeSymbol extends Symbol<'Pipe'> {
     return this.analysis.meta;
   }
 
+  /** Return dependencies injected in the constructor of the pipe */
   getDependencies() {
     assertDeps(this.deps, this.name);
     return this.deps.map(dep => this.workspace.findSymbol(dep.token)).filter(exists);

@@ -13,6 +13,10 @@ export class DirectiveSymbol extends Symbol<'Directive'> {
     return this.analysis.meta;
   }
 
+  /**
+   * Return class & factory providers specific to this class
+   * @note only providers specified in the `provider` fields of the directive will be returned (not the module).
+   */
   getProviders() {
     const providers = this.analysis.meta.providers;
     if (providers instanceof WrappedNodeExpr) {
@@ -22,6 +26,7 @@ export class DirectiveSymbol extends Symbol<'Directive'> {
     }
   }
 
+  /** Return dependencies injected in the constructor of the directive */
   getDependencies() {
     assertDeps(this.deps, this.name);
     return this.deps.map(dep => this.workspace.findSymbol(dep.token)).filter(exists);

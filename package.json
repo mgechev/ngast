@@ -1,13 +1,13 @@
 {
   "name": "ngast",
-  "version": "0.4.0",
+  "version": "0.5.0",
   "description": "Parsing tools for Angular. The project is an abstraction over the Angular compiler which provides friendly interface.",
   "main": "ngast.bundle.js",
   "module": "index.js",
   "types": "index.d.ts",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/mgechev/ngast.git"
+    "url": "git+https://github.com/ng-ast/ngast.git"
   },
   "peerDependencies": {
     "@angular/compiler": "^10.0.0",
@@ -55,5 +55,10 @@
     "Compiler"
   ],
   "author": "Minko Gechev <mgechev@gmail.com>",
+  "contributors": [{
+    "name": "GrandSchtroumpf",
+    "email": "francois.guezengar@hotmail.fr",
+    "url": "https://github.com/GrandSchtroumpf"
+  }],
   "license": "MIT"
 }

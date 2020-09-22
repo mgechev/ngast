@@ -10,6 +10,7 @@ import { PipeHandlerData } from '@angular/compiler-cli/src/ngtsc/annotations/src
 import { InjectableHandlerData } from '@angular/compiler-cli/src/ngtsc/annotations/src/injectable';
 import { DirectiveHandlerData } from '@angular/compiler-cli/src/ngtsc/annotations/src/directive';
 import { ComponentAnalysisData } from '@angular/compiler-cli/src/ngtsc/annotations/src/component';
+import { isFromDtsFile } from '@angular/compiler-cli/src/ngtsc/util/src/typescript';
 
 const handlerName = {
   'NgModule': 'NgModuleDecoratorHandler',
@@ -49,10 +50,12 @@ export abstract class Symbol<A extends AnnotationNames> {
     public node: ClassDeclaration<Declaration>,
   ) {}
 
+  /** Name of the class */
   get name() {
     return this.node.name.getText();
   }
 
+  /** Path where the class is declared */
   get path() {
     if (!this._path) {
       this._path = this.node.getSourceFile().fileName;
@@ -60,18 +63,22 @@ export abstract class Symbol<A extends AnnotationNames> {
     return this._path;
   }
 
+  /** Logs from @angular/compiler when something got wrong */
   get diagnostics() {
     return this.trait?.state === TraitState.ERRORED ? this.trait.diagnostics : null;
   }
 
+  /** Check if the ClassDeclaration has been analyzed by the trait compiler */
   get isAnalysed() {
     return isAnalysed(this.trait);
   }
 
+  /** The record of the ClassDeclaration in the trait compiler */
   get record() {
     return this.workspace.traitCompiler.recordFor(this.node);
   }
 
+  /** The result of the analysis. Specific per annotation */
   get analysis(): Readonly<GetHandlerData<A>> {
     this.ensureAnalysis();
     if (this.trait?.state === TraitState.ERRORED) {
@@ -94,12 +101,12 @@ export abstract class Symbol<A extends AnnotationNames> {
     return this._trait;
   }
 
+  /** Analyse this specific ClassDeclaration */
   public analyse() {
     this.workspace.traitCompiler?.analyzeNode(this.node);
     this.workspace.traitCompiler?.resolveNode(this.node);
     // @question should we record NgModule Scope dependencies here ???
   }
-
 
   protected ensureAnalysis() {
     if (!this.record) {
@@ -107,7 +114,13 @@ export abstract class Symbol<A extends AnnotationNames> {
     }
   }
 
+  /** Type check the current symbol against an Annotation */
   public isSymbol(name: AnnotationNames): this is FactoryOutput<A> {
     return this.annotation === name;
+  }
+
+  /** Check if symbol is from node_modules */
+  public isDts(): boolean {
+    return isFromDtsFile(this.node);
   }
 }
