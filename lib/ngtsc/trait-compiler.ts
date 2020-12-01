@@ -1,4 +1,3 @@
-import { Declaration } from 'typescript';
 import { ClassDeclaration } from '@angular/compiler-cli/src/ngtsc/reflection';
 import { TraitCompiler, TraitState, ResolveResult, ClassRecord } from '@angular/compiler-cli/src/ngtsc/transform';
 import { FatalDiagnosticError } from '@angular/compiler-cli/src/ngtsc/diagnostics';
@@ -9,11 +8,11 @@ import { isFromDtsFile } from '@angular/compiler-cli/src/ngtsc/util/src/typescri
 export class NgastTraitCompiler extends TraitCompiler {
 
   /** Perform analysis for one node */
-  analyzeNode(node: ClassDeclaration<Declaration>) {
+  analyzeNode(node: ClassDeclaration<ClassDeclaration>) {
     this.analyzeClass(node, null);
   }
 
-  resolveNode(node: ClassDeclaration<Declaration>) {
+  resolveNode(node: ClassDeclaration<ClassDeclaration>) {
     const record = this.recordFor(node);
     for (let trait of record?.traits || []) {
       const handler = trait.handler;
