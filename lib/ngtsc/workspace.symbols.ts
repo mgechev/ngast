@@ -5,18 +5,18 @@ import { NgCompilerHost } from '@angular/compiler-cli/src/ngtsc/core';
 import { NgCompilerOptions } from '@angular/compiler-cli/src/ngtsc/core/api';
 import { InjectableDecoratorHandler, PipeDecoratorHandler, DirectiveDecoratorHandler, ReferencesRegistry, NoopReferencesRegistry, NgModuleDecoratorHandler, ComponentDecoratorHandler } from '@angular/compiler-cli/src/ngtsc/annotations';
 import { NgtscCompilerHost, FileSystem, LogicalFileSystem, NodeJSFileSystem } from '@angular/compiler-cli/src/ngtsc/file_system';
-import { TypeScriptReflectionHost, ClassDeclaration } from '@angular/compiler-cli/src/ngtsc/reflection';
+import { TypeScriptReflectionHost, ClassDeclaration, DeclarationNode } from '@angular/compiler-cli/src/ngtsc/reflection';
 import { PartialEvaluator } from '@angular/compiler-cli/src/ngtsc/partial_evaluator';
 import { IncrementalDriver } from '@angular/compiler-cli/src/ngtsc/incremental';
 import { DefaultImportTracker, ReferenceEmitStrategy, AliasingHost, Reference, ReferenceEmitter, LogicalProjectStrategy, RelativePathStrategy, PrivateExportAliasingHost, LocalIdentifierStrategy, AbsoluteModuleStrategy, AliasStrategy, UnifiedModulesStrategy, UnifiedModulesAliasingHost, ModuleResolver } from '@angular/compiler-cli/src/ngtsc/imports';
-import { InjectableClassRegistry, CompoundMetadataRegistry, DtsMetadataReader, LocalMetadataRegistry, CompoundMetadataReader } from '@angular/compiler-cli/src/ngtsc/metadata';
+import { InjectableClassRegistry, CompoundMetadataRegistry, DtsMetadataReader, LocalMetadataRegistry, CompoundMetadataReader, TemplateMapping } from '@angular/compiler-cli/src/ngtsc/metadata';
 import { MetadataDtsModuleScopeResolver, LocalModuleScopeRegistry, ComponentScopeReader } from '@angular/compiler-cli/src/ngtsc/scope';
 import { getSourceFileOrNull, isDtsPath, isFromDtsFile } from '@angular/compiler-cli/src/ngtsc/util/src/typescript';
 import { NgModuleRouteAnalyzer } from '@angular/compiler-cli/src/ngtsc/routing';
 import { CycleAnalyzer, ImportGraph } from '@angular/compiler-cli/src/ngtsc/cycles';
 import { AdapterResourceLoader } from '@angular/compiler-cli/src/ngtsc/resource';
 import { ReferenceGraph } from '@angular/compiler-cli/src/ngtsc/entry_point';
-import { DtsTransformRegistry, DecoratorHandler } from '@angular/compiler-cli/src/ngtsc/transform';
+import { DtsTransformRegistry, DecoratorHandler, CompilationMode } from '@angular/compiler-cli/src/ngtsc/transform';
 import { PerfRecorder, NOOP_PERF_RECORDER } from '@angular/compiler-cli/src/ngtsc/perf';
 import { ModuleWithProvidersScanner } from '@angular/compiler-cli/src/ngtsc/modulewithproviders';
 import { NgModuleSymbol } from './module.symbol';
@@ -39,6 +39,8 @@ interface Toolkit {
   directiveHandler: DirectiveDecoratorHandler;
   moduleHandler: NgModuleDecoratorHandler;
   componentHandler: ComponentDecoratorHandler;
+
+  templateMapping: TemplateMapping;
 
   checker: TypeChecker;
   reflector: TypeScriptReflectionHost;
@@ -117,7 +119,8 @@ export class WorkspaceSymbols {
         this.perfRecorder,
         this.incrementalDriver,
         this.options.compileNonExportedClasses !== false,
-        this.dtsTransforms
+        CompilationMode.FULL,
+        this.dtsTransforms,
       )
     );
   }
@@ -130,7 +133,7 @@ export class WorkspaceSymbols {
     });
   }
 
-  
+
   /** Evaluate typecript Expression & update the dependancy graph accordingly */
   public get evaluator() {
     return this.lazy('evaluator', () => new PartialEvaluator(
@@ -209,7 +212,7 @@ export class WorkspaceSymbols {
     }
   }
 
-  
+
   /////////////////////////
   // ----- PRIVATE ----- //
   /////////////////////////
@@ -308,6 +311,7 @@ export class WorkspaceSymbols {
         this.metaReader,
         this.scopeReader,
         this.scopeRegistry,
+        this.templateMapping,
         this.isCore,
         this.resourceManager,
         this.host.rootDirs,
@@ -362,6 +366,9 @@ export class WorkspaceSymbols {
     return this.lazy('incrementalDriver', () => IncrementalDriver.fresh(this.program));
   }
 
+  private get templateMapping() {
+    return this.lazy('templateMapping', () => new TemplateMapping());
+  }
 
   /** (pre)Load resources using cache */
   private get resourceManager() {
@@ -478,7 +485,7 @@ export class WorkspaceSymbols {
   private get mwpScanner() {
     return this.lazy('mwpScanner', () => new ModuleWithProvidersScanner(this.reflector, this.evaluator, this.refEmitter));
   }
-  
+
   /** Analyze lazy loaded routes */
   public get routeAnalyzer() {
     return this.lazy('routeAnalyzer', () => new NgModuleRouteAnalyzer(this.moduleResolver, this.evaluator));
@@ -522,7 +529,7 @@ export class WorkspaceSymbols {
       const ngModuleFile = scope.ngModule.getSourceFile();
       depGraph.addTransitiveDependency(ngModuleFile, file);
       depGraph.addDependency(file, ngModuleFile);
-      const meta = this.metaReader.getDirectiveMetadata(new Reference(scope.declaration));
+      const meta = this.metaReader.getDirectiveMetadata(new Reference<ClassDeclaration<any>>(scope.declaration));
       // For components
       if (meta !== null && meta.isComponent) {
         depGraph.addTransitiveResources(ngModuleFile, file);

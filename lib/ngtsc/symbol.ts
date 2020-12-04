@@ -1,6 +1,5 @@
 import { WorkspaceSymbols } from './workspace.symbols';
-import { ClassDeclaration, Decorator } from '@angular/compiler-cli/src/ngtsc/reflection';
-import { Declaration } from 'typescript';
+import { ClassDeclaration, DeclarationNode, Decorator } from '@angular/compiler-cli/src/ngtsc/reflection';
 import { TraitState, Trait, AnalyzedTrait, ResolvedTrait } from '@angular/compiler-cli/src/ngtsc/transform';
 import { R3DependencyMetadata } from '@angular/compiler';
 import { AnnotationNames } from './utils';
@@ -47,7 +46,7 @@ export abstract class Symbol<A extends AnnotationNames> {
 
   constructor(
     protected workspace: WorkspaceSymbols,
-    public node: ClassDeclaration<Declaration>,
+    public node: ClassDeclaration<DeclarationNode>,
   ) {}
 
   /** Name of the class */
