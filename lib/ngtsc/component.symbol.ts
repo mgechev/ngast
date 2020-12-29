@@ -3,9 +3,10 @@ import { assertDeps, exists } from './utils';
 import { CssAst } from '../css-parser/css-ast';
 import { parseCss } from '../css-parser/parse-css';
 import { WrappedNodeExpr } from '@angular/compiler';
+import { ComponentMetadata } from './metadata';
 
 export class ComponentSymbol extends Symbol<'Component'> {
-  protected readonly annotation = 'Component';
+  readonly annotation = 'Component';
 
   private assertScope() {
     const scope = this.getScope();
@@ -16,16 +17,23 @@ export class ComponentSymbol extends Symbol<'Component'> {
     }
   }
 
-  get deps() {
-    return this.metadata.deps;
+  protected get deps() {
+    return this.analysis.meta.deps;
   }
 
-  get metadata() {
-    return this.analysis.meta;
+  get metadata(): ComponentMetadata {
+    const meta = this.analysis.meta;
+    return {
+      exportAs: meta.exportAs,
+      changeDetection: meta.changeDetection,
+      selector: meta.selector,
+      inputs: meta.inputs,
+      outputs: meta.outputs
+    }
   }
 
   /** Get the module scope of the component */
-  getScope() {
+  private getScope() {
     this.ensureAnalysis();
     return this.workspace.scopeRegistry.getScopeForComponent(this.node);
   }
@@ -70,11 +78,11 @@ export class ComponentSymbol extends Symbol<'Component'> {
 
   /** The Style AST provided by ngast */
   getStylesAst(): CssAst[] | null {
-    return this.metadata.styles.map(s => parseCss(s));
+    return this.analysis.meta.styles.map(s => parseCss(s));
   }
 
   /** The Template AST provided by Ivy */
   getTemplateAst() {
-    return this.metadata.template.nodes;
+    return this.analysis.meta.template.nodes;
   }
 }

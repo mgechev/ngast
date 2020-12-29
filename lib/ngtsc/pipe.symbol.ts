@@ -2,9 +2,9 @@ import { Symbol } from './symbol';
 import { assertDeps, exists } from './utils';
 
 export class PipeSymbol extends Symbol<'Pipe'> {
-  protected readonly annotation = 'Pipe';
+  readonly annotation = 'Pipe';
 
-  get deps() {
+  protected get deps() {
     return this.metadata.deps;
   }
 

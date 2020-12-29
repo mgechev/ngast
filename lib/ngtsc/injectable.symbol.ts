@@ -3,15 +3,15 @@ import { assertDeps, exists } from './utils';
 
 
 export class InjectableSymbol extends Symbol<'Injectable'> {
-  protected readonly annotation = 'Injectable';
+  readonly annotation = 'Injectable';
 
-  get deps() {
+  protected get deps() {
     return this.metadata.userDeps
       ? this.metadata?.userDeps
       : this.analysis.ctorDeps;
   }
 
-  get metadata() {
+  protected get metadata() {
     return this.analysis.meta;
   }
 

@@ -134,7 +134,7 @@ export class WorkspaceSymbols {
   }
 
 
-  /** Evaluate typecript Expression & update the dependancy graph accordingly */
+  /** Evaluate typescript Expression & update the dependency graph accordingly */
   public get evaluator() {
     return this.lazy('evaluator', () => new PartialEvaluator(
       this.reflector,

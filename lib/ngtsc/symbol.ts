@@ -3,13 +3,11 @@ import { ClassDeclaration, DeclarationNode, Decorator } from '@angular/compiler-
 import { TraitState, Trait, AnalyzedTrait, ResolvedTrait } from '@angular/compiler-cli/src/ngtsc/transform';
 import { R3DependencyMetadata } from '@angular/compiler';
 import { AnnotationNames } from './utils';
-import { FactoryOutput } from './find-symbol';
 import { NgModuleAnalysis } from '@angular/compiler-cli/src/ngtsc/annotations/src/ng_module';
 import { PipeHandlerData } from '@angular/compiler-cli/src/ngtsc/annotations/src/pipe';
 import { InjectableHandlerData } from '@angular/compiler-cli/src/ngtsc/annotations/src/injectable';
 import { DirectiveHandlerData } from '@angular/compiler-cli/src/ngtsc/annotations/src/directive';
 import { ComponentAnalysisData } from '@angular/compiler-cli/src/ngtsc/annotations/src/component';
-import { isFromDtsFile } from '@angular/compiler-cli/src/ngtsc/util/src/typescript';
 
 const handlerName = {
   'NgModule': 'NgModuleDecoratorHandler',
@@ -39,7 +37,7 @@ export const isAnalysed = <A, B, C>(trait?: Trait<A, B, C>): trait is AnalyzedTr
 }
 
 export abstract class Symbol<A extends AnnotationNames> {
-  protected readonly abstract annotation: A;
+  readonly abstract annotation: A;
   protected readonly abstract deps: R3DependencyMetadata[] | 'invalid' | null;
   private _trait: GetTrait<A> | undefined;
   private _path: string;
@@ -73,7 +71,7 @@ export abstract class Symbol<A extends AnnotationNames> {
   }
 
   /** The record of the ClassDeclaration in the trait compiler */
-  get record() {
+  private get record() {
     return this.workspace.traitCompiler.recordFor(this.node);
   }
 
@@ -111,15 +109,5 @@ export abstract class Symbol<A extends AnnotationNames> {
     if (!this.record) {
       this.analyse();
     }
-  }
-
-  /** Type check the current symbol against an Annotation */
-  public isSymbol(name: AnnotationNames): this is FactoryOutput<A> {
-    return this.annotation === name;
-  }
-
-  /** Check if symbol is from node_modules */
-  public isDts(): boolean {
-    return isFromDtsFile(this.node);
   }
 }
