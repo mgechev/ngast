@@ -4,7 +4,7 @@ import type { ComponentSymbol } from './component.symbol';
 import { assertDeps, exists } from './utils';
 
 export class NgModuleSymbol extends Symbol<'NgModule'> {
-  protected readonly annotation = 'NgModule';
+  readonly annotation = 'NgModule';
 
   get deps() {
     return this.analysis.inj.deps;
@@ -32,7 +32,7 @@ export class NgModuleSymbol extends Symbol<'NgModule'> {
 
   /**
    * Get all declaration class of the module as `ComponentSymbol | PipeSymbol | DirectiveSymbol`
-   * You can filter them using `declaration.isSymbol(name)` method: 
+   * You can filter them using `declaration.isSymbol(name)` method:
    * @example
    * ```typescript
    * const declarations = module.getDeclarations()
@@ -58,7 +58,7 @@ export class NgModuleSymbol extends Symbol<'NgModule'> {
 
   /**
    * Get all declaration class of the module as `ComponentSymbol | PipeSymbol | DirectiveSymbol`
-   * You can filter them using `exported.isSymbol(name)` method: 
+   * You can filter them using `exported.isSymbol(name)` method:
    * @example
    * ```typescript
    * const exported = module.getExports()

@@ -1,16 +1,23 @@
 import { Symbol } from './symbol';
 import { assertDeps, exists } from './utils';
 import { WrappedNodeExpr } from '@angular/compiler';
+import { DirectiveMetadata } from './metadata';
 
 export class DirectiveSymbol extends Symbol<'Directive'> {
-  protected readonly annotation = 'Directive';
+  readonly annotation = 'Directive';
 
-  get deps() {
-    return this.metadata.deps;
+  protected get deps() {
+    return this.analysis.meta.deps;
   }
 
-  get metadata() {
-    return this.analysis.meta;
+  get metadata(): DirectiveMetadata {
+    const meta = this.analysis.meta;
+    return {
+      exportAs: meta.exportAs,
+      selector: meta.selector,
+      inputs: meta.inputs,
+      outputs: meta.outputs
+    };
   }
 
   /**
