@@ -16,7 +16,7 @@ describe('InjectionSymbol', () => {
       // None decorated @Injectable are not visible since v9
       const [basicView] = workspace.getAllInjectable();
       expect(basicView.name).toBe('BasicViewProvider');
-      expect(basicView.isSymbol('Injectable')).toBeTrue();
+      expect(basicView.annotation).toBe('Injectable');
     });
   });
 
