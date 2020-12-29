@@ -16,7 +16,7 @@ describe('ComponentSymbol', () => {
     it('Should get the component', () => {
       const [component] = workspace.getAllComponents();
       expect(component.name).toBe('MainComponent');
-      expect(component.isSymbol('Component')).toBeTrue();
+      expect(component.annotation).toBe('Component');
       expect(component.metadata.selector).toBe('main-component');
     });
   });

@@ -16,7 +16,7 @@ describe('DirectiveSymbol', () => {
     it('Should get the directive', () => {
       const [directive] = workspace.getAllDirectives();
       expect(directive.name).toBe('MainDirective');
-      expect(directive.isSymbol('Directive')).toBeTrue();
+      expect(directive.annotation).toBe('Directive');
       expect(directive.metadata.selector).toBe('[main]');
     });
   });
