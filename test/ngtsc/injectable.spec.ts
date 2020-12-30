@@ -33,5 +33,10 @@ describe('InjectionSymbol', () => {
       expect(primitive.name).toBe('primitive');
     });
 
+    it('Should get module providers', () => {
+      const [m] = workspace.getAllModules();
+      const provider = m.getProviders().filter(p => p.name === 'BasicProvider').pop();
+      expect(provider).not.toBeUndefined();
+    });
   });
 });
