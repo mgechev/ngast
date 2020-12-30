@@ -1,10 +1,10 @@
-import { createProgram, Program, createModuleResolutionCache, TypeChecker, getOriginalNode, Declaration, isIdentifier, Identifier, isToken } from 'typescript';
-import { Type, Expression, WrappedNodeExpr } from '@angular/compiler';
+import { createProgram, Program, createModuleResolutionCache, TypeChecker, getOriginalNode, Declaration, isIdentifier, isToken } from 'typescript';
+import { Type, Expression, WrappedNodeExpr, ExternalExpr } from '@angular/compiler';
 import { readConfiguration } from '@angular/compiler-cli';
 import { NgCompilerHost } from '@angular/compiler-cli/src/ngtsc/core';
 import { NgCompilerOptions } from '@angular/compiler-cli/src/ngtsc/core/api';
 import { InjectableDecoratorHandler, PipeDecoratorHandler, DirectiveDecoratorHandler, ReferencesRegistry, NoopReferencesRegistry, NgModuleDecoratorHandler, ComponentDecoratorHandler } from '@angular/compiler-cli/src/ngtsc/annotations';
-import { NgtscCompilerHost, FileSystem, LogicalFileSystem, NodeJSFileSystem } from '@angular/compiler-cli/src/ngtsc/file_system';
+import { NgtscCompilerHost, FileSystem, LogicalFileSystem, NodeJSFileSystem, relative } from '@angular/compiler-cli/src/ngtsc/file_system';
 import { TypeScriptReflectionHost, ClassDeclaration, DeclarationNode } from '@angular/compiler-cli/src/ngtsc/reflection';
 import { PartialEvaluator } from '@angular/compiler-cli/src/ngtsc/partial_evaluator';
 import { IncrementalDriver } from '@angular/compiler-cli/src/ngtsc/incremental';
@@ -28,6 +28,7 @@ import { DirectiveSymbol } from './directive.symbol';
 import { PipeSymbol } from './pipe.symbol';
 import { AnnotationNames, getDtsAnnotation, getLocalAnnotation } from './utils';
 import { ProviderRegistry } from './provider';
+import { dirname, join, sep } from 'path';
 
 interface Toolkit {
   program: Program;
@@ -181,7 +182,7 @@ export class WorkspaceSymbols {
 
 
   /** Find a symbol based on the class expression */
-  public findSymbol(token: Expression) {
+  public findSymbol(token: Expression, relativeTo: string = '') {
     if (token instanceof WrappedNodeExpr) {
       if (isIdentifier(token.node)) {
         const decl = this.reflector.getDeclarationOfIdentifier(token.node);
@@ -193,6 +194,14 @@ export class WorkspaceSymbols {
       } else if (isToken(token.node)) {
         return this.providerRegistry.getProvider(token.node);
       }
+    } else if (token instanceof ExternalExpr) {
+      const dir = dirname(relativeTo);
+      const module = token.value.moduleName ?? '';
+      const moduleName = module.endsWith('.ts') ? module : `${module}.ts`;
+      const path = join(dir, moduleName);
+      return this.getAllInjectable().filter(injectable => {
+        return injectable.path === path && injectable.name === token.value.name
+      }).pop();
     }
   }
 

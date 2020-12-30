@@ -73,7 +73,7 @@ export class ComponentSymbol extends Symbol<'Component'> {
   /** Return dependencies injected in the constructor of the component */
   getDependencies() {
     assertDeps(this.deps, this.name);
-    return this.deps.map(dep => this.workspace.findSymbol(dep.token)).filter(exists);
+    return this.deps.map(dep => this.workspace.findSymbol(dep.token, this.path)).filter(exists);
   }
 
   /** The Style AST provided by ngast */

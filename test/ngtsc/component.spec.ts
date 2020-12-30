@@ -69,4 +69,18 @@ describe('ComponentSymbol', () => {
       expect(selectors.includes('date')).toBeTrue();
     })
   });
+
+  describe('external deps', () => {
+    let workspace: WorkspaceSymbols;
+    const folder = getFolder('ngtsc-external-deps');
+
+    beforeEach(() => workspace = new WorkspaceSymbols(`${folder}/tsconfig.json`));
+
+    it('Should get external providers', () => {
+      const [component] = workspace.getAllComponents();
+      const [basic, primitive] = component.getDependencies();
+      expect(basic.name).toBe('BasicProvider');
+      expect(primitive.name).toBe('primitive');
+    })
+  })
 });
