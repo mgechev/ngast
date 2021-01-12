@@ -1,6 +1,7 @@
 import { WorkspaceSymbols } from '../../lib/ngtsc/workspace.symbols';
 import { join } from 'path';
 import { Provider } from '../../lib/ngtsc/provider';
+import { TemplateNode } from '../../lib/ngtsc/template-transform.visitor';
 
 function getFolder(name: string) {
   return join(__dirname, '/../../../test/fixture', name);
@@ -37,7 +38,7 @@ describe('ComponentSymbol', () => {
     it('Should have templateAst', () => {
       const [component] = workspace.getAllComponents();
       const [root] = component.getTemplateAst();
-      expect(root['name']).toBe('div');
+      expect((root as TemplateNode).name).toBe('div');
     });
 
     it('Should get providers', () => {
