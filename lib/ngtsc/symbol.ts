@@ -38,6 +38,7 @@ export const isAnalysed = <A, B, C>(trait?: Trait<A, B, C>): trait is AnalyzedTr
 
 export abstract class Symbol<A extends AnnotationNames> {
   readonly abstract annotation: A;
+  /** @internal */
   protected readonly abstract deps: R3DependencyMetadata[] | 'invalid' | null;
   private _trait: GetTrait<A> | undefined;
   private _path: string;
