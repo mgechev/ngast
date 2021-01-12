@@ -6,7 +6,8 @@ import { DirectiveMetadata } from './metadata';
 export class DirectiveSymbol extends Symbol<'Directive'> {
   readonly annotation = 'Directive';
 
-  protected get deps() {
+  /** @internal */
+  get deps() {
     return this.analysis.meta.deps;
   }
 

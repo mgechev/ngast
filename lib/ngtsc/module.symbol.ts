@@ -6,6 +6,7 @@ import { assertDeps, exists } from './utils';
 export class NgModuleSymbol extends Symbol<'NgModule'> {
   readonly annotation = 'NgModule';
 
+  /** @internal */
   get deps() {
     return this.analysis.inj.deps;
   }
