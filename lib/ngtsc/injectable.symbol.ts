@@ -5,7 +5,8 @@ import { assertDeps, exists } from './utils';
 export class InjectableSymbol extends Symbol<'Injectable'> {
   readonly annotation = 'Injectable';
 
-  protected get deps() {
+  /** @internal */
+  get deps() {
     return this.metadata.userDeps
       ? this.metadata?.userDeps
       : this.analysis.ctorDeps;

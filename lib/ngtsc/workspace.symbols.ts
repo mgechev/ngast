@@ -199,9 +199,9 @@ export class WorkspaceSymbols {
       const module = token.value.moduleName ?? '';
       const moduleName = module.endsWith('.ts') ? module : `${module}.ts`;
       const path = join(dir, moduleName);
-      return this.getAllInjectable().filter(injectable => {
+      return this.getAllInjectable().find(injectable => {
         return injectable.path === path && injectable.name === token.value.name
-      }).pop();
+      });
     }
   }
 

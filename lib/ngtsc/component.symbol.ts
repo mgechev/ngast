@@ -17,7 +17,8 @@ export class ComponentSymbol extends Symbol<'Component'> {
     }
   }
 
-  protected get deps() {
+  /** @internal */
+  get deps() {
     return this.analysis.meta.deps;
   }
 

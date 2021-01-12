@@ -4,7 +4,8 @@ import { assertDeps, exists } from './utils';
 export class PipeSymbol extends Symbol<'Pipe'> {
   readonly annotation = 'Pipe';
 
-  protected get deps() {
+  /** @internal */
+  get deps() {
     return this.metadata.deps;
   }
 
