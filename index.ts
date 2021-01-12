@@ -8,3 +8,4 @@ export * from './lib/ngtsc/workspace.symbols';
 export * from './lib/ngtsc/trait-compiler';
 export * from './lib/ngtsc/find-symbol';
 export * from './lib/ngtsc/utils';
+export { TemplateNode } from './lib/ngtsc/template-transform.visitor';

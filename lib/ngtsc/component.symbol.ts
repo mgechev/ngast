@@ -4,6 +4,7 @@ import { CssAst } from '../css-parser/css-ast';
 import { parseCss } from '../css-parser/parse-css';
 import { WrappedNodeExpr } from '@angular/compiler';
 import { ComponentMetadata } from './metadata';
+import { TransformTemplateVisitor, TemplateNode } from './template-transform.visitor';
 
 export class ComponentSymbol extends Symbol<'Component'> {
   readonly annotation = 'Component';
@@ -83,7 +84,12 @@ export class ComponentSymbol extends Symbol<'Component'> {
   }
 
   /** The Template AST provided by Ivy */
-  getTemplateAst() {
-    return this.analysis.meta.template.nodes;
+  getTemplateAst(): 'error' | TemplateNode[] {
+    const scope = this.getScope();
+    if (scope === 'error' || scope === null) {
+      return 'error';
+    }
+    const visitor = new TransformTemplateVisitor(scope, this.workspace);
+    return this.analysis.meta.template.nodes.map(node => node.visit(visitor));
   }
 }
