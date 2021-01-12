@@ -7,8 +7,8 @@ export class InjectableSymbol extends Symbol<'Injectable'> {
 
   /** @internal */
   get deps() {
-    return this.metadata.userDeps
-      ? this.metadata?.userDeps
+    return this.metadata?.userDeps
+      ? this.metadata.userDeps
       : this.analysis.ctorDeps;
   }
 
@@ -19,6 +19,6 @@ export class InjectableSymbol extends Symbol<'Injectable'> {
   /** Return dependencies injected in the constructor of the injectable */
   getDependencies() {
     assertDeps(this.deps, this.name);
-    return this.deps.map(dep => this.workspace.findSymbol(dep.token)).filter(exists);
+    return this.deps.map(dep => this.workspace.findSymbol(dep.token, this.path)).filter(exists);
   }
 }
