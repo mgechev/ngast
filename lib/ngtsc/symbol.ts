@@ -33,13 +33,13 @@ export const filterByHandler = <A extends AnnotationNames>(annotation: A) => (tr
 };
 
 export const isAnalysed = <A, B, C>(trait?: Trait<A, B, C>): trait is AnalyzedTrait<A, B, C> | ResolvedTrait<A, B, C> => {
-  return trait?.state === TraitState.ANALYZED || trait?.state === TraitState.RESOLVED;
+  return trait?.state === TraitState.Analyzed || trait?.state === TraitState.Resolved;
 }
 
 export abstract class Symbol<A extends AnnotationNames> {
   readonly abstract annotation: A;
   /** @internal */
-  protected readonly abstract deps: R3DependencyMetadata[] | 'invalid' | null;
+  protected readonly abstract deps: R3DependencyMetadata[] | null | undefined | 'invalid';
   private _trait: GetTrait<A> | undefined;
   private _path: string;
 
@@ -63,7 +63,7 @@ export abstract class Symbol<A extends AnnotationNames> {
 
   /** Logs from @angular/compiler when something got wrong */
   get diagnostics() {
-    return this.trait?.state === TraitState.ERRORED ? this.trait.diagnostics : null;
+    return this.trait?.state === TraitState.Analyzed ? this.trait.analysisDiagnostics : null;
   }
 
   /** Check if the ClassDeclaration has been analyzed by the trait compiler */
@@ -77,12 +77,12 @@ export abstract class Symbol<A extends AnnotationNames> {
   }
 
   /** The result of the analysis. Specific per annotation */
-  get analysis(): Readonly<GetHandlerData<A>> {
+  get analysis(): Readonly<GetHandlerData<A>>|null {
     this.ensureAnalysis();
-    if (this.trait?.state === TraitState.ERRORED) {
-      const message = `An error occurred during analysis of "${this.name}". `;
-      const solution = `Check diagnostics in [${this.annotation}Symbol].diagnostics. `;
-      throw new Error(message + solution);
+    if (this.trait?.state === TraitState.Analyzed) {
+      const message = `An error occurred during analysis of "${this.name}": `;
+      const error = this.diagnostics;
+      throw new Error(message + error);
     }
     // As we analyzed the node above it should be ok...
     if (isAnalysed(this.trait)) {

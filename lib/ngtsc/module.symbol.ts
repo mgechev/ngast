@@ -8,11 +8,11 @@ export class NgModuleSymbol extends Symbol<'NgModule'> {
 
   /** @internal */
   get deps() {
-    return this.analysis.inj.deps;
+    return this.analysis?.inj.deps;
   }
 
   get metadata() {
-    return this.analysis.mod;
+    return this.analysis?.mod;
   }
 
   get scope() {
@@ -28,7 +28,7 @@ export class NgModuleSymbol extends Symbol<'NgModule'> {
 
   /** Get the providers of the module as InjectableSymbol */
   getProviders() {
-    return this.workspace.providerRegistry.getAllProviders(this.analysis.providers);
+    return this.workspace.providerRegistry.getAllProviders(this.analysis?.providers);
   }
 
   /**
@@ -41,7 +41,7 @@ export class NgModuleSymbol extends Symbol<'NgModule'> {
    * ```
    */
   getDeclarations() {
-    return this.analysis.declarations.map(ref => this.workspace.getSymbol(ref.node) as DeclarationSymbol);
+    return this.analysis?.declarations.map(ref => this.workspace.getSymbol(ref.node) as DeclarationSymbol);
   }
 
   /**
@@ -54,7 +54,7 @@ export class NgModuleSymbol extends Symbol<'NgModule'> {
    * ```
    */
   getImports() {
-    return this.analysis.imports.map(ref => this.workspace.getSymbol(ref.node) as NgModuleSymbol);
+    return this.analysis?.imports.map(ref => this.workspace.getSymbol(ref.node) as NgModuleSymbol);
   }
 
   /**
@@ -67,11 +67,11 @@ export class NgModuleSymbol extends Symbol<'NgModule'> {
    * ```
    */
   getExports() {
-    return this.analysis.exports.map(ref => this.workspace.getSymbol(ref.node));
+    return this.analysis?.exports.map(ref => this.workspace.getSymbol(ref.node));
   }
 
   /** Get the list of components bootstraped by the module if any */
   getBootstap() {
-    return this.metadata.bootstrap.map(ref => this.workspace.findSymbol(ref.value) as ComponentSymbol);
+    return this.metadata?.bootstrap.map(ref => this.workspace.findSymbol(ref.value) as ComponentSymbol);
   }
 }

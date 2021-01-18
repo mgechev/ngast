@@ -22,7 +22,7 @@ interface ProviderMetadata {
   provide: Reference | DynamicValue | string;
   /** The key used by the provider  */
   useKey: UseKey;
-  /** The content of the useKey */ 
+  /** The content of the useKey */
   value: any;
 }
 
@@ -120,7 +120,7 @@ export class ProviderRegistry {
   }
 
   /** Get all providers from a list of providers in a decorator NgModule, Directive, Component */
-  getAllProviders(expression: Expression | null) {
+  getAllProviders(expression: Expression | null | undefined) {
     const result: (InjectableSymbol | Provider)[] = [];
     if (expression) {
       const resolveValue = this.workspace.evaluator.evaluate(expression);

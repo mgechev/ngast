@@ -11,7 +11,7 @@ export class ComponentSymbol extends Symbol<'Component'> {
 
   private assertScope() {
     const scope = this.getScope();
-    if (scope === 'error') {
+    if (scope === null) {
       throw new Error(`Could not find scope for component ${this.name}. Check [ComponentSymbol].diagnostics`);
     } else {
       return scope;
@@ -20,11 +20,14 @@ export class ComponentSymbol extends Symbol<'Component'> {
 
   /** @internal */
   get deps() {
-    return this.analysis.meta.deps;
+    return this.analysis?.meta.deps;
   }
 
-  get metadata(): ComponentMetadata {
-    const meta = this.analysis.meta;
+  get metadata(): ComponentMetadata | null {
+    const meta = this.analysis?.meta;
+    if (!meta) {
+      return null;
+    }
     return {
       exportAs: meta.exportAs,
       changeDetection: meta.changeDetection,
@@ -64,7 +67,7 @@ export class ComponentSymbol extends Symbol<'Component'> {
    * @note only providers specified in the `provider` fields of the component will be returned (not the module).
    */
   getProviders() {
-    const providers = this.analysis.meta.providers;
+    const providers = this.analysis?.meta.providers;
     if (providers instanceof WrappedNodeExpr) {
       return this.workspace.providerRegistry.getAllProviders(providers.node);
     } else {
@@ -79,17 +82,17 @@ export class ComponentSymbol extends Symbol<'Component'> {
   }
 
   /** The Style AST provided by ngast */
-  getStylesAst(): CssAst[] | null {
-    return this.analysis.meta.styles.map(s => parseCss(s));
+  getStylesAst(): CssAst[] | null | undefined {
+    return this.analysis?.meta.styles.map(s => parseCss(s));
   }
 
   /** The Template AST provided by Ivy */
-  getTemplateAst(): 'error' | TemplateNode[] {
+  getTemplateAst(): undefined | null | TemplateNode[] {
     const scope = this.getScope();
-    if (scope === 'error' || scope === null) {
-      return 'error';
+    if (scope === null) {
+      return null;
     }
     const visitor = new TransformTemplateVisitor(scope, this.workspace);
-    return this.analysis.meta.template.nodes.map(node => node.visit(visitor));
+    return this.analysis?.meta.template.nodes.map(node => node.visit(visitor));
   }
 }

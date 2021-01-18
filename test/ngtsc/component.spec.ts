@@ -94,7 +94,7 @@ describe('ComponentSymbol', () => {
     it('Should resolve components used in template', () => {
       const [component] = workspace.getAllComponents();
       const [button] = component.getTemplateAst() as TemplateNode[];
-      console.log(button.component.deps);
+      expect(button.component).not.toBeFalsy();
     });
   })
 });

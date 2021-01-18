@@ -58,7 +58,7 @@ interface Toolkit {
   referencesRegistry: ReferencesRegistry;
   routeAnalyzer: NgModuleRouteAnalyzer;
 
-  resourceManager: AdapterResourceLoader;
+  resourceLoader: AdapterResourceLoader;
   moduleResolver: ModuleResolver;
   cycleAnalyzer: CycleAnalyzer;
   incrementalDriver: IncrementalDriver;
@@ -322,11 +322,12 @@ export class WorkspaceSymbols {
         this.scopeRegistry,
         this.templateMapping,
         this.isCore,
-        this.resourceManager,
+        this.resourceLoader,
         this.host.rootDirs,
         this.options.preserveWhitespaces || false,
         this.options.i18nUseExternalIds !== false,
         this.options.enableI18nLegacyMessageIdFormat !== false,
+        false,
         this.options.i18nNormalizeLineEndingsInICUs,
         this.moduleResolver,
         this.cycleAnalyzer,
@@ -380,8 +381,8 @@ export class WorkspaceSymbols {
   }
 
   /** (pre)Load resources using cache */
-  private get resourceManager() {
-    return this.lazy('resourceManager', () => new AdapterResourceLoader(this.host, this.options));
+  private get resourceLoader() {
+    return this.lazy('resourceLoader', () => new AdapterResourceLoader(this.host, this.options));
   }
 
   /** Resolve the module source-files references in lazy-loaded routes */

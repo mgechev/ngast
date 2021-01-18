@@ -17,7 +17,7 @@ describe('Templates', () => {
     expect(component.name).toBe('AppComponent');
     expect(component.metadata.selector).toBe('app-component');
     const templateResult = component.getTemplateAst();
-    expect(templateResult).not.toBe('error');
+    expect(templateResult).not.toBe(null);
     const template = templateResult as TemplateNode[];
     expect(template[0].name).toBe('ng-template');
     expect(template[0].children[0].children[0].component.metadata.selector).toBe('main-component');
