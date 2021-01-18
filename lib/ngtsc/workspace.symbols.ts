@@ -4,8 +4,8 @@ import { readConfiguration } from '@angular/compiler-cli';
 import { NgCompilerHost } from '@angular/compiler-cli/src/ngtsc/core';
 import { NgCompilerOptions } from '@angular/compiler-cli/src/ngtsc/core/api';
 import { InjectableDecoratorHandler, PipeDecoratorHandler, DirectiveDecoratorHandler, ReferencesRegistry, NoopReferencesRegistry, NgModuleDecoratorHandler, ComponentDecoratorHandler } from '@angular/compiler-cli/src/ngtsc/annotations';
-import { NgtscCompilerHost, FileSystem, LogicalFileSystem, NodeJSFileSystem, relative } from '@angular/compiler-cli/src/ngtsc/file_system';
-import { TypeScriptReflectionHost, ClassDeclaration, DeclarationNode } from '@angular/compiler-cli/src/ngtsc/reflection';
+import { NgtscCompilerHost, FileSystem, LogicalFileSystem, NodeJSFileSystem } from '@angular/compiler-cli/src/ngtsc/file_system';
+import { TypeScriptReflectionHost, ClassDeclaration } from '@angular/compiler-cli/src/ngtsc/reflection';
 import { PartialEvaluator } from '@angular/compiler-cli/src/ngtsc/partial_evaluator';
 import { IncrementalDriver } from '@angular/compiler-cli/src/ngtsc/incremental';
 import { DefaultImportTracker, ReferenceEmitStrategy, AliasingHost, Reference, ReferenceEmitter, LogicalProjectStrategy, RelativePathStrategy, PrivateExportAliasingHost, LocalIdentifierStrategy, AbsoluteModuleStrategy, AliasStrategy, UnifiedModulesStrategy, UnifiedModulesAliasingHost, ModuleResolver } from '@angular/compiler-cli/src/ngtsc/imports';
@@ -28,7 +28,7 @@ import { DirectiveSymbol } from './directive.symbol';
 import { PipeSymbol } from './pipe.symbol';
 import { AnnotationNames, getDtsAnnotation, getLocalAnnotation } from './utils';
 import { ProviderRegistry } from './provider';
-import { dirname, join, sep } from 'path';
+import { dirname, join } from 'path';
 
 interface Toolkit {
   program: Program;

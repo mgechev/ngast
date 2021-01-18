@@ -119,7 +119,7 @@ export class TransformTemplateVisitor implements TmplAstRecursiveVisitor {
         (dir) => dir.annotation === 'Directive'
       ) as DirectiveSymbol[],
       attributes: element.attributes.map((attribute) => attribute.visit(this)),
-      children: element.children.map((child) => child.visit(this)),
+      children: element.children.map((child) => child.visit(this)).filter(el => !!el),
       references: element.references.map((ref) => ref.visit(this)),
       variables: [],
     };

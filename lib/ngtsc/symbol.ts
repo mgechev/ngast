@@ -101,8 +101,8 @@ export abstract class Symbol<A extends AnnotationNames> {
 
   /** Analyse this specific ClassDeclaration */
   public analyse() {
-    this.workspace.traitCompiler?.analyzeNode(this.node);
-    this.workspace.traitCompiler?.resolveNode(this.node);
+    this.workspace.traitCompiler.analyzeNode(this.node);
+    this.workspace.traitCompiler.resolveNode(this.node);
     // @question should we record NgModule Scope dependencies here ???
   }
 
