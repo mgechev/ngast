@@ -8,11 +8,14 @@ export class DirectiveSymbol extends Symbol<'Directive'> {
 
   /** @internal */
   get deps() {
-    return this.analysis.meta.deps;
+    return this.analysis?.meta.deps;
   }
 
-  get metadata(): DirectiveMetadata {
-    const meta = this.analysis.meta;
+  get metadata(): DirectiveMetadata | null {
+    const meta = this.analysis?.meta;
+    if (!meta) {
+      return null;
+    }
     return {
       exportAs: meta.exportAs,
       selector: meta.selector,
@@ -26,7 +29,7 @@ export class DirectiveSymbol extends Symbol<'Directive'> {
    * @note only providers specified in the `provider` fields of the directive will be returned (not the module).
    */
   getProviders() {
-    const providers = this.analysis.meta.providers;
+    const providers = this.analysis?.meta.providers;
     if (providers instanceof WrappedNodeExpr) {
       return this.workspace.providerRegistry.getAllProviders(providers.node);
     } else {

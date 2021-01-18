@@ -17,19 +17,17 @@ export class NgastTraitCompiler extends TraitCompiler {
     for (let trait of record?.traits || []) {
       const handler = trait.handler;
       switch (trait.state) {
-        case TraitState.SKIPPED:
-        case TraitState.ERRORED:
-          continue;
-        case TraitState.PENDING:
+        case TraitState.Skipped:
+        case TraitState.Pending:
           throw new Error(`Resolving a trait that hasn't been analyzed: ${node.name.text} / ${
               Object.getPrototypeOf(trait.handler).constructor.name}`);
-        case TraitState.RESOLVED:
+        case TraitState.Resolved:
           throw new Error(`Resolving an already resolved trait`);
       }
 
       if (handler.resolve === undefined) {
         // No resolution of this trait needed - it's considered successful by default.
-        trait = trait.toResolved(null);
+        trait = trait.toResolved(null, null);
         continue;
       }
 
@@ -38,7 +36,7 @@ export class NgastTraitCompiler extends TraitCompiler {
         result = handler.resolve(node, trait.analysis as Readonly<unknown>);
       } catch (err) {
         if (err instanceof FatalDiagnosticError) {
-          trait = trait.toErrored([err.toDiagnostic()]);
+          trait = trait.toResolved(null, [err.toDiagnostic()]);
           continue;
         } else {
           throw err;
@@ -46,12 +44,12 @@ export class NgastTraitCompiler extends TraitCompiler {
       }
 
       if (result.diagnostics !== undefined && result.diagnostics.length > 0) {
-        trait = trait.toErrored(result.diagnostics);
+        trait = trait.toResolved(null, result.diagnostics);
       } else {
         if (result.data !== undefined) {
-          trait = trait.toResolved(result.data);
+          trait = trait.toResolved(result.data, null);
         } else {
-          trait = trait.toResolved(null);
+          trait = trait.toResolved(null, null);
         }
       }
 
