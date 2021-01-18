@@ -20,7 +20,7 @@ export class AppComponent {
 
 @Component({
   selector: 'main-component',
-  template: '<div main>Hello world</div>',
+  template: '<div main i18n>Hello world Updated {minutes, plural, =0 {just now} =1 {one minute ago}}</div>',
 })
 export class MainComponent {
   visible: boolean;

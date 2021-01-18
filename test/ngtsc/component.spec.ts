@@ -84,4 +84,17 @@ describe('ComponentSymbol', () => {
       expect(primitive.name).toBe('primitive');
     })
   })
+
+  describe('template deps', () => {
+    let workspace: WorkspaceSymbols;
+    const folder = getFolder('deps');
+
+    beforeEach(() => workspace = new WorkspaceSymbols(`${folder}/tsconfig.json`));
+
+    it('Should resolve components used in template', () => {
+      const [component] = workspace.getAllComponents();
+      const [button] = component.getTemplateAst() as TemplateNode[];
+      console.log(button.component.deps);
+    });
+  })
 });

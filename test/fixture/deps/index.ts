@@ -2,14 +2,14 @@ import { NgModule, Component, Inject, Injectable } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { CommonModule } from '@angular/common';
-import { MatExpansionModule } from '@angular/material/expansion';
+import { MatButtonModule } from '@angular/material/button';
 
 @Injectable()
 export class BasicProvider {}
 
 @Component({
   selector: 'main-component',
-  template: '<div *ngIf="visible">Hello world</div>'
+  template: '<button mat-button></button><div *ngIf="visible">Hello world</div>'
 })
 export class MainComponent {
   visible: boolean;
@@ -20,7 +20,7 @@ export class CompositeProvider {
 }
 
 @NgModule({
-  imports: [CommonModule, BrowserModule, MatExpansionModule, BrowserAnimationsModule],
+  imports: [CommonModule, BrowserModule, MatButtonModule, BrowserAnimationsModule],
   exports: [MainComponent],
   declarations: [MainComponent],
   bootstrap: [MainComponent],
