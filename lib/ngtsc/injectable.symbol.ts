@@ -9,11 +9,11 @@ export class InjectableSymbol extends Symbol<'Injectable'> {
   get deps() {
     return this.metadata?.userDeps
       ? this.metadata.userDeps
-      : this.analysis.ctorDeps;
+      : this.analysis?.ctorDeps;
   }
 
   protected get metadata() {
-    return this.analysis.meta;
+    return this.analysis?.meta;
   }
 
   /** Return dependencies injected in the constructor of the injectable */

@@ -6,11 +6,11 @@ export class PipeSymbol extends Symbol<'Pipe'> {
 
   /** @internal */
   get deps() {
-    return this.metadata.deps;
+    return this.metadata?.deps;
   }
 
   get metadata() {
-    return this.analysis.meta;
+    return this.analysis?.meta;
   }
 
   /** Return dependencies injected in the constructor of the pipe */
