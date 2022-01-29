@@ -16,7 +16,7 @@ describe('PipeSymbol', () => {
       const [pipe] = workspace.getAllPipes();
       expect(pipe.name).toBe('MainPipe');
       expect(pipe.annotation).toBe('Pipe');
-      expect(pipe.metadata.pipeName).toBe('main');
+      expect(pipe.metadata!.pipeName).toBe('main');
     });
   });
 

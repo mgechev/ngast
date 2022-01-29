@@ -8,6 +8,7 @@ import { PipeHandlerData } from '@angular/compiler-cli/src/ngtsc/annotations/src
 import { InjectableHandlerData } from '@angular/compiler-cli/src/ngtsc/annotations/src/injectable';
 import { DirectiveHandlerData } from '@angular/compiler-cli/src/ngtsc/annotations/src/directive';
 import { ComponentAnalysisData } from '@angular/compiler-cli/src/ngtsc/annotations/src/component';
+import {SemanticSymbol} from '@angular/compiler-cli/src/ngtsc/incremental/semantic_graph';
 
 const handlerName = {
   'NgModule': 'NgModuleDecoratorHandler',
@@ -26,15 +27,15 @@ export interface HandlerData {
 }
 
 type GetHandlerData<A extends keyof typeof handlerName> = HandlerData[(typeof handlerName)[A]];
-type GetTrait<A extends keyof typeof handlerName> = Trait<Decorator, GetHandlerData<A>, unknown>
+type GetTrait<A extends keyof typeof handlerName> = Trait<Decorator, GetHandlerData<A>, null, unknown>;
 
-export const filterByHandler = <A extends AnnotationNames>(annotation: A) => (trait: Trait<Decorator, any, unknown>): trait is GetTrait<A> => {
+export const filterByHandler = <A extends AnnotationNames>(annotation: A) => (trait: Trait<Decorator, any, null, unknown>): trait is GetTrait<A> => {
   return trait.handler.name === handlerName[annotation];
 };
 
-export const isAnalysed = <A, B, C>(trait?: Trait<A, B, C>): trait is AnalyzedTrait<A, B, C> | ResolvedTrait<A, B, C> => {
+export const isAnalysed = <A, B, C extends SemanticSymbol | null, R>(trait?: Trait<A, B, C, R>): trait is AnalyzedTrait<A, B, C, R> | ResolvedTrait<A, B, C, R> => {
   return trait?.state === TraitState.Analyzed || trait?.state === TraitState.Resolved;
-}
+};
 
 export abstract class Symbol<A extends AnnotationNames> {
   readonly abstract annotation: A;

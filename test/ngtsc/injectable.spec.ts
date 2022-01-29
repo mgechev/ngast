@@ -28,7 +28,7 @@ describe('InjectionSymbol', () => {
 
     it('Should get dependencies', () => {
       const [_, composite] = workspace.getAllInjectable();
-      const [basic, primitive] = composite.getDependencies()
+      const [basic, primitive] = composite.getDependencies();
       expect(basic.name).toBe('BasicProvider');
       expect(primitive.name).toBe('primitive');
     });

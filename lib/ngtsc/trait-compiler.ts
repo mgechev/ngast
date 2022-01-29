@@ -33,7 +33,7 @@ export class NgastTraitCompiler extends TraitCompiler {
 
       let result: ResolveResult<unknown>;
       try {
-        result = handler.resolve(node, trait.analysis as Readonly<unknown>);
+        result = handler.resolve(node, trait.analysis as Readonly<unknown>, trait.symbol);
       } catch (err) {
         if (err instanceof FatalDiagnosticError) {
           trait = trait.toResolved(null, [err.toDiagnostic()]);

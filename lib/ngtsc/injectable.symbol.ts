@@ -7,8 +7,8 @@ export class InjectableSymbol extends Symbol<'Injectable'> {
 
   /** @internal */
   get deps() {
-    return this.metadata?.userDeps
-      ? this.metadata.userDeps
+    return this.metadata?.deps
+      ? this.metadata.deps
       : this.analysis?.ctorDeps;
   }
 
