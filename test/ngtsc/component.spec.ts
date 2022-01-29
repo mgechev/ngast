@@ -18,7 +18,7 @@ describe('ComponentSymbol', () => {
       const [component] = workspace.getAllComponents();
       expect(component.name).toBe('MainComponent');
       expect(component.annotation).toBe('Component');
-      expect(component.metadata.selector).toBe('main-component');
+      expect(component.metadata!.selector).toBe('main-component');
     });
   });
 
@@ -37,7 +37,7 @@ describe('ComponentSymbol', () => {
 
     it('Should have templateAst', () => {
       const [component] = workspace.getAllComponents();
-      const [root] = component.getTemplateAst();
+      const [root] = component.getTemplateAst()!;
       expect((root as TemplateNode).name).toBe('div');
     });
 
@@ -45,10 +45,10 @@ describe('ComponentSymbol', () => {
       const [component] = workspace.getAllComponents();
       const [token] = component.getProviders();
       expect(token.name).toBe('TOKEN');
-      expect(token instanceof Provider).toBeTruthy()
+      expect(token instanceof Provider).toBeTruthy();
       expect((token as Provider).metadata.useKey).toBe('useValue');
       expect((token as Provider).metadata.value).toBe(true);
-    })
+    });
 
     it('Should get the scope selector', () => {
       const [component] = workspace.getAllComponents();
@@ -59,7 +59,7 @@ describe('ComponentSymbol', () => {
       expect(selectors.includes('[main]')).toBeTruthy();
       // DTS
       expect(selectors.includes('mat-accordion')).toBeTruthy();
-    })
+    });
 
     it('Should get the scope pipe', () => {
       const [component] = workspace.getAllComponents();
@@ -68,7 +68,7 @@ describe('ComponentSymbol', () => {
       expect(selectors.includes('main')).toBeTrue();
       // DTS
       expect(selectors.includes('date')).toBeTrue();
-    })
+    });
   });
 
   describe('external deps', () => {
@@ -82,8 +82,8 @@ describe('ComponentSymbol', () => {
       const [basic, primitive] = component.getDependencies();
       expect(basic.name).toBe('BasicProvider');
       expect(primitive.name).toBe('primitive');
-    })
-  })
+    });
+  });
 
   describe('template deps', () => {
     let workspace: WorkspaceSymbols;
@@ -96,5 +96,5 @@ describe('ComponentSymbol', () => {
       const [button] = component.getTemplateAst() as TemplateNode[];
       expect(button.component).not.toBeFalsy();
     });
-  })
+  });
 });

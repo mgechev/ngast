@@ -20,7 +20,7 @@ describe('WorkspaceSymbols', () => {
 
     it('Get declarations with right Symbol', () => {
       const [module] = workspace.getAllModules();
-      const [component, directive, pipe] = module.getDeclarations();
+      const [component, directive, pipe] = module.getDeclarations()!;
       expect(component.annotation).toBe('Component');
       expect(component.name).toBe('MainComponent');
       expect(directive.annotation).toBeTruthy('Directive');
@@ -31,21 +31,21 @@ describe('WorkspaceSymbols', () => {
 
     it('Get imports', () => {
       const [module] = workspace.getAllModules();
-      const [common, browser, local] = module.getImports();
+      const [common, browser, local] = module.getImports()!;
       expect(common.name).toBe('CommonModule');
       expect(browser.name).toBe('BrowserModule');
     });
 
     it('Get exports with right Symbol', () => {
       const [module] = workspace.getAllModules();
-      const [exports] = module.getExports();
-      expect(exports.annotation).toBe('Component');
-      expect(exports.name).toBe('MainComponent');
+      const [exports] = module.getExports()!;
+      expect(exports!.annotation).toBe('Component');
+      expect(exports!.name).toBe('MainComponent');
     });
 
     it('Get bootstrap component', () => {
       const [module] = workspace.getAllModules();
-      const [bootstrap] = module.getBootstap();
+      const [bootstrap] = module.getBootstap()!;
       expect(bootstrap.name).toBe('MainComponent');
     });
   });

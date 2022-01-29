@@ -17,7 +17,7 @@ describe('DirectiveSymbol', () => {
       const [directive] = workspace.getAllDirectives();
       expect(directive.name).toBe('MainDirective');
       expect(directive.annotation).toBe('Directive');
-      expect(directive.metadata.selector).toBe('[main]');
+      expect(directive.metadata!.selector).toBe('[main]');
     });
   });
 
@@ -37,7 +37,7 @@ describe('DirectiveSymbol', () => {
       const [directive] = workspace.getAllDirectives();
       const [token] = directive.getProviders();
       expect(token.name).toBe('TOKEN');
-      expect(token instanceof Provider).toBeTruthy()
+      expect(token instanceof Provider).toBeTruthy();
       expect((token as Provider).metadata.useKey).toBe('useValue');
       expect((token as Provider).metadata.value).toBe(false);
     });

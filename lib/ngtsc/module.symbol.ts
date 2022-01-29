@@ -8,7 +8,7 @@ export class NgModuleSymbol extends Symbol<'NgModule'> {
 
   /** @internal */
   get deps() {
-    return this.analysis?.inj.deps;
+    return  null; // this.analysis?.inj;
   }
 
   get metadata() {
@@ -23,7 +23,8 @@ export class NgModuleSymbol extends Symbol<'NgModule'> {
   /** Return dependencies injected in the constructor of the module */
   getDependencies() {
     assertDeps(this.deps, this.name);
-    return this.deps.map(dep => this.workspace.findSymbol(dep.token)).filter(exists);
+    throw new Error('Not implemented');
+    // return this.deps.map(dep => this.workspace.findSymbol(dep.token)).filter(exists);
   }
 
   /** Get the providers of the module as InjectableSymbol */
